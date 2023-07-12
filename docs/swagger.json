@@ -1,0 +1,1135 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Prometheus-X Catalog API",
+    "version": "0.1.0",
+    "description": ""
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3000/v1",
+      "description": "API Server"
+    }
+  ],
+  "tags": [
+    {
+      "name": "Ecosystems",
+      "description": "Endpoints related to ecosystems"
+    },
+    {
+      "name": "Participants",
+      "description": "Endpoints related to participants"
+    }
+  ],
+  "paths": {
+    "/ecosystems/me": {
+      "get": {
+        "tags": ["Ecosystems"],
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "summary": "Retrieves ecosystems where you are a participant",
+        "parameters": [
+          {
+            "name": "filter",
+            "in": "query",
+            "description": "Filter ecosystems by participant role",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": ["all", "orchestrator", "member"]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Ecosystem"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/ecosystems/me/{id}": {
+      "get": {
+        "tags": ["Ecosystems"],
+        "summary": "Retrieves one ecosystem where you are a participant by ID",
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Ecosystem ID",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Ecosystem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/ecosystems/{id}": {
+      "put": {
+        "tags": ["Ecosystems"],
+        "summary": "Update an ecosystem",
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Ecosystem ID",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Updated ecosystem data",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EcosystemUpdate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful operation"
+          }
+        }
+      }
+    },
+    "/ecosystems": {
+      "post": {
+        "tags": ["Ecosystems"],
+        "summary": "Create an ecosystem",
+        "requestBody": {
+          "description": "New ecosystem data",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EcosystemCreation"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Ecosystem created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Ecosystem"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": ["Ecosystems"],
+        "summary": "Get all Ecosystems",
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "Maximum number of ecosystems to return",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "Page number of ecosystems to retrieve",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Ecosystem"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+
+    "/participants": {
+      "post": {
+        "tags": ["Participants"],
+        "summary": "Create a participant",
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "requestBody": {
+          "description": "New participant data",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ParticipantCreation"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Participant created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Participant"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": ["Participants"],
+        "summary": "Get all participants",
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "Maximum number of participants to return",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "Page number of participants to retrieve",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Participant"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/participants/{id}": {
+      "put": {
+        "tags": ["Participants"],
+        "summary": "Update a participant",
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Participant ID",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Updated participant data",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ParticipantUpdate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful operation"
+          }
+        }
+      },
+      "get": {
+        "tags": ["Participants"],
+        "summary": "Get a participant by ID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Participant ID",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Participant"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/participants/me": {
+      "get": {
+        "tags": ["Participants"],
+        "summary": "Get the current participant",
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Participant"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Ecosystem": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "purposeAndGoals": {
+            "$ref": "#/components/schemas/PurposeAndGoals"
+          },
+          "rolesAndResponsibilities": {
+            "$ref": "#/components/schemas/RolesAndResponsibilities"
+          },
+          "businessLogic": {
+            "$ref": "#/components/schemas/BusinessLogic"
+          },
+          "dataValue": {
+            "$ref": "#/components/schemas/DataValue"
+          },
+          "governance": {
+            "$ref": "#/components/schemas/Governance"
+          },
+          "dataServicesInfrastructure": {
+            "$ref": "#/components/schemas/DataServicesInfrastructure"
+          },
+          "systemDesignAndArchitecture": {
+            "$ref": "#/components/schemas/SystemDesignAndArchitecture"
+          },
+          "functionalRequirements": {
+            "$ref": "#/components/schemas/FunctionalRequirements"
+          },
+          "informationManagement": {
+            "$ref": "#/components/schemas/InformationManagement"
+          },
+          "security": {
+            "$ref": "#/components/schemas/Security"
+          },
+          "privacyAndPersonalData": {
+            "$ref": "#/components/schemas/PrivacyAndPersonalData"
+          }
+        }
+      },
+      "EcosystemCreation": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "purposeAndGoals": {
+            "$ref": "#/components/schemas/PurposeAndGoals"
+          },
+          "rolesAndResponsibilities": {
+            "$ref": "#/components/schemas/RolesAndResponsibilities"
+          },
+          "businessLogic": {
+            "$ref": "#/components/schemas/BusinessLogic"
+          },
+          "dataValue": {
+            "$ref": "#/components/schemas/DataValue"
+          },
+          "governance": {
+            "$ref": "#/components/schemas/Governance"
+          },
+          "dataServicesInfrastructure": {
+            "$ref": "#/components/schemas/DataServicesInfrastructure"
+          },
+          "systemDesignAndArchitecture": {
+            "$ref": "#/components/schemas/SystemDesignAndArchitecture"
+          },
+          "functionalRequirements": {
+            "$ref": "#/components/schemas/FunctionalRequirements"
+          },
+          "informationManagement": {
+            "$ref": "#/components/schemas/InformationManagement"
+          },
+          "security": {
+            "$ref": "#/components/schemas/Security"
+          },
+          "privacyAndPersonalData": {
+            "$ref": "#/components/schemas/PrivacyAndPersonalData"
+          }
+        }
+      },
+      "EcosystemUpdate": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "purposeAndGoals": {
+            "$ref": "#/components/schemas/PurposeAndGoals"
+          },
+          "rolesAndResponsibilities": {
+            "$ref": "#/components/schemas/RolesAndResponsibilities"
+          },
+          "businessLogic": {
+            "$ref": "#/components/schemas/BusinessLogic"
+          },
+          "dataValue": {
+            "$ref": "#/components/schemas/DataValue"
+          },
+          "governance": {
+            "$ref": "#/components/schemas/Governance"
+          },
+          "dataServicesInfrastructure": {
+            "$ref": "#/components/schemas/DataServicesInfrastructure"
+          },
+          "systemDesignAndArchitecture": {
+            "$ref": "#/components/schemas/SystemDesignAndArchitecture"
+          },
+          "functionalRequirements": {
+            "$ref": "#/components/schemas/FunctionalRequirements"
+          },
+          "informationManagement": {
+            "$ref": "#/components/schemas/InformationManagement"
+          },
+          "security": {
+            "$ref": "#/components/schemas/Security"
+          },
+          "privacyAndPersonalData": {
+            "$ref": "#/components/schemas/PrivacyAndPersonalData"
+          }
+        }
+      },
+      "PurposeAndGoals": {
+        "type": "object",
+        "properties": {
+          "keyPurpose": {
+            "type": "string"
+          },
+          "principles": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "useCases": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "RolesAndResponsibilities": {
+        "type": "object",
+        "properties": {
+          "stakeholders": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Stakeholder"
+            }
+          }
+        }
+      },
+      "Stakeholder": {
+        "type": "object",
+        "properties": {
+          "organisation": {
+            "type": "string"
+          },
+          "role": {
+            "type": "string"
+          },
+          "dataOfferings": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "serviceOfferings": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "BusinessLogic": {
+        "type": "object",
+        "properties": {
+          "businessModel": {
+            "type": "string"
+          },
+          "payingParties": {
+            "$ref": "#/components/schemas/PayingParties"
+          },
+          "businessCase": {
+            "$ref": "#/components/schemas/BusinessCase"
+          },
+          "ecosystemSharing": {
+            "$ref": "#/components/schemas/EcosystemSharing"
+          }
+        }
+      },
+      "PayingParties": {
+        "type": "object",
+        "properties": {
+          "direction": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "payers": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "BusinessCase": {
+        "type": "object",
+        "properties": {
+          "definition": {
+            "type": "string"
+          }
+        }
+      },
+      "EcosystemSharing": {
+        "type": "object",
+        "properties": {
+          "role": {
+            "type": "string"
+          },
+          "valueSharing": {
+            "$ref": "#/components/schemas/ValueSharing"
+          },
+          "revenueModel": {
+            "$ref": "#/components/schemas/RevenueModel"
+          },
+          "benefits": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "costs": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "ValueSharing": {
+        "type": "object",
+        "properties": {
+          "businessModel": {
+            "type": "string"
+          },
+          "valueNetwork": {
+            "$ref": "#/components/schemas/ValueNetwork"
+          },
+          "payers": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "ValueNetwork": {
+        "type": "object",
+        "properties": {
+          "direction": {
+            "type": "string"
+          }
+        }
+      },
+      "RevenueModel": {
+        "type": "object",
+        "properties": {
+          "businessModel": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "payingParties": {
+            "$ref": "#/components/schemas/PayingParties"
+          }
+        }
+      },
+      "DataValue": {
+        "type": "object",
+        "properties": {
+          "pricingModel": {
+            "type": "string"
+          },
+          "dataValueSolution": {
+            "$ref": "#/components/schemas/DataValueSolution"
+          },
+          "dataNetworkSolutions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DataNetworkSolution"
+            }
+          },
+          "levelOfCommitment": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "DataValueSolution": {
+        "type": "object",
+        "properties": {
+          "provider": {
+            "type": "string"
+          },
+          "offering": {
+            "type": "string"
+          },
+          "buildingBlock": {
+            "type": "string"
+          }
+        }
+      },
+      "DataNetworkSolution": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": ["buy", "rent", "build"]
+          },
+          "pays": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "Governance": {
+        "type": "object",
+        "properties": {
+          "governancePrinciples": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "decisionModel": {
+            "$ref": "#/components/schemas/DecisionModel"
+          }
+        }
+      },
+      "DecisionModel": {
+        "type": "object",
+        "properties": {
+          "perimeter": {
+            "type": "string"
+          },
+          "decisionProcess": {
+            "type": "string"
+          }
+        }
+      },
+      "DataServicesInfrastructure": {
+        "type": "object",
+        "properties": {
+          "infrastructureServices": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "dataUsageControl": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "consentManagement": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "dataQuality": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "operationalMonitoring": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "issuesQuestions": {
+            "type": "string"
+          },
+          "links": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "SystemDesignAndArchitecture": {
+        "type": "object",
+        "properties": {
+          "systemPrinciples": {
+            "$ref": "#/components/schemas/SystemPrinciples"
+          },
+          "metadataFormats": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MetadataFormat"
+            }
+          }
+        }
+      },
+      "SystemPrinciples": {
+        "type": "object",
+        "properties": {
+          "buildingBlocks": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "requirements": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "architecture": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "MetadataFormat": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "link": {
+            "type": "string"
+          }
+        }
+      },
+      "FunctionalRequirements": {
+        "type": "object",
+        "properties": {
+          "technicalInterfaces": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TechnicalInterface"
+            }
+          },
+          "acIdentities": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "dataUsageControlSolutions": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "transactionManagement": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "dataGovernanceSolution": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "TechnicalInterface": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "link": {
+            "type": "string"
+          },
+          "evolutionType": {
+            "type": "string"
+          }
+        }
+      },
+      "InformationManagement": {
+        "type": "object",
+        "properties": {
+          "dataServices": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "dataQuality": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "Security": {
+        "type": "object",
+        "properties": {
+          "threatAssessment": {
+            "$ref": "#/components/schemas/ThreatAssessment"
+          },
+          "riskManagementTools": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "ThreatAssessment": {
+        "type": "object",
+        "properties": {
+          "methods": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "standards": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "threats": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "securityObjectives": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "PrivacyAndPersonalData": {
+        "type": "object",
+        "properties": {
+          "inclusionPersonalData": {
+            "type": "boolean"
+          },
+          "PersonalDataManagementSolution": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "schemas": {
+        "ParticipantCreation": {
+          "type": "object",
+          "properties": {
+            "hasLegallyBindingName": {
+              "type": "string"
+            },
+            "identifier": {
+              "type": "string",
+              "default": ""
+            },
+            "address": {
+              "$ref": "#/components/schemas/Address"
+            },
+            "url": {
+              "type": "string",
+              "default": ""
+            },
+            "description": {
+              "type": "string",
+              "default": ""
+            },
+            "hasBusinessIdentifier": {
+              "type": "string",
+              "default": ""
+            },
+            "hasMemberParticipant": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "default": []
+            },
+            "hasLogo": {
+              "type": "string",
+              "default": ""
+            },
+            "contactPoint": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/ContactPoint"
+              }
+            },
+            "hasCompanyType": {
+              "type": "string",
+              "default": ""
+            },
+            "hasPhoneNumber": {
+              "type": "string",
+              "required": true
+            },
+            "hasMemberPerson": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/MemberPerson"
+              }
+            },
+            "email": {
+              "type": "string",
+              "required": true
+            },
+            "password": {
+              "type": "string",
+              "required": true
+            },
+            "jsonld": {
+              "type": "string",
+              "default": ""
+            }
+          }
+        },
+        "ParticipantUpdate": {
+          "type": "object",
+          "properties": {
+            "hasLegallyBindingName": {
+              "type": "string"
+            },
+            "identifier": {
+              "type": "string"
+            },
+            "address": {
+              "$ref": "#/components/schemas/Address"
+            },
+            "url": {
+              "type": "string"
+            },
+            "description": {
+              "type": "string"
+            },
+            "hasBusinessIdentifier": {
+              "type": "string"
+            },
+            "hasMemberParticipant": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "hasLogo": {
+              "type": "string"
+            },
+            "contactPoint": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/ContactPoint"
+              }
+            },
+            "hasCompanyType": {
+              "type": "string"
+            },
+            "hasPhoneNumber": {
+              "type": "string"
+            },
+            "hasMemberPerson": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/MemberPerson"
+              }
+            },
+            "email": {
+              "type": "string"
+            },
+            "password": {
+              "type": "string"
+            },
+            "jsonld": {
+              "type": "string"
+            }
+          }
+        },
+        "Address": {
+          "type": "object",
+          "properties": {
+            "addressLocality": {
+              "type": "string",
+              "default": ""
+            },
+            "addressRegion": {
+              "type": "string",
+              "default": ""
+            },
+            "postalCode": {
+              "type": "string",
+              "default": ""
+            },
+            "streetAddress": {
+              "type": "string",
+              "default": ""
+            }
+          }
+        },
+        "ContactPoint": {
+          "type": "object",
+          "properties": {
+            "email": {
+              "type": "string",
+              "required": true
+            },
+            "telephone": {
+              "type": "string",
+              "required": true
+            },
+            "contactType": {
+              "type": "string",
+              "required": true
+            }
+          }
+        },
+        "MemberPerson": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string",
+              "required": true
+            },
+            "email": {
+              "type": "string",
+              "required": true
+            }
+          }
+        }
+      }
+    }
+  }
+}
