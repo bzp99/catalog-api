@@ -1,6 +1,10 @@
 # Prometheus-X Catalog API
 
-The Prometheus-X Catalog API is a catalog management API that allows ecosystem administrators to manage their ecosystems, data/service providers to register their data & services, and enables users to browse the catalog. This API provides a centralized platform for organizing and discovering various offerings within the Prometheus-X ecosystem.
+The Prometheus-X Catalog API is a catalog management API that allows ecosystem administrators to manage their ecosystems, data/service providers to register their data & services, and enables users to browse the catalog. This API provides a platform for organizing and discovering various offerings within the Prometheus-X ecosystem.
+
+## Prometheus-X Service Ecosystem
+
+The Catalog API is one of the components allowing management of the catalog. Even though it is independant and serves its own purpose, users of a catalog will need interaction with more than one service. Thus, if you want to run a full catalog, consider looking into deploying the [Catalog Registry](https://github.com/Prometheus-X-association/catalog-registry) and the [Ecosystem Matcher](https://github.com/Prometheus-X-association/ecosystem-matcher), two components expanding on the catalog API to offer a more complete set of features.
 
 ## Table of Contents
 
@@ -21,7 +25,7 @@ The Prometheus-X Catalog API is a catalog management API that allows ecosystem a
 1. Clone the repository:
 
 ```bash
-git clone <repository_url>
+git clone https://github.com/Prometheus-X-association/catalog-api.git
 cd prometheus-x-catalog-api
 ```
 

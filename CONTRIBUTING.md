@@ -26,7 +26,7 @@ Please keep the following guidelines and best practices in mind while contributi
 
 ## Feedback and Support
 
-If you have any questions or need assistance, feel free to [create an issue](https://github.com/Prometheus-X-association/catalog-registry/issues) in our GitHub repository.
+If you have any questions or need assistance, feel free to [create an issue](https://github.com/Prometheus-X-association/catalog-api/issues) in our GitHub repository.
 
 ## License
 
