@@ -134,7 +134,7 @@ participantSchema.methods.validatePassword = async function (
 participantSchema.pre<IParticipant>("save", async function (next) {
   try {
     if (this.isModified("password") || this.isNew) {
-      const saltRounds = process.env.SALT_ROUNDS || 10;
+      const saltRounds = parseInt(process.env.SALT_ROUNDS) || 10;
       const hashedPassword: string = await bcrypt.hash(
         this.password,
         saltRounds

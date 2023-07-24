@@ -14,7 +14,7 @@ export const verifyEcosystemOwnership = async (
 ) => {
   try {
     const { id } = req.params;
-    const participantId = req.participant?.id;
+    const participantId = req.user?.id;
 
     const ecosystem = await Ecosystem.findOne({
       id,

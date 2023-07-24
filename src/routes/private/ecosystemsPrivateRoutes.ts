@@ -4,6 +4,8 @@ import {
   createEcosystem,
   getMyEcosystemById,
   getMyEcosystems,
+  processAccessRequest,
+  updateAccessRequest,
   updateEcosystemById,
 } from "../../controllers/private/ecosystemsPrivateController";
 import { verifyEcosystemOwnership } from "../../middleware/ownership";
@@ -11,6 +13,7 @@ import {
   setJoiValidationSchema,
   validatePayload,
 } from "../../middleware/joiValidation";
+import { usePopulatedUser } from "../../middleware/useAuthenticatedUser";
 const r: Router = Router();
 
 r.use(verifyJwtMiddleware);
@@ -25,5 +28,14 @@ r.put(
   updateEcosystemById
 );
 r.post("/", setJoiValidationSchema, validatePayload, createEcosystem);
+r.post(
+  "/access-request",
+  setJoiValidationSchema,
+  validatePayload,
+  usePopulatedUser,
+  processAccessRequest
+);
+
+r.put("/access-request/:id/:action", usePopulatedUser, updateAccessRequest);
 
 export default r;

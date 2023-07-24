@@ -4,16 +4,16 @@ export const participantCreationSchema = Joi.object({
   hasLegallyBindingName: Joi.string().required(),
   identifier: Joi.string().required(),
   address: Joi.object({
-    addressLocality: Joi.string().default(""),
-    addressRegion: Joi.string().default(""),
-    postalCode: Joi.string().default(""),
-    streetAddress: Joi.string().default(""),
+    addressLocality: Joi.string(),
+    addressRegion: Joi.string(),
+    postalCode: Joi.string(),
+    streetAddress: Joi.string(),
   }),
   url: Joi.string(),
   description: Joi.string().required(),
-  hasBusinessIdentifier: Joi.string().default(""),
+  hasBusinessIdentifier: Joi.string(),
   hasMemberParticipant: Joi.array().items(Joi.string()).default([]),
-  hasLogo: Joi.string().default(""),
+  hasLogo: Joi.string(),
   contactPoint: Joi.array().items(
     Joi.object({
       email: Joi.string().required(),
@@ -21,7 +21,7 @@ export const participantCreationSchema = Joi.object({
       contactType: Joi.string().required(),
     })
   ),
-  hasCompanyType: Joi.string().default(""),
+  hasCompanyType: Joi.string(),
   hasPhoneNumber: Joi.string().required(),
   hasMemberPerson: Joi.array().items(
     Joi.object({
@@ -31,8 +31,7 @@ export const participantCreationSchema = Joi.object({
   ),
   email: Joi.string().required(),
   password: Joi.string().required(),
-  jsonld: Joi.string().default(""),
-}).default();
+});
 
 export const participantUpdateSchema = Joi.object({
   hasLegallyBindingName: Joi.string(),
@@ -65,5 +64,4 @@ export const participantUpdateSchema = Joi.object({
   ),
   email: Joi.string(),
   password: Joi.string(),
-  jsonld: Joi.string(),
 });

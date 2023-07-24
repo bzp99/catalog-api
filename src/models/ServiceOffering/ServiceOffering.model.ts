@@ -62,9 +62,12 @@ const serviceOfferingSchema = new Schema<IServiceOffering>(
         type: Schema.Types.ObjectId,
         ref: "Participant",
         required: true,
-        default: [],
       },
     ],
+    license: {
+      type: String,
+      default: "",
+    },
     jsonld: {
       type: String,
       required: true,

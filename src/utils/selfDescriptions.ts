@@ -1,4 +1,9 @@
-import { IEcosystem, IParticipant } from "../types/models";
+import {
+  IDataOffering,
+  IEcosystem,
+  IParticipant,
+  IServiceOffering,
+} from "../types/models";
 
 /**
  * Generates a JSON-LD for the ecosystem based on the schema
@@ -201,7 +206,7 @@ export const ecosystemToSelfDescription = (
 };
 
 /**
- * Generates a JSON-LD for the participant based on the example
+ * Generates a JSON-LD for the participant based on the schema
  */
 export const participantToSelfDescription = (p: IParticipant) => {
   const jsonLd = {
@@ -267,4 +272,187 @@ export const participantToSelfDescription = (p: IParticipant) => {
   };
 
   return JSON.stringify(jsonLd, null, 2);
+};
+
+/**
+ * Generates a JSON-LD for the Data Offering based on the schema
+ * @todo Understand fields hasPart and hasPolicy to better exploit them
+ */
+export const dataOfferingToSelfDescription = (d: IDataOffering) => {
+  const jsonLD = {
+    "@context": {
+      dcat: "http://www.w3.org/ns/dcat#",
+      dcterms: "http://purl.org/dc/terms/",
+      xsd: "http://www.w3.org/2001/XMLSchema#",
+      foaf: "http://xmlns.com/foaf/0.1/",
+      odrl: "https://www.w3.org/TR/odrl-model/",
+      "gax-core": "https://example.com/gax-core#",
+    },
+    "@id": "dap:d33937",
+    "@type": "dcat:Dataset",
+    "dcterms:title": {
+      "@value": d.title,
+      "@language": "en",
+    },
+    "dcterms:conformsTo": {
+      "@id": "TODO",
+    },
+    "dcterms:description": {
+      "@value": d.description,
+      "@language": "en",
+    },
+    "dcterms:identifier": d.identifier,
+    "dcterms:issued": {
+      "@value": d.createdAt,
+      "@type": "xsd:date",
+    },
+    "dcterms:license": {
+      "@id": d.license,
+    },
+    "dcterms:publisher": {
+      "@id": d.publisher,
+    },
+    // "dcterms:hasPart": d.hasPart.map((part) => ({
+    //   "@id": part.id,
+    //   "@type": "foaf:Document",
+    //   "dcterms:type": part.type,
+    //   "dcterms:format": part.format,
+    //   "dcterms:description": {
+    //     "@value": part.description,
+    //     "@language": "en",
+    //   },
+    //   "dcterms:issued": {
+    //     "@value": part.issued,
+    //     "@type": "xsd:date",
+    //   },
+    //   "dcterms:title": {
+    //     "@value": part.title,
+    //     "@language": "en",
+    //   },
+    // })),
+    // "dcat:distribution": d.distribution.map((distribution) => ({
+    //   "@type": "dcat:Distribution",
+    //   "dcterms:identifier": distribution.identifier,
+    //   "dcterms:title": {
+    //     "@value": distribution.title,
+    //     "@language": "en",
+    //   },
+    //   "dcat:mediaType": distribution.mediaType,
+    //   "odrl:hasPolicy": {
+    //     "@type": "Policy",
+    //     "odrl:permission": distribution.permissions.map((permission) => ({
+    //       "@type": "Permission",
+    //       "odrl:action": permission.action,
+    //       "odrl:target": permission.target,
+    //     })),
+    //   },
+    // })),
+    "odrl:hasPolicy": d.hasPolicy.map((policy) => ({
+      "@context": {
+        "@vocab": "https://www.w3.org/TR/odrl-model/",
+      },
+      "@id": policy,
+      // permission: policy.permissions.map((permission) => ({
+      //   action: permission.action,
+      //   constraint: permission.constraints.map((constraint) => ({
+      //     leftOperand: {
+      //       "@value": constraint.leftOperand,
+      //     },
+      //     rightOperand: {
+      //       "@value": constraint.rightOperand,
+      //     },
+      //     operator: constraint.operator,
+      //   })),
+      //   duty: permission.duty,
+      // })),
+      // prohibition: policy.prohibition,
+      // obligation: policy.obligation,
+    })),
+    "dcat:landingPage": {
+      "@id": d.landingPage,
+    },
+    "dcterms:accrualPeriodicity": d.accrualPeriodicity,
+    "gax-core:offeredBy": d.offeredBy.map((offeredBy) => ({
+      "@id": offeredBy.id,
+    })),
+  };
+
+  return JSON.stringify(jsonLD, null, 2);
+};
+
+/**
+ * Generates the JSON-LD Self description for the service offering
+ * @todo look more into hasPart field and distribution field
+ */
+export const serviceToSelfDescription = (s: IServiceOffering) => {
+  const jsonLD = {
+    "@context": {
+      cc: "http://creativecommons.org/ns#",
+      schema: "http://schema.org/",
+      xsd: "http://www.w3.org/2001/XMLSchema#",
+      "gax-core": "http://w3id.org/gaia-x/core#",
+      dcterms: "http://purl.org/dc/terms/",
+      ids: "https://w3id.org/idsa/core/",
+      dcat: "http://www.w3.org/ns/dcat#",
+      did: "https://www.w3.org/TR/did-core/#",
+    },
+    "@id": "did:web:http://example.com/registry/service",
+    "@type": "ServiceOffering",
+    "gax-core:offeredBy": s.offeredBy.map((offeredBy) => ({
+      "@id": offeredBy.id,
+    })),
+    "dcterms:title": {
+      "@value": s.title,
+      "@type": "xsd:string",
+    },
+    "schema:image": {
+      "@value": "TODO",
+      "@type": "xsd:anyURI",
+    },
+    "dcterms:description": {
+      "@value": s.description,
+      "@type": "xsd:string",
+    },
+    "dcat:landingPage": {
+      "@value": s.landingPage,
+      "@type": "xsd:anyURI",
+    },
+    "dcat:keyword": s.keywords.map((keyword) => ({
+      "@type": "xsd:string",
+      "@value": keyword,
+    })),
+    "dcat:distribution": s.distribution.map((distribution) => ({
+      "@id": distribution,
+    })),
+    "dcterms:accrualPeriodicity": {
+      "@id": s.accrualPeriodicity,
+    },
+    "dcterms:subject": {
+      "@id": s.subject,
+    },
+    "dcterms:spatial": {
+      "@id": s.spatial,
+    },
+    "dcterms:license": {
+      "@id": s.license,
+    },
+    "dcat:theme": {
+      "@id": s.theme,
+    },
+    "dcat:temporalResolution": {
+      "@id": s.temporalResolution,
+    },
+    // "schema:hasPart": {
+    //   "@type": "CertificateScope",
+    //   "schema:partOf": {
+    //     "@id": s.partOf,
+    //   },
+    //   "schema:scope": {
+    //     "@value": s.scope,
+    //     "@type": "xsd:string",
+    //   },
+    // },
+  };
+
+  return JSON.stringify(jsonLD, null, 2);
 };

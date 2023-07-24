@@ -20,6 +20,9 @@ export interface AllSchemas {
    * JSON-LD Self Description
    */
   jsonld: string;
+
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 export interface IDataOffering extends Document, AllSchemas {
@@ -67,12 +70,14 @@ export interface IDataOffering extends Document, AllSchemas {
   /**
    * Participant DID offering the data offering
    */
-  offeredBy: IParticipant[];
+  offeredBy: Types.ObjectId[];
 
   /**
    * DCAT Terms periodicity URI string
    */
   accrualPeriodicity: string;
+
+  landingPage: string;
 
   businessModel: BusinessModel;
 }
@@ -82,6 +87,11 @@ export interface IEcosystem extends Document, AllSchemas {
    * Data ecosystem name
    */
   name: string;
+
+  /**
+   * Identifier for federation
+   */
+  identifier: string;
 
   /**
    * Purposes & goals of the data ecosystem
@@ -317,6 +327,8 @@ export interface IServiceOffering extends Document, AllSchemas {
   landingPage: string;
   keywords: string[];
 
+  license: string;
+
   /**
    * @type dcat:distribution
    */
@@ -358,4 +370,84 @@ export interface IServiceOffering extends Document, AllSchemas {
    * Participants offering the service
    */
   offeredBy: Types.ObjectId[];
+}
+
+export type FederatedIdentifier = {
+  /**
+   * MongoDB id
+   */
+  id: Types.ObjectId | null;
+
+  /**
+   * DID identifier, useful to identify the participant
+   * if coming from another instance
+   */
+  identifier: string;
+};
+
+export interface IEcosystemAccessRequest extends Document, AllSchemas {
+  /**
+   * Ecosystem the participant should access
+   */
+  ecosystem: FederatedIdentifier;
+
+  /**
+   * Status of the access request
+   */
+  status: "PENDING" | "AUTHORIZED" | "REVOKED";
+
+  /**
+   * The participant joining the ecosystem
+   */
+  joining: FederatedIdentifier & { role: string };
+
+  /**
+   * If the orchestrator invited the participant or
+   * if the participant requested access to the ecosystem
+   */
+  isInvitation: boolean;
+
+  initiatedBy: FederatedIdentifier;
+  authorizedBy: FederatedIdentifier;
+  revokedBy: FederatedIdentifier;
+
+  /**
+   * For later (interaction with the contractualization)
+   */
+  accessionAgreementSignature: string;
+}
+
+export interface IEcosystemAccessRequestModel
+  extends Model<IEcosystemAccessRequest> {
+  /**
+   * Finds all Access requests attached to the specified ecosystem
+   * @param id MongoDB ID of the ecosystem
+   * @param identifier Federated identifier of the ecosystem
+   */
+  findAccessRequestsByEcosystem(
+    id: string,
+    identifier: string
+  ): Promise<IEcosystemAccessRequest[]>;
+
+  /**
+   * creates an access request for the participant to make an access request to the ecosystem
+   * @param participant The participant wanting to join the ecosystem
+   * @param ecosystem The ecosystem information
+   */
+  request(
+    participant: FederatedIdentifier & { role: string },
+    ecosystem: FederatedIdentifier
+  ): Promise<IEcosystemAccessRequest>;
+
+  /**
+   * Creates an Invitation for a participant to join the ecosystem
+   * @param participant The participant to invite
+   * @param ecosystem The ecosystem information
+   * @param initiator The participant initiating the invitation
+   */
+  invite(
+    participant: FederatedIdentifier & { role: string },
+    ecosystem: FederatedIdentifier,
+    initiator: FederatedIdentifier
+  ): Promise<IEcosystemAccessRequest>;
 }

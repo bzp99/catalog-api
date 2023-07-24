@@ -1,5 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import {
+  ecosystemAccessRequestInvitationSchema,
+  ecosystemAccessRequestSchema,
   ecosystemCreationSchema,
   ecosystemUpdateSchema,
 } from "../libs/joi/ecosystemSchemas";
@@ -9,6 +11,14 @@ import {
 } from "../libs/joi/participantSchemas";
 import { NotFoundError } from "../errors/NotFoundError";
 import { ValidationError } from "joi";
+import {
+  dataOfferingCreationSchema,
+  dataOfferingUpdateSchema,
+} from "../libs/joi/dataOfferingSchemas";
+import {
+  serviceOfferingCreationSchema,
+  serviceOfferingUpdateSchema,
+} from "../libs/joi/serviceOfferingSchemas";
 
 /**
  * Sets the Joi schema to use as validation
@@ -20,7 +30,7 @@ export const setJoiValidationSchema = async (
   next: NextFunction
 ) => {
   try {
-    const { method, originalUrl } = req;
+    const { method, originalUrl, body } = req;
     let schema;
     if (originalUrl.includes("ecosystems")) {
       schema =
@@ -28,6 +38,24 @@ export const setJoiValidationSchema = async (
     } else if (originalUrl.includes("participants")) {
       schema =
         method === "POST" ? participantCreationSchema : participantUpdateSchema;
+    } else if (originalUrl.includes("data")) {
+      schema =
+        method === "POST"
+          ? dataOfferingCreationSchema
+          : dataOfferingUpdateSchema;
+    } else if (originalUrl.includes("services")) {
+      schema =
+        method === "POST"
+          ? serviceOfferingCreationSchema
+          : serviceOfferingUpdateSchema;
+    } else if (originalUrl.includes("access-request")) {
+      if (method === "POST") {
+        if (body.ecosystem && body.participant) {
+          req.validationSchema = ecosystemAccessRequestInvitationSchema;
+        } else if (body.ecosystem && body.role && !body.participant) {
+          req.validationSchema = ecosystemAccessRequestSchema;
+        }
+      }
     } else {
       throw new NotFoundError("Unknown path validation key");
     }

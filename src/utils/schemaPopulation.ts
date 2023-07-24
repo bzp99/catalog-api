@@ -24,3 +24,17 @@ export const ECOSYSTEM_POPULATION = [
     select: PARTICIPANT_SELECTION,
   },
 ];
+
+export const SERVICE_POPULATION = [
+  {
+    path: "offeredBy",
+    select: PARTICIPANT_SELECTION,
+  },
+];
+
+export const DATA_OFFERING_POPULATION = [
+  {
+    path: "offeredBy",
+    select: PARTICIPANT_SELECTION,
+  },
+];

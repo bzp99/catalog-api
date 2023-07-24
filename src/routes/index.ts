@@ -13,10 +13,14 @@ const API_PREFIX = "/v1";
 import auth from "./auth";
 import publicParticipants from "./public/participantsPublicRoutes";
 import publicEcosystems from "./public/ecosystemsPublicRoutes";
+import publicDataOfferings from "./public/dataPublicRoutes";
+import publicServices from "./public/servicesPublicRoutes";
 
 // Private routes
 import privateParticipants from "./private/participantsPrivateRoutes";
 import privateEcosystems from "./private/ecosystemsPrivateRoutes";
+import privateDataOfferings from "./private/dataPrivateRoutes";
+import privateServices from "./private/servicesPrivateRoutes";
 
 export const loadRoutes = (app: Application) => {
   app.get("/health", (req: Request, res: Response) => {
@@ -31,6 +35,8 @@ export const loadRoutes = (app: Application) => {
     publicParticipants,
     privateParticipants
   );
+  app.use(`${API_PREFIX}/services`, publicServices, privateServices);
+  app.use(`${API_PREFIX}/data`, publicDataOfferings, privateDataOfferings);
 
   app.use(invalidEndpointHandler);
   app.use(globalErrorHandler);

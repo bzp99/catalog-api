@@ -1,14 +1,20 @@
 import "express";
 import { JwtPayload } from "jsonwebtoken";
-import { IEcosystem } from "./models";
+import { IEcosystem, IParticipant } from "./models";
 
 import Joi from "joi";
 
 declare module "express" {
   interface Request {
     decodedToken?: JwtPayload;
-    participant?: {
+    user?: {
       id: string;
+
+      /**
+       * Only available on handlers that come
+       * after usePopulatedUser
+       */
+      populated?: IParticipant;
     };
 
     /**

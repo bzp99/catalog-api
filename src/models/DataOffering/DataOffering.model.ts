@@ -9,12 +9,10 @@ const dataOfferingSchema = new Schema<IDataOffering>(
     },
     dataType: {
       type: String,
-      required: true,
       default: "",
     },
     dataSize: {
       type: String,
-      required: true,
       default: "",
     },
     description: {
@@ -29,35 +27,33 @@ const dataOfferingSchema = new Schema<IDataOffering>(
     },
     license: {
       type: String,
-      required: true,
       default: "",
     },
     publisher: {
       type: String,
-      required: true,
       default: "",
     },
     hasPolicy: {
       type: [String],
-      required: true,
       default: [],
     },
     offeredBy: [
       {
         type: Schema.Types.ObjectId,
-        ref: "Participant", // Reference the Participant model
+        ref: "Participant",
         required: true,
-        default: [],
       },
     ],
     accrualPeriodicity: {
       type: String,
-      required: true,
       default: "",
     },
     businessModel: {
       type: String,
-      required: true,
+      default: "",
+    },
+    landingPage: {
+      type: String,
       default: "",
     },
     jsonld: {

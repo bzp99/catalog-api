@@ -247,3 +247,23 @@ export const ecosystemUpdateSchema = Joi.object({
     PersonalDataManagementSolution: Joi.array().items(Joi.string()),
   }),
 });
+
+export const ecosystemAccessRequestInvitationSchema = Joi.object({
+  ecosystem: Joi.object({
+    id: Joi.string().required(),
+    identifier: Joi.string().required(),
+  }).required(),
+  participant: Joi.object({
+    id: Joi.string().required(),
+    identifier: Joi.string().required(),
+    role: Joi.string().required(),
+  }).required(),
+});
+
+export const ecosystemAccessRequestSchema = Joi.object({
+  ecosystem: Joi.object({
+    id: Joi.string().required(),
+    identifier: Joi.string().required(),
+  }).required(),
+  role: Joi.string().required(),
+});
