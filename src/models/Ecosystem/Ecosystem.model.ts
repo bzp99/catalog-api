@@ -68,12 +68,10 @@ const ecosystemSchema = new Schema<IEcosystem>(
         provider: {
           type: Schema.Types.ObjectId,
           ref: "Participant",
-          required: true,
         },
         offering: {
           type: Schema.Types.ObjectId,
           ref: "Participant",
-          required: true,
         },
         buildingBlock: { type: String, default: "" },
       },

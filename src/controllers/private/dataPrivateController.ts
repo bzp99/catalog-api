@@ -3,7 +3,6 @@ import Ecosystem from "../../models/Ecosystem/Ecosystem.model";
 import { DATA_OFFERING_POPULATION } from "../../utils/schemaPopulation";
 import { IDataOffering } from "../../types/models";
 import { Types } from "mongoose";
-import ServiceOffering from "../../models/ServiceOffering/ServiceOffering.model";
 import DataOffering from "../../models/DataOffering/DataOffering.model";
 import { dataOfferingToSelfDescription } from "../../utils/selfDescriptions";
 
@@ -19,7 +18,7 @@ export const getMyDataOfferings = async (
   try {
     const authenticatedParticipantId = req.user?.id;
 
-    const data = DataOffering.find({
+    const data = await DataOffering.find({
       offeredBy: authenticatedParticipantId,
     });
 
@@ -44,7 +43,7 @@ export const createDataOffering = async (
 
     data.offeredBy.push(new Types.ObjectId(participantId));
 
-    const newData = new ServiceOffering(data);
+    const newData = new DataOffering(data);
 
     newData.jsonld = dataOfferingToSelfDescription(newData as any);
 

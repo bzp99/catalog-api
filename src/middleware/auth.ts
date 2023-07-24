@@ -25,7 +25,7 @@ export const verifyJwtMiddleware = (
     ) as JwtPayload;
 
     req.decodedToken = decodedToken;
-    req.participant = {
+    req.user = {
       id: decodedToken.sub,
     };
 

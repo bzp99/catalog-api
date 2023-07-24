@@ -1,24 +1,32 @@
 import { Router } from "express";
-import { verifyJwtMiddleware } from "../../middleware/auth";
+import {
+  getAllEcosystems,
+  getEcosystemById,
+} from "../controllers/public/ecosystemsPublicController";
+import { verifyJwtMiddleware } from "../middleware/auth";
+import { usePopulatedUser } from "../middleware/useAuthenticatedUser";
+import { verifyEcosystemOwnership } from "../middleware/ownership";
+import {
+  setJoiValidationSchema,
+  validatePayload,
+} from "../middleware/joiValidation";
 import {
   createEcosystem,
+  deleteEcosystemById,
   getMyEcosystemById,
   getMyEcosystems,
   processAccessRequest,
   updateAccessRequest,
   updateEcosystemById,
-} from "../../controllers/private/ecosystemsPrivateController";
-import { verifyEcosystemOwnership } from "../../middleware/ownership";
-import {
-  setJoiValidationSchema,
-  validatePayload,
-} from "../../middleware/joiValidation";
-import { usePopulatedUser } from "../../middleware/useAuthenticatedUser";
+} from "../controllers/private/ecosystemsPrivateController";
 const r: Router = Router();
+
+r.get("/", getAllEcosystems);
+r.get("/me", verifyJwtMiddleware, getMyEcosystems);
+r.get("/:id", getEcosystemById);
 
 r.use(verifyJwtMiddleware);
 
-r.get("/me", getMyEcosystems);
 r.get("/me/:id", getMyEcosystemById);
 r.put(
   "/:id",
@@ -27,6 +35,7 @@ r.put(
   validatePayload,
   updateEcosystemById
 );
+r.delete("/:id", deleteEcosystemById);
 r.post("/", setJoiValidationSchema, validatePayload, createEcosystem);
 r.post(
   "/access-request",

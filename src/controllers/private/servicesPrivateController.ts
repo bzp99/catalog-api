@@ -18,7 +18,7 @@ export const getMyServices = async (
   try {
     const authenticatedParticipantId = req.user?.id;
 
-    const services = ServiceOffering.find({
+    const services = await ServiceOffering.find({
       offeredBy: authenticatedParticipantId,
     });
 

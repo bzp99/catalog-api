@@ -84,6 +84,22 @@ export const getMyEcosystemById = async (
 };
 
 /**
+ * Deletes an ecosystem by its id
+ */
+export const deleteEcosystemById = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const e = await Ecosystem.findByIdAndDelete(req.params.id);
+    return res.json(e);
+  } catch (err) {
+    next(err);
+  }
+};
+
+/**
  * Creates a new ecosystem by setting the authenticated user
  * as orchestrator of this ecosystem
  */

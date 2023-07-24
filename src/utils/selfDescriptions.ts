@@ -98,17 +98,17 @@ export const ecosystemToSelfDescription = (
       dataValueSolution: {
         provider: {
           "@type": "schema:Organization",
-          "@id": e.dataValue.dataValueSolution.provider._id,
+          "@id": e.dataValue.dataValueSolution.provider?._id,
           "schema:name":
-            e.dataValue.dataValueSolution.provider.hasLegallyBindingName,
-          "did:identifier": e.dataValue.dataValueSolution.provider.id,
+            e.dataValue.dataValueSolution.provider?.hasLegallyBindingName,
+          "did:identifier": e.dataValue.dataValueSolution.provider?.id,
         },
         offering: {
           "@type": "schema:Organization",
-          "@id": e.dataValue.dataValueSolution.offering._id,
+          "@id": e.dataValue.dataValueSolution.offering?._id,
           "schema:name":
-            e.dataValue.dataValueSolution.offering.hasLegallyBindingName,
-          "did:identifier": e.dataValue.dataValueSolution.offering.id,
+            e.dataValue.dataValueSolution.offering?.hasLegallyBindingName,
+          "did:identifier": e.dataValue.dataValueSolution.offering?.id,
         },
         buildingBlock: e.dataValue.dataValueSolution.buildingBlock || "",
       },
@@ -124,9 +124,9 @@ export const ecosystemToSelfDescription = (
           pays: dn.pays.map((payer) => {
             return {
               "@type": "schema:Organization",
-              "@id": payer._id,
-              "schema:name": payer.hasLegallyBindingName,
-              "did:identifier": payer.id,
+              "@id": payer?._id,
+              "schema:name": payer?.hasLegallyBindingName,
+              "did:identifier": payer?.id,
             };
           }),
         };
@@ -223,7 +223,7 @@ export const participantToSelfDescription = (p: IParticipant) => {
     "@id": p.id,
     "@type": "Participant",
     "did:identifier": p.identifier,
-    "gax-participant:hasLegallyBindingName": p.hasLegallyBindingName,
+    "gax-participant:hasLegallyBindingName": p?.hasLegallyBindingName,
     address: {
       "@type": "schema:PostalAddress",
       "schema:addressLocality": p.address.addressLocality,

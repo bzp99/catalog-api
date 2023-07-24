@@ -51,8 +51,8 @@ export const ecosystemCreationSchema = Joi.object({
   dataValue: Joi.object({
     pricingModel: Joi.string().default(""),
     dataValueSolution: Joi.object({
-      provider: Joi.string().required(),
-      offering: Joi.string().required(),
+      provider: Joi.string(),
+      offering: Joi.string(),
       buildingBlock: Joi.string().default(""),
     }),
     dataNetworkSolutions: Joi.array()

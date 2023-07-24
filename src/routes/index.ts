@@ -9,18 +9,11 @@ import { invalidEndpointHandler } from "../middleware/invalidEndpointHandler";
 
 const API_PREFIX = "/v1";
 
-// Public routes
 import auth from "./auth";
-import publicParticipants from "./public/participantsPublicRoutes";
-import publicEcosystems from "./public/ecosystemsPublicRoutes";
-import publicDataOfferings from "./public/dataPublicRoutes";
-import publicServices from "./public/servicesPublicRoutes";
-
-// Private routes
-import privateParticipants from "./private/participantsPrivateRoutes";
-import privateEcosystems from "./private/ecosystemsPrivateRoutes";
-import privateDataOfferings from "./private/dataPrivateRoutes";
-import privateServices from "./private/servicesPrivateRoutes";
+import data from "./data";
+import ecosystems from "./ecosystems";
+import participants from "./participants";
+import services from "./services";
 
 export const loadRoutes = (app: Application) => {
   app.get("/health", (req: Request, res: Response) => {
@@ -29,14 +22,10 @@ export const loadRoutes = (app: Application) => {
   app.use("/docs", swaggerUI.serve, swaggerUI.setup(swaggerSpec));
 
   app.use(`${API_PREFIX}/auth`, auth);
-  app.use(`${API_PREFIX}/ecosystems`, publicEcosystems, privateEcosystems);
-  app.use(
-    `${API_PREFIX}/participants`,
-    publicParticipants,
-    privateParticipants
-  );
-  app.use(`${API_PREFIX}/services`, publicServices, privateServices);
-  app.use(`${API_PREFIX}/data`, publicDataOfferings, privateDataOfferings);
+  app.use(`${API_PREFIX}/ecosystems`, ecosystems);
+  app.use(`${API_PREFIX}/participants`, participants);
+  app.use(`${API_PREFIX}/services`, services);
+  app.use(`${API_PREFIX}/data`, data);
 
   app.use(invalidEndpointHandler);
   app.use(globalErrorHandler);
