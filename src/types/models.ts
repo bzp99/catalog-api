@@ -80,6 +80,16 @@ export interface IDataOffering extends Document, AllSchemas {
   landingPage: string;
 
   businessModel: BusinessModel;
+
+  /**
+   * DCAT keyword
+   */
+  keyword: string[];
+
+  /**
+   * DCAT theme
+   */
+  theme: string;
 }
 
 export interface IEcosystem extends Document, AllSchemas {
@@ -243,6 +253,11 @@ export interface IEcosystem extends Document, AllSchemas {
     inclusionPersonalData: boolean;
     PersonalDataManagementSolution: BuildingBlock[];
   };
+
+  needs: {
+    data: { keyword: string[]; theme?: string }[];
+    services: { keyword: string[]; theme?: string }[];
+  };
 }
 
 export interface IParticipant extends Document, AllSchemas {
@@ -325,8 +340,6 @@ export interface IServiceOffering extends Document, AllSchemas {
   title: string;
   description: string;
   landingPage: string;
-  keywords: string[];
-
   license: string;
 
   /**
@@ -351,11 +364,6 @@ export interface IServiceOffering extends Document, AllSchemas {
   spatial: string;
 
   /**
-   * @type dcat:theme
-   */
-  theme: string;
-
-  /**
    * @type dcat:temporalResolution
    */
   temporalResolution: string;
@@ -370,6 +378,16 @@ export interface IServiceOffering extends Document, AllSchemas {
    * Participants offering the service
    */
   offeredBy: Types.ObjectId[];
+
+  /**
+   * DCAT keyword
+   */
+  keyword: string[];
+
+  /**
+   * DCAT theme
+   */
+  theme: string;
 }
 
 export type FederatedIdentifier = {

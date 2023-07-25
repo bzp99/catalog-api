@@ -1,5 +1,5 @@
 node_modules
 dist
-reference-models/
 .env
 mochawesome-report/
+.vscode/

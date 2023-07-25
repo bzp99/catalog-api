@@ -56,6 +56,8 @@ const dataOfferingSchema = new Schema<IDataOffering>(
       type: String,
       default: "",
     },
+    theme: { type: String, default: "" },
+    keyword: [{ type: String }],
     jsonld: {
       type: String,
       required: true,
@@ -69,6 +71,8 @@ const dataOfferingSchema = new Schema<IDataOffering>(
   },
   { timestamps: true }
 );
+
+dataOfferingSchema.index({ theme: "text", keyword: "text" });
 
 const DataOffering = model<IDataOffering>("DataOffering", dataOfferingSchema);
 

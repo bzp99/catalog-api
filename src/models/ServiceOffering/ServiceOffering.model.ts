@@ -17,11 +17,6 @@ const serviceOfferingSchema = new Schema<IServiceOffering>(
       required: true,
       default: "",
     },
-    keywords: {
-      type: [String],
-      required: true,
-      default: [],
-    },
     distribution: {
       type: [String],
       required: true,
@@ -42,11 +37,8 @@ const serviceOfferingSchema = new Schema<IServiceOffering>(
       required: true,
       default: "",
     },
-    theme: {
-      type: String,
-      required: true,
-      default: "",
-    },
+    theme: { type: String, default: "" },
+    keyword: [{ type: String }],
     temporalResolution: {
       type: String,
       required: true,
@@ -81,6 +73,8 @@ const serviceOfferingSchema = new Schema<IServiceOffering>(
   },
   { timestamps: true }
 );
+
+serviceOfferingSchema.index({ theme: "text", keyword: "text" });
 
 const ServiceOffering = model<IServiceOffering>(
   "ServiceOffering",

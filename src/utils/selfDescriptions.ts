@@ -200,6 +200,22 @@ export const ecosystemToSelfDescription = (
       PersonalDataManagementSolution:
         e.privacyAndPersonalData.PersonalDataManagementSolution || [],
     },
+    needs: {
+      data:
+        e.needs?.data?.map((d) => {
+          return {
+            "dcat:theme": d.theme,
+            "dcat:keyword": d.keyword,
+          };
+        }) || [],
+      services:
+        e.needs?.services?.map((s) => {
+          return {
+            "dcat:theme": s.theme,
+            "dcat:keyword": s.keyword,
+          };
+        }) || [],
+    },
   };
 
   return JSON.stringify(jsonLd, null, 2);
@@ -375,6 +391,8 @@ export const dataOfferingToSelfDescription = (d: IDataOffering) => {
     "gax-core:offeredBy": d.offeredBy.map((offeredBy) => ({
       "@id": offeredBy.id,
     })),
+    "dcat:theme": d.theme,
+    "dcat:keyword": d.keyword,
   };
 
   return JSON.stringify(jsonLD, null, 2);
@@ -417,10 +435,6 @@ export const serviceToSelfDescription = (s: IServiceOffering) => {
       "@value": s.landingPage,
       "@type": "xsd:anyURI",
     },
-    "dcat:keyword": s.keywords.map((keyword) => ({
-      "@type": "xsd:string",
-      "@value": keyword,
-    })),
     "dcat:distribution": s.distribution.map((distribution) => ({
       "@id": distribution,
     })),
@@ -436,12 +450,11 @@ export const serviceToSelfDescription = (s: IServiceOffering) => {
     "dcterms:license": {
       "@id": s.license,
     },
-    "dcat:theme": {
-      "@id": s.theme,
-    },
     "dcat:temporalResolution": {
       "@id": s.temporalResolution,
     },
+    "dcat:theme": s.theme,
+    "dcat:keyword": s.keyword,
     // "schema:hasPart": {
     //   "@type": "CertificateScope",
     //   "schema:partOf": {

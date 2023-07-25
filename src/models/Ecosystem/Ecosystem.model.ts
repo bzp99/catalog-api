@@ -151,6 +151,20 @@ const ecosystemSchema = new Schema<IEcosystem>(
       inclusionPersonalData: { type: Boolean },
       PersonalDataManagementSolution: [{ type: String }],
     },
+    needs: {
+      data: [
+        {
+          keyword: [{ type: String }],
+          theme: { type: String },
+        },
+      ],
+      services: [
+        {
+          keyword: [{ type: String }],
+          theme: { type: String },
+        },
+      ],
+    },
     jsonld: {
       type: String,
       required: true,

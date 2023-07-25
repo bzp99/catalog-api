@@ -7,6 +7,9 @@ export const sampleDataOffering = {
   license: "CC BY-NC",
   publisher: "Data Publisher Inc.",
   hasPolicy: ["Policy 1", "Policy 2"],
+  keyword: [
+    "https://raw.githubusercontent.com/Prometheus-X-association/reference-models/main/src/references/data-categories/hobbies.json",
+  ],
   accrualPeriodicity: "Monthly",
   businessModel: "Pay-per-Use",
   landingPage: "https://www.example.com/data-offering",
@@ -16,7 +19,9 @@ export const sampleServiceOffering = {
   title: "Sample Service Offering",
   description: "This is a sample service offering.",
   landingPage: "https://www.example.com/service-offering",
-  keywords: ["Service", "API", "Data"],
+  keyword: [
+    "https://raw.githubusercontent.com/Prometheus-X-association/reference-models/main/src/references/service-categories/adaptiveLearning.json",
+  ],
   distribution: ["Digital", "Web Service"],
   accrualPeriodicity: "Daily",
   subject: "Data Services",
