@@ -22,7 +22,7 @@ export const createServiceOffering = async (
     });
     await serviceOffering.save();
 
-    return res.json(serviceOffering);
+    return res.status(201).json(serviceOffering);
   } catch (err) {
     next(err);
   }
@@ -39,7 +39,6 @@ export const getServiceOfferingsForParticipant = async (
   try {
     const payload = await getParticipantServiceOfferings({
       req,
-      res,
       participantId: req.params.id,
     });
     return res.json(payload);
@@ -59,7 +58,6 @@ export const getSessionParticipantServiceOfferings = async (
   try {
     const payload = await getParticipantServiceOfferings({
       req,
-      res,
       participantId: req.user.id,
     });
     return res.json(payload);
@@ -82,6 +80,8 @@ export const updateServiceOffering = async (
 
     if (!updatedServiceOffering) {
       return res.status(404).json({
+        req,
+        res,
         code: 404,
         errorMsg: "Resource not found",
         message: "The service offering could not be found",
@@ -105,13 +105,17 @@ export const deleteServiceOffering = async (
     );
     if (!serviceOffering) {
       return res.status(404).json({
+        req,
+        res,
         code: 404,
         errorMsg: "Resource not found",
         message: "The service offering could not be found",
       });
     }
 
-    return res.json(serviceOffering);
+    return res
+      .status(204)
+      .json({ message: "Service offering deleted successfully" });
   } catch (err) {
     next(err);
   }
@@ -119,11 +123,9 @@ export const deleteServiceOffering = async (
 
 const getParticipantServiceOfferings = async ({
   req,
-  res,
   participantId,
 }: {
   req: Request;
-  res: Response;
   participantId: string;
 }) => {
   const { limit, page, populated } = req.query;

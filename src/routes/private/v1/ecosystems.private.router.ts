@@ -43,7 +43,7 @@ router.post(
       .exists()
       .trim(),
     body("provides").isArray().notEmpty(),
-    body("searchedDatatypes").exists().isArray(),
+    body("searchedData").exists().isArray(),
     body("searchedServices").exists().isArray(),
     body("useCases").exists().isArray(),
     body("businessLogic").optional().isObject(),
@@ -113,7 +113,7 @@ router.put(
     body("logo").optional().isString(),
     body("useCases").optional().isArray(),
     body("searchedServices").optional().isArray(),
-    body("searchedDatatypes").optional().isArray(),
+    body("searchedData").optional().isArray(),
     body("provides").optional().isArray().notEmpty(),
     body("businessLogic").optional().isObject(),
     body("buildingBlocks").optional().isArray().custom(isBuildingBlocksArray),

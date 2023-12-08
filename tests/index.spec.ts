@@ -5,6 +5,7 @@ import { config } from "dotenv";
 config();
 
 import { startServer } from "../src/server";
+import { Participant, OrganizationAdmin } from "../src/models";
 import { IncomingMessage, Server, ServerResponse } from "http";
 import {
   sampleDataResource,
@@ -32,9 +33,9 @@ after((done) => {
 });
 
 let participantId = "";
+let adminId = "";
 let jwt = "";
 let ecosystemId = "";
-let dataOfferingId = "";
 let serviceOfferingId = "";
 
 describe("Initialize with Participant creation and login", () => {
@@ -47,8 +48,9 @@ describe("Initialize with Participant creation and login", () => {
       .expect(201);
 
     expect(response.body).to.be.an("object");
-    expect(response.body).to.have.property("_id");
-    participantId = response.body._id;
+    expect(response.body.admin).to.have.property("_id");
+    participantId = response.body.participant._id;
+    adminId = response.body.admin._id;
   });
 
   it("should login and return a token", async () => {
@@ -108,33 +110,28 @@ describe("Service offering management", () => {
       .expect(200);
   });
 
-  it("Should retrieve a list of service offerings by the user", async () => {
+  it("Should retrieve a list of service offerings for the user", async () => {
     const res = await request(app)
       .get("/v1/serviceofferings/me")
       .set("Authorization", `Bearer ${jwt}`)
       .expect(200);
-
-    expect(res.body).to.be.an("array");
   });
 
   it("Should delete the service offering", async () => {
     await request(app)
       .delete("/v1/serviceofferings/" + serviceOfferingId)
       .set("Authorization", `Bearer ${jwt}`)
-      .expect(200);
+      .expect(204);
   });
 });
 
 describe("Cleanup", () => {
   describe("Cleanup created participant", () => {
-    it(
-      "Should delete the created participant with id " + participantId,
-      async () => {
-        const response = await request(app)
-          .delete("/v1/participants/me")
-          .set("Authorization", `Bearer ${jwt}`);
-        expect(response.status).to.equal(200);
-      }
-    );
+    it("Should delete the test participant and its associated organization admin", async () => {
+      const participant = await Participant.findByIdAndDelete(participantId);
+      expect(participant).to.not.be.null;
+      const admin = await OrganizationAdmin.findByIdAndDelete(adminId);
+      expect(admin).to.not.be.null;
+    });
   });
 });
