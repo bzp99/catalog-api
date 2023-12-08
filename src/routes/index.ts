@@ -1,32 +1,52 @@
-import { Application, Request, Response } from "express";
+import fs from "fs";
+import path from "path";
+import { Application } from "express";
 
-// Routes
-import { globalErrorHandler } from "../middleware/globalErrorHandler";
+const importRouter = async (routerPath: string) => {
+  const routerModule = await import(routerPath);
+  return routerModule.default;
+};
 
-import swaggerUI from "swagger-ui-express";
-import swaggerSpec from "../../docs/swagger.json";
-import { invalidEndpointHandler } from "../middleware/invalidEndpointHandler";
+export const setupRoutes = async (app: Application) => {
+  const routesDir = path.join(__dirname);
+  const routerMap = new Map();
 
-const API_PREFIX = "/v1";
+  // Load all routers
+  for (const accessType of ["private", "public"]) {
+    const accessTypeDir = path.join(routesDir, accessType);
+    for (const version of fs.readdirSync(accessTypeDir)) {
+      const versionDir = path.join(accessTypeDir, version);
+      for (const routerFile of fs.readdirSync(versionDir)) {
+        const resourceName = routerFile.split(".")[0];
+        const routerPath = `/${version}/${resourceName.toLowerCase()}`;
+        const fullPath = path.join(versionDir, routerFile);
 
-import auth from "./auth";
-import data from "./data";
-import ecosystems from "./ecosystems";
-import participants from "./participants";
-import services from "./services";
+        if (!routerMap.has(routerPath)) {
+          routerMap.set(routerPath, {
+            private: null,
+            public: null,
+          });
+        }
 
-export const loadRoutes = (app: Application) => {
-  app.get("/health", (req: Request, res: Response) => {
-    res.json({ status: "OK" });
-  });
-  app.use("/docs", swaggerUI.serve, swaggerUI.setup(swaggerSpec));
+        const router = await importRouter(fullPath);
 
-  app.use(`${API_PREFIX}/auth`, auth);
-  app.use(`${API_PREFIX}/ecosystems`, ecosystems);
-  app.use(`${API_PREFIX}/participants`, participants);
-  app.use(`${API_PREFIX}/services`, services);
-  app.use(`${API_PREFIX}/data`, data);
+        if (accessType === "private") {
+          routerMap.get(routerPath).private = router;
+        } else {
+          routerMap.get(routerPath).public = router;
+        }
+      }
+    }
+  }
 
-  app.use(invalidEndpointHandler);
-  app.use(globalErrorHandler);
+  // Apply routers to the app
+  for (const [basePath, routers] of routerMap) {
+    if (routers.private && routers.public) {
+      app.use(basePath, routers.public, routers.private);
+    } else if (routers.private) {
+      app.use(basePath, routers.private);
+    } else if (routers.public) {
+      app.use(basePath, routers.public);
+    }
+  }
 };

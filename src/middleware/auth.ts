@@ -3,6 +3,7 @@
 
 import { NextFunction, Request, Response } from "express";
 import jwt, { JwtPayload } from "jsonwebtoken";
+import { CONFIG } from "../config/environment";
 
 export const verifyJwtMiddleware = (
   req: Request,
@@ -19,10 +20,7 @@ export const verifyJwtMiddleware = (
   const token = authHeader.slice(7);
 
   try {
-    const decodedToken = jwt.verify(
-      token,
-      process.env.JWT_SECRET_KEY
-    ) as JwtPayload;
+    const decodedToken = jwt.verify(token, CONFIG.jwtSecretKey) as JwtPayload;
 
     req.decodedToken = decodedToken;
     req.user = {

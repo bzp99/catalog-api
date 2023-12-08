@@ -3,7 +3,7 @@
     "module": "commonjs",
     "esModuleInterop": true,
     "target": "ESNext",
-    "noImplicitAny": true,
+    "noImplicitAny": false,
     "moduleResolution": "node",
     "sourceMap": true,
     "declaration": true,

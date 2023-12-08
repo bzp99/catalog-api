@@ -1,184 +1,112 @@
-import { Schema, model } from "mongoose";
-import { IEcosystem } from "../../types/models";
+import { Schema, Types } from "mongoose";
+import {
+  IEcosystem,
+  IEcosystemModel,
+  IEcosystemMethods,
+} from "../../types/ecosystem";
 
-const ecosystemSchema = new Schema<IEcosystem>(
+export const ecosystemSchema = new Schema<
+  IEcosystem,
+  IEcosystemModel,
+  IEcosystemMethods
+>(
   {
+    orchestrator: { type: String, required: true },
     name: { type: String, required: true },
-    purposeAndGoals: {
-      keyPurpose: { type: String, default: "" },
-      principles: { type: [String] },
-      useCases: { type: [String] },
+    description: { type: String, required: true },
+    country_or_region: { type: String, default: "" },
+    target_audience: { type: String, default: "" },
+    main_functionalities_needed: [{ type: String }],
+    logo: {
+      type: String,
+      required: false,
+      default: "default_ecosystem.jpg",
     },
-    rolesAndResponsibilities: {
-      stakeholders: [
-        {
-          organisation: {
-            type: Schema.Types.ObjectId,
-            ref: "Participant",
-            required: true,
-          },
-          role: { type: String, required: true },
-          dataOfferings: [
-            {
-              type: Schema.Types.ObjectId,
-              ref: "DataOffering",
-            },
-          ],
-          serviceOfferings: [
-            {
-              type: Schema.Types.ObjectId,
-              ref: "ServiceOffering",
-            },
-          ],
+    useCases: [{ type: Types.ObjectId, ref: "UseCase" }],
+    joinRequests: [
+      {
+        participant: { type: String },
+        roles: [String],
+        valueProposition: { type: String, required: false },
+        status: {
+          type: String,
+          enum: ["Pending", "Authorized", "Rejected", "Signed"],
+          default: "Pending",
+          required: true,
         },
-      ],
-    },
+        createdAt: { type: Date, default: new Date(), required: true },
+        updatedAt: { type: Date, default: new Date(), required: true },
+      },
+    ],
+    invitations: [
+      {
+        participant: { type: String },
+        roles: [String],
+        valueProposition: { type: String, required: false },
+        status: {
+          type: String,
+          enum: ["Pending", "Authorized", "Rejected", "Signed"],
+          default: "Pending",
+          required: true,
+        },
+        createdAt: { type: Date, default: new Date(), required: true },
+        updatedAt: { type: Date, default: new Date(), required: true },
+      },
+    ],
+    participants: [
+      {
+        participant: { type: String },
+        roles: [String],
+        offerings: [
+          {
+            serviceOffering: { type: String },
+            policy: [
+              {
+                ruleId: { type: String, required: true },
+                values: {
+                  type: Schema.Types.Mixed,
+                  required: true,
+                },
+              },
+            ],
+          },
+        ],
+      },
+    ],
+    searchedData: [{ type: String }],
+    searchedServices: [{ type: String }],
+    provides: [{ type: String }],
+    contract: { type: String, default: null },
+    location: { type: String, default: "" },
     businessLogic: {
-      businessModel: { type: String, default: "" },
-      payingParties: {
-        direction: { type: [String] },
-        payers: { type: [String] },
-      },
-      businessCase: {
-        definition: { type: String, default: "" },
-      },
-      ecosystemSharing: {
-        role: { type: String, default: "" },
-        valueSharing: {
-          businessModel: { type: String, default: "" },
-          valueNetwork: {
-            direction: { type: String, default: "" },
-          },
-          payers: { type: [String] },
-        },
-        revenueModel: {
-          businessModel: [{ type: String }],
-          payingParties: {
-            direction: [{ type: String }],
-            payers: [{ type: String }],
-          },
-        },
-        benefits: [{ type: String }],
-        costs: [{ type: String }],
-      },
-    },
-    dataValue: {
-      pricingModel: { type: String, default: "" },
-      dataValueSolution: {
-        provider: {
-          type: Schema.Types.ObjectId,
-          ref: "Participant",
-        },
-        offering: {
-          type: Schema.Types.ObjectId,
-          ref: "Participant",
-        },
-        buildingBlock: { type: String, default: "" },
-      },
-      dataNetworkSolutions: [
+      businessModel: [{ type: String }],
+      roles: [
         {
-          type: {
-            type: String,
-            enum: ["buy", "rent", "build"],
-          },
-          pays: [
-            {
-              type: Schema.Types.ObjectId,
-              ref: "Participant",
-              required: true,
-            },
-          ],
-        },
-      ],
-      levelOfCommitment: [{ type: String }],
-    },
-    governance: {
-      governancePrinciples: [{ type: String }],
-      decisionModel: {
-        perimeter: { type: String, default: "" },
-        decisionProcess: { type: String, default: "" },
-      },
-    },
-    dataServicesInfrastructure: {
-      infrastructureServices: [{ type: String }],
-      dataUsageControl: [{ type: String }],
-      consentManagement: [{ type: String }],
-      dataQuality: [{ type: String }],
-      operationalMonitoring: [{ type: String }],
-      issuesQuestions: { type: String, default: "" },
-      links: [{ type: String }],
-    },
-    systemDesignAndArchitecture: {
-      systemPrinciples: {
-        buildingBlocks: [{ type: String }],
-        requirements: [{ type: String }],
-        architecture: [{ type: String }],
-      },
-      metadataFormats: [
-        {
-          name: { type: String, default: "" },
-          link: { type: String, default: "" },
+          businessModels: [{ type: String }],
+          benefits: [{ type: String }],
+          costs: [{ type: String }],
+          payingParties: [{ type: String }],
+          role: { type: String },
         },
       ],
     },
-    functionalRequirements: {
-      technicalInterfaces: [
-        {
-          name: { type: String, default: "" },
-          link: { type: String, default: "" },
-          evolutionType: { type: String, default: "" },
-        },
-      ],
-      acIdentities: [{ type: String }],
-      dataUsageControlSolutions: [{ type: String }],
-      transactionManagement: [{ type: String }],
-      dataGovernanceSolution: [{ type: String }],
-    },
-    informationManagement: {
-      dataServices: [{ type: String }],
-      dataQuality: [{ type: String }],
-    },
-    security: {
-      threatAssessment: {
-        methods: [{ type: String }],
-        standards: [{ type: String }],
-        threats: [{ type: String }],
-        securityObjectives: [{ type: String }],
+    rolesAndObligations: [
+      {
+        role: { type: String },
+        ruleId: { type: String },
+        values: Schema.Types.Mixed,
       },
-      riskManagementTools: [{ type: String }],
-    },
-    privacyAndPersonalData: {
-      inclusionPersonalData: { type: Boolean },
-      PersonalDataManagementSolution: [{ type: String }],
-    },
-    needs: {
-      data: [
-        {
-          keyword: [{ type: String }],
-          theme: { type: String },
-        },
-      ],
-      services: [
-        {
-          keyword: [{ type: String }],
-          theme: { type: String },
-        },
-      ],
-    },
-    jsonld: {
-      type: String,
-      required: true,
-      default: "",
-    },
-    schema_version: {
-      type: String,
-      required: true,
-      default: "v0.0.1",
-    },
+    ],
+    buildingBlocks: [
+      {
+        buildingBlock: { type: String },
+        implementation: { type: String },
+      },
+    ],
+    schema_version: { type: String, default: "1.1.0" },
   },
-  { timestamps: true }
+  {
+    timestamps: true,
+    query: {},
+  }
 );
-
-const Ecosystem = model<IEcosystem>("Ecosystem", ecosystemSchema);
-
-export default Ecosystem;

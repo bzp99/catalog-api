@@ -1,40 +1,68 @@
-import { PARTICIPANT_SELECTION } from "./schemaSelection";
+import { Types } from "mongoose";
+import { IParticipant } from "../types/participant";
+import { IDataResource } from "../types/dataresource";
+import { ISoftwareResource } from "../types/softwareresource";
 
-export const ECOSYSTEM_POPULATION = [
+type MongooseDoc<T> = T & {
+  _id: Types.ObjectId;
+  id: string;
+};
+
+export type ServiceOfferingPopulationType = {
+  providedBy: IParticipant;
+  dataResources: MongooseDoc<IDataResource>[];
+  softwareResources: MongooseDoc<ISoftwareResource>[];
+};
+
+export const serviceOfferingPopulation = [
   {
-    path: "rolesAndResponsibilities.stakeholders.organisation",
-    select: PARTICIPANT_SELECTION,
+    path: "providedBy",
+    model: "Participant",
   },
   {
-    path: "rolesAndResponsibilities.stakeholders.dataOfferings",
+    path: "dataResources",
+    model: "DataResource",
   },
   {
-    path: "rolesAndResponsibilities.stakeholders.serviceOfferings",
-  },
-  {
-    path: "dataValue.dataValueSolution.provider",
-    select: PARTICIPANT_SELECTION,
-  },
-  {
-    path: "dataValue.dataValueSolution.offering",
-    select: PARTICIPANT_SELECTION,
-  },
-  {
-    path: "dataValue.dataNetworkSolutions.pays",
-    select: PARTICIPANT_SELECTION,
+    path: "softwareResources",
+    model: "SoftwareResource",
   },
 ];
 
-export const SERVICE_POPULATION = [
+export const notificationPopulation = [
   {
-    path: "offeredBy",
-    select: PARTICIPANT_SELECTION,
+    path: "notifier",
+    model: "Participant",
+  },
+  {
+    path: "notified",
+    model: "Participant",
+  },
+  {
+    path: "serviceOffering",
+    model: "ServiceOffering",
+  },
+  {
+    path: "ecosystem",
+    model: "Ecosystem",
   },
 ];
 
-export const DATA_OFFERING_POPULATION = [
+export const exchangeConfigurationPopulation = [
   {
-    path: "offeredBy",
-    select: PARTICIPANT_SELECTION,
+    path: "provider",
+    model: "Participant",
+  },
+  {
+    path: "consumer",
+    model: "Participant",
+  },
+  {
+    path: "providerServiceOffering",
+    model: "ServiceOffering",
+  },
+  {
+    path: "consumerServiceOffering",
+    model: "ServiceOffering",
   },
 ];

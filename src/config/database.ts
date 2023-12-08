@@ -1,10 +1,11 @@
 import mongoose from "mongoose";
+import { CONFIG } from "./environment";
 
 export async function loadMongoose() {
-  let mongoUri = `mongodb://${process.env.MONGO_HOST}:${process.env.MONGO_PORT}/${process.env.MONGO_DATABASE}`;
+  let mongoUri = `mongodb://${CONFIG.mongoHost}:${CONFIG.mongoPort}/${CONFIG.mongoDatabase}`;
 
-  if (process.env.MONGO_USERNAME && process.env.MONGO_PASSWORD) {
-    mongoUri = `mongodb://${process.env.MONGO_USERNAME}:${process.env.MONGO_PASSWORD}@${process.env.MONGO_HOST}:${process.env.MONGO_PORT}/${process.env.MONGO_DATABASE}`;
+  if (CONFIG.mongoUserName && CONFIG.mongoPassword) {
+    mongoUri = `mongodb://${CONFIG.mongoUserName}:${CONFIG.mongoPassword}@${CONFIG.mongoHost}:${CONFIG.mongoPort}/${CONFIG.mongoDatabase}`;
   }
 
   const connect = await mongoose.connect(mongoUri);

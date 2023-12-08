@@ -17,27 +17,31 @@
       "description": "Authentication"
     },
     {
+      "name": "Data Resources",
+      "description": "Endpoints to manage data assets & resources"
+    },
+    {
+      "name": "Software Resources",
+      "description": "Endpoints to manage software resources"
+    },
+    {
+      "name": "Service Offerings",
+      "description": "Endpoints to manage service offerings"
+    },
+    {
       "name": "Ecosystems",
       "description": "Endpoints related to ecosystems"
     },
     {
-      "name": "Participants",
-      "description": "Endpoints related to participants"
-    },
-    {
-      "name": "Data",
-      "descriptions": "Endpoints to manage data and data offerings"
-    },
-    {
-      "name": "Services",
-      "descriptions": "Endpoints to manage service offerings"
+      "name": "Negotiation",
+      "description": "Endpoints related to management of negotiation on service offerings"
     }
   ],
   "paths": {
-    "/data": {
+    "/dataresources": {
       "get": {
-        "summary": "Retrieves Data offerings with pagination",
-        "tags": ["Data"],
+        "summary": "Retrieves Data resources with pagination",
+        "tags": ["Data Resources"],
         "security": [],
         "parameters": [
           {
@@ -74,25 +78,29 @@
         ],
         "responses": {
           "200": {
-            "description": "Successful response with data offerings",
+            "description": "Successful response",
             "content": {
               "application/json": {
                 "schema": {
                   "type": "object",
                   "properties": {
                     "data": {
-                      "type": "array",
-                      "items": {
-                        "$ref": "#/components/schemas/DataOffering"
+                      "type": "object",
+                      "properties": {
+                        "limit": {
+                          "type": "number"
+                        },
+                        "page": {
+                          "type": "number"
+                        },
+                        "pages": {
+                          "type": "number"
+                        },
+                        "result": {
+                          "type": "object",
+                          "ref": "#/Components/schemas/DataResource"
+                        }
                       }
-                    },
-                    "totalCount": {
-                      "type": "integer",
-                      "description": "Total count of data offerings"
-                    },
-                    "totalPages": {
-                      "type": "integer",
-                      "description": "Total pages available based on pagination"
                     }
                   }
                 }
@@ -102,8 +110,8 @@
         }
       },
       "post": {
-        "summary": "Creates a new data offering for the authenticated participant",
-        "tags": ["Data"],
+        "summary": "Creates a new data resource for the authenticated participant",
+        "tags": ["Data Resources"],
         "security": [
           {
             "bearerAuth": []
@@ -114,18 +122,18 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/DataOfferingCreation"
+                "$ref": "#/components/schemas/DataResource"
               }
             }
           }
         },
         "responses": {
           "201": {
-            "description": "Successful response with the created Data offering",
+            "description": "Successful response with the created Data Resource",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/DataOffering"
+                  "$ref": "#/components/schemas/DataResource"
                 }
               }
             }
@@ -133,10 +141,10 @@
         }
       }
     },
-    "/data/{id}": {
+    "/dataresources/{id}": {
       "get": {
-        "summary": "Retrieves a single Data offering by its ID",
-        "tags": ["Data"],
+        "summary": "Retrieves a single Data resource by its ID",
+        "tags": ["Data Resources"],
         "security": [],
         "parameters": [
           {
@@ -146,28 +154,28 @@
             "schema": {
               "type": "string"
             },
-            "description": "ID of the Data offering to retrieve"
+            "description": "ID of the Data resource to retrieve"
           }
         ],
         "responses": {
           "200": {
-            "description": "Successful response with the Data offering",
+            "description": "Successful response with the Data resource",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/DataOffering"
+                  "$ref": "#/components/schemas/DataResource"
                 }
               }
             }
           },
           "404": {
-            "description": "Data offering not found"
+            "description": "Data resource not found"
           }
         }
       },
       "put": {
-        "summary": "Updates a data offering by its ID",
-        "tags": ["Data"],
+        "summary": "Updates a data resource by its ID",
+        "tags": ["Data Resources"],
         "parameters": [
           {
             "in": "path",
@@ -176,7 +184,7 @@
             "schema": {
               "type": "string"
             },
-            "description": "ID of the Data offering to update"
+            "description": "ID of the Data resource to update"
           }
         ],
         "security": [
@@ -189,30 +197,30 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/DataOffering"
+                "$ref": "#/components/schemas/DataResource"
               }
             }
           }
         },
         "responses": {
           "200": {
-            "description": "Successful response with the updated Data offering",
+            "description": "Successful response with the updated Data resource",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/DataOffering"
+                  "$ref": "#/components/schemas/DataResource"
                 }
               }
             }
           },
           "404": {
-            "description": "Data offering not found"
+            "description": "Data resource not found"
           }
         }
       },
       "delete": {
-        "summary": "Deletes a data offering by its ID",
-        "tags": ["Data"],
+        "summary": "Deletes a data resource by its ID",
+        "tags": ["Data Resources"],
         "parameters": [
           {
             "in": "path",
@@ -221,7 +229,7 @@
             "schema": {
               "type": "string"
             },
-            "description": "ID of the Data offering to delete"
+            "description": "ID of the Data resource to delete"
           }
         ],
         "security": [
@@ -235,7 +243,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/DataOffering"
+                  "$ref": "#/components/schemas/DataResource"
                 }
               }
             }
@@ -246,10 +254,10 @@
         }
       }
     },
-    "/data/me": {
+    "/dataresources/me": {
       "get": {
-        "summary": "Retrieves Data Offerings of the logged in user",
-        "tags": ["Data"],
+        "summary": "Retrieves Data resources of the logged in user",
+        "tags": ["Data Resources"],
         "security": [
           {
             "bearerAuth": []
@@ -257,12 +265,14 @@
         ],
         "responses": {
           "200": {
-            "description": "Successful response with the Data offerings",
+            "description": "Successful response with the Data resources",
             "content": {
               "application/json": {
-                "type": "array",
-                "items": {
-                  "$ref": "#/components/schemas/DataOffering"
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/DataResource"
+                  }
                 }
               }
             }
@@ -271,10 +281,10 @@
       }
     },
 
-    "/services": {
+    "/softwareresources": {
       "get": {
-        "summary": "Retrieves Service offerings with pagination",
-        "tags": ["Services"],
+        "summary": "Retrieves software resources with pagination",
+        "tags": ["Software Resources"],
         "security": [],
         "parameters": [
           {
@@ -306,30 +316,34 @@
                 "type": "string"
               }
             },
-            "description": "Filter by Participant IDs offering the service (comma-separated)"
+            "description": "Filter by Participant IDs offering the data (comma-separated)"
           }
         ],
         "responses": {
           "200": {
-            "description": "Successful response with service offerings",
+            "description": "Successful response",
             "content": {
               "application/json": {
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "services": {
-                      "type": "array",
-                      "items": {
-                        "$ref": "#/components/schemas/ServiceOffering"
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "limit": {
+                          "type": "number"
+                        },
+                        "page": {
+                          "type": "number"
+                        },
+                        "pages": {
+                          "type": "number"
+                        },
+                        "result": {
+                          "type": "object",
+                          "ref": "#/Components/schemas/SoftwareResource"
+                        }
                       }
-                    },
-                    "totalCount": {
-                      "type": "integer",
-                      "description": "Total count of service offerings"
-                    },
-                    "totalPages": {
-                      "type": "integer",
-                      "description": "Total pages available based on pagination"
                     }
                   }
                 }
@@ -339,8 +353,8 @@
         }
       },
       "post": {
-        "summary": "Creates a new service offering for the authenticated participant",
-        "tags": ["Services"],
+        "summary": "Creates a new Software resource for the authenticated participant",
+        "tags": ["Software Resources"],
         "security": [
           {
             "bearerAuth": []
@@ -351,18 +365,18 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/ServiceOfferingCreation"
+                "$ref": "#/components/schemas/SoftwareResource"
               }
             }
           }
         },
         "responses": {
           "201": {
-            "description": "Successful response with the created Service offering",
+            "description": "Successful response with the created Software Resource",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ServiceOffering"
+                  "$ref": "#/components/schemas/SoftwareResource"
                 }
               }
             }
@@ -370,10 +384,10 @@
         }
       }
     },
-    "/services/{id}": {
+    "/softwareresources/{id}": {
       "get": {
-        "summary": "Retrieves a single Service offering by its ID",
-        "tags": ["Services"],
+        "summary": "Retrieves a single Software resource by its ID",
+        "tags": ["Software Resources"],
         "security": [],
         "parameters": [
           {
@@ -383,28 +397,28 @@
             "schema": {
               "type": "string"
             },
-            "description": "ID of the Service offering to retrieve"
+            "description": "ID of the Software resource to retrieve"
           }
         ],
         "responses": {
           "200": {
-            "description": "Successful response with the Service offering",
+            "description": "Successful response with the Software resource",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ServiceOffering"
+                  "$ref": "#/components/schemas/SoftwareResource"
                 }
               }
             }
           },
           "404": {
-            "description": "Service offering not found"
+            "description": "Data resource not found"
           }
         }
       },
       "put": {
-        "summary": "Updates a Service offering by its ID",
-        "tags": ["Services"],
+        "summary": "Updates a Software resource by its ID",
+        "tags": ["Software Resources"],
         "parameters": [
           {
             "in": "path",
@@ -413,7 +427,7 @@
             "schema": {
               "type": "string"
             },
-            "description": "ID of the Service offering to update"
+            "description": "ID of the Software resource to update"
           }
         ],
         "security": [
@@ -426,30 +440,30 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/ServiceOfferingUpdate"
+                "$ref": "#/components/schemas/SoftwareResource"
               }
             }
           }
         },
         "responses": {
           "200": {
-            "description": "Successful response with the updated Service offering",
+            "description": "Successful response with the updated Software resource",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ServiceOffering"
+                  "$ref": "#/components/schemas/SoftwareResource"
                 }
               }
             }
           },
           "404": {
-            "description": "Service offering not found"
+            "description": "Software resource not found"
           }
         }
       },
       "delete": {
-        "summary": "Deletes a Service offering by its ID",
-        "tags": ["Services"],
+        "summary": "Deletes a Software resource by its ID",
+        "tags": ["Software Resources"],
         "parameters": [
           {
             "in": "path",
@@ -458,7 +472,7 @@
             "schema": {
               "type": "string"
             },
-            "description": "ID of the Service offering to delete"
+            "description": "ID of the Software resource to delete"
           }
         ],
         "security": [
@@ -468,25 +482,25 @@
         ],
         "responses": {
           "200": {
-            "description": "Successful response with the deleted Service offering",
+            "description": "Successful response with the deleted Software offering",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ServiceOffering"
+                  "$ref": "#/components/schemas/SoftwareResource"
                 }
               }
             }
           },
           "404": {
-            "description": "Service offering not found"
+            "description": "Data offering not found"
           }
         }
       }
     },
-    "/services/me": {
+    "/softwareresources/me": {
       "get": {
-        "summary": "Retrieves Service Offerings of the logged-in user",
-        "tags": ["Services"],
+        "summary": "Retrieves Software resources of the logged in user",
+        "tags": ["Software Resources"],
         "security": [
           {
             "bearerAuth": []
@@ -494,50 +508,13 @@
         ],
         "responses": {
           "200": {
-            "description": "Successful response with the Service offerings",
-            "content": {
-              "application/json": {
-                "type": "array",
-                "items": {
-                  "$ref": "#/components/schemas/ServiceOffering"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-
-    "/ecosystems/me": {
-      "get": {
-        "tags": ["Ecosystems"],
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
-        "summary": "Retrieves ecosystems where you are a participant",
-        "parameters": [
-          {
-            "name": "filter",
-            "in": "query",
-            "description": "Filter ecosystems by participant role",
-            "required": false,
-            "schema": {
-              "type": "string",
-              "enum": ["all", "orchestrator", "member"]
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful operation",
+            "description": "Successful response with the Software resources",
             "content": {
               "application/json": {
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/Ecosystem"
+                    "$ref": "#/components/schemas/SoftwareResource"
                   }
                 }
               }
@@ -546,185 +523,70 @@
         }
       }
     },
-    "/ecosystems/me/{id}": {
+
+    "/serviceofferings": {
       "get": {
-        "tags": ["Ecosystems"],
-        "summary": "Retrieves one ecosystem where you are a participant by ID",
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
+        "summary": "Retrieves Service offerings with pagination",
+        "tags": ["Service Offerings"],
+        "security": [],
         "parameters": [
           {
-            "name": "id",
-            "in": "path",
-            "description": "Ecosystem ID",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful operation",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Ecosystem"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/ecosystems/{id}": {
-      "put": {
-        "tags": ["Ecosystems"],
-        "summary": "Update an ecosystem",
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "description": "Ecosystem ID",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "requestBody": {
-          "description": "Updated ecosystem data",
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/EcosystemUpdate"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Successful operation"
-          }
-        }
-      },
-      "get": {
-        "summary": "Retrieves one ecosystem by its ID",
-        "tags": ["Ecosystems"],
-        "parameters": [
-          {
-            "in": "path",
-            "name": "id",
-            "required": true,
-            "schema": {
-              "type": "string"
-            },
-            "description": "ID of the ecosystem to retrieve"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful response with the ecosystem",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Ecosystem"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Ecosystem not found"
-          }
-        }
-      }
-    },
-    "/ecosystems": {
-      "post": {
-        "tags": ["Ecosystems"],
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
-        "summary": "Create an ecosystem",
-        "requestBody": {
-          "description": "New ecosystem data",
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/EcosystemCreation"
-              }
-            }
-          }
-        },
-        "responses": {
-          "201": {
-            "description": "Ecosystem created",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Ecosystem"
-                }
-              }
-            }
-          }
-        }
-      },
-      "get": {
-        "tags": ["Ecosystems"],
-        "summary": "Get all Ecosystems",
-        "parameters": [
-          {
+            "in": "query",
             "name": "limit",
-            "in": "query",
-            "description": "Maximum number of ecosystems to return",
-            "required": false,
             "schema": {
               "type": "integer",
-              "minimum": 1
-            }
+              "minimum": 1,
+              "default": 10
+            },
+            "description": "Number of items to return per page"
           },
           {
-            "name": "page",
             "in": "query",
-            "description": "Page number of ecosystems to retrieve",
-            "required": false,
+            "name": "page",
             "schema": {
               "type": "integer",
-              "minimum": 1
-            }
+              "minimum": 1,
+              "default": 1
+            },
+            "description": "Page number for pagination"
+          },
+          {
+            "in": "query",
+            "name": "offeredBy",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "description": "Filter by Participant IDs offering the data (comma-separated)"
           }
         ],
         "responses": {
           "200": {
-            "description": "Successful operation",
+            "description": "Successful response",
             "content": {
               "application/json": {
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "ecosystems": {
-                      "type": "array",
-                      "items": {
-                        "$ref": "#/components/schemas/Ecosystem"
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "limit": {
+                          "type": "number"
+                        },
+                        "page": {
+                          "type": "number"
+                        },
+                        "pages": {
+                          "type": "number"
+                        },
+                        "result": {
+                          "type": "object",
+                          "ref": "#/Components/schemas/ServiceOffering"
+                        }
                       }
-                    },
-                    "totalCount": {
-                      "type": "integer"
-                    },
-                    "totalPages": {
-                      "type": "integer"
                     }
                   }
                 }
@@ -732,12 +594,10 @@
             }
           }
         }
-      }
-    },
-    "/ecosystems/access-request": {
+      },
       "post": {
-        "tags": ["Ecosystems"],
-        "summary": "Processes an access request to an ecosystem",
+        "summary": "Creates a new Service Offering for the authenticated participant",
+        "tags": ["Service Offerings"],
         "security": [
           {
             "bearerAuth": []
@@ -748,191 +608,18 @@
           "content": {
             "application/json": {
               "schema": {
-                "oneOf": [
-                  {
-                    "$ref": "#/components/schemas/EcosystemAccessRequestInvitation"
-                  },
-                  {
-                    "$ref": "#/components/schemas/EcosystemAccessRequest"
-                  }
-                ]
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Successful operation",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/EcosystemAccessRequest"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad Request"
-          },
-          "401": {
-            "description": "Unauthorized"
-          },
-          "404": {
-            "description": "Not Found"
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
-        }
-      }
-    },
-    "/ecosystems/access-request/{id}/{action}": {
-      "put": {
-        "tags": ["Ecosystems"],
-        "summary": "Processes an access request update (accept or revoke)",
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
-        "parameters": [
-          {
-            "in": "path",
-            "name": "id",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid"
-            }
-          },
-          {
-            "in": "path",
-            "name": "action",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "enum": ["accept", "revoke"]
-            }
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "id": {
-                    "type": "string",
-                    "format": "uuid"
-                  },
-                  "action": {
-                    "type": "string",
-                    "enum": ["accept", "revoke"]
-                  }
-                }
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Successful operation",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/EcosystemAccessRequest"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad Request"
-          },
-          "401": {
-            "description": "Unauthorized"
-          },
-          "403": {
-            "description": "Forbidden"
-          },
-          "404": {
-            "description": "Not Found"
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
-        }
-      }
-    },
-
-    "/participants": {
-      "post": {
-        "tags": ["Participants"],
-        "summary": "Create a participant",
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
-        "requestBody": {
-          "description": "New participant data",
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/ParticipantCreation"
+                "$ref": "#/components/schemas/ServiceOffering"
               }
             }
           }
         },
         "responses": {
           "201": {
-            "description": "Participant created",
+            "description": "Successful response with the created Service Offering",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Participant"
-                }
-              }
-            }
-          }
-        }
-      },
-      "get": {
-        "tags": ["Participants"],
-        "summary": "Get all participants",
-        "parameters": [
-          {
-            "name": "limit",
-            "in": "query",
-            "description": "Maximum number of participants to return",
-            "required": false,
-            "schema": {
-              "type": "integer",
-              "minimum": 1
-            }
-          },
-          {
-            "name": "page",
-            "in": "query",
-            "description": "Page number of participants to retrieve",
-            "required": false,
-            "schema": {
-              "type": "integer",
-              "minimum": 1
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful operation",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Participant"
-                  }
+                  "$ref": "#/components/schemas/ServiceOffering"
                 }
               }
             }
@@ -940,87 +627,138 @@
         }
       }
     },
-    "/participants/{id}": {
-      "put": {
-        "tags": ["Participants"],
-        "summary": "Update a participant",
-        "security": [
-          {
-            "JWT": []
-          }
-        ],
+    "/serviceofferings/{id}": {
+      "get": {
+        "summary": "Retrieves a single Service Offering by its ID",
+        "tags": ["Service Offerings"],
+        "security": [],
         "parameters": [
           {
-            "name": "id",
             "in": "path",
-            "description": "Participant ID",
+            "name": "id",
             "required": true,
             "schema": {
               "type": "string"
+            },
+            "description": "ID of the Service Offering to retrieve"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response with the Service Offering",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ServiceOffering"
+                }
+              }
             }
+          },
+          "404": {
+            "description": "Data resource not found"
+          }
+        }
+      },
+      "put": {
+        "summary": "Updates a Service Offering by its ID",
+        "tags": ["Service Offerings"],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "ID of the Service Offering to update"
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
           }
         ],
         "requestBody": {
-          "description": "Updated participant data",
           "required": true,
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/ParticipantUpdate"
+                "$ref": "#/components/schemas/ServiceOffering"
               }
             }
           }
         },
         "responses": {
           "200": {
-            "description": "Successful operation"
+            "description": "Successful response with the updated Service Offering",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ServiceOffering"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Service Offering not found"
           }
         }
       },
-      "get": {
-        "tags": ["Participants"],
-        "summary": "Get a participant by ID",
+      "delete": {
+        "summary": "Deletes a Service Offering by its ID",
+        "tags": ["Service Offerings"],
         "parameters": [
           {
-            "name": "id",
             "in": "path",
-            "description": "Participant ID",
+            "name": "id",
             "required": true,
             "schema": {
               "type": "string"
-            }
+            },
+            "description": "ID of the Service Offering to delete"
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
           }
         ],
         "responses": {
           "200": {
-            "description": "Successful operation",
+            "description": "Successful response with the deleted Service Offering",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Participant"
+                  "$ref": "#/components/schemas/ServiceOffering"
                 }
               }
             }
+          },
+          "404": {
+            "description": "Data offering not found"
           }
         }
       }
     },
-    "/participants/me": {
+    "/serviceofferings/me": {
       "get": {
-        "tags": ["Participants"],
-        "summary": "Get the current participant",
+        "summary": "Retrieves Service Offerings of the logged in user",
+        "tags": ["Service Offerings"],
         "security": [
           {
-            "JWT": []
+            "bearerAuth": []
           }
         ],
         "responses": {
           "200": {
-            "description": "Successful operation",
+            "description": "Successful response with the Service Offerings",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Participant"
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ServiceOffering"
+                  }
                 }
               }
             }
@@ -1042,12 +780,10 @@
                 "type": "object",
                 "properties": {
                   "email": {
-                    "type": "string",
-                    "required": true
+                    "type": "string"
                   },
                   "password": {
-                    "type": "string",
-                    "required": true
+                    "type": "string"
                   }
                 }
               }
@@ -1073,8 +809,913 @@
           }
         }
       }
+    },
+    "/auth/signup": {
+      "post": {
+        "tags": ["Authentication"],
+        "summary": "Signup",
+        "requestBody": {
+          "description": "Credentials",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "type": "string"
+                  },
+                  "password": {
+                    "type": "string"
+                  },
+                  "firstName": {
+                    "type": "string"
+                  },
+                  "lastName": {
+                    "type": "string"
+                  },
+                  "participantName": {
+                    "type": "string",
+                    "description": "Name of the Participant / Organization to sign up"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Registration"
+          }
+        }
+      }
+    },
+
+    "/negotiation": {
+      "get": {
+        "tags": ["Negotiation"],
+        "summary": "Get My Exchange Configurations",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExchangeConfiguration"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["Negotiation"],
+        "summary": "Create Service Offering Access Request",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "provider": {
+                    "type": "string"
+                  },
+                  "consumer": {
+                    "type": "string"
+                  },
+                  "providerServiceOffering": {
+                    "type": "string"
+                  },
+                  "consumerServiceOffering": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "provider",
+                  "consumer",
+                  "providerServiceOffering",
+                  "consumerServiceOffering"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExchangeConfiguration"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/negotiation/{id}": {
+      "get": {
+        "tags": ["Negotiation"],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "summary": "Get Exchange Configuration by ID",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExchangeConfiguration"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": ["Negotiation"],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "summary": "Authorize Exchange Configuration",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "policy": {
+                    "type": "array",
+                    "items": {
+                      "type": "object"
+                    }
+                  }
+                },
+                "required": ["policy"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExchangeConfiguration"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/negotiation/{id}/negotiate": {
+      "put": {
+        "tags": ["Negotiation"],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "summary": "Negotiate Exchange Configuration Policy",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "policy": {
+                    "type": "array",
+                    "items": {
+                      "type": "object"
+                    }
+                  }
+                },
+                "required": ["policy"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExchangeConfiguration"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/negotiation/{id}/accept": {
+      "put": {
+        "tags": ["Negotiation"],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "summary": "Accept Negotiation",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExchangeConfiguration"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/negotiation/{id}/sign": {
+      "put": {
+        "tags": ["Negotiation"],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "summary": "Sign Exchange Configuration",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "signature": {
+                    "type": "string"
+                  }
+                },
+                "required": ["signature"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExchangeConfiguration"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+
+    "/ecosystems": {
+      "get": {
+        "summary": "Retrieves ecosystems with pagination",
+        "tags": ["Ecosystems"],
+        "security": [],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "limit",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "default": 10
+            },
+            "description": "Number of items to return per page"
+          },
+          {
+            "in": "query",
+            "name": "page",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "default": 1
+            },
+            "description": "Page number for pagination"
+          },
+          {
+            "in": "query",
+            "name": "offeredBy",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "description": "Filter by Participant IDs included in Ecosystems (comma-separated)"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "limit": {
+                          "type": "number"
+                        },
+                        "page": {
+                          "type": "number"
+                        },
+                        "pages": {
+                          "type": "number"
+                        },
+                        "result": {
+                          "type": "object",
+                          "ref": "#/Components/schemas/Ecosystem"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Creates a new Ecosystem with the authenticated participant as orchestrator",
+        "tags": ["Ecosystems"],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Ecosystem"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful response with the created Ecosystem",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Ecosystem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/ecosystems/{id}": {
+      "get": {
+        "summary": "Retrieves a single Ecosystem by its ID",
+        "tags": ["Ecosystems"],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "ID of the Ecosystem to retrieve"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response with the Ecosystem",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Ecosystem"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Ecosystem not found"
+          }
+        }
+      },
+      "put": {
+        "summary": "Updates a Ecosystem by its ID",
+        "tags": ["Ecosystems"],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "ID of the Ecosystem to update"
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Ecosystem"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful response with the updated Ecosystem",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Ecosystem"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Ecosystem not found"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Deletes a Ecosystem by its ID",
+        "tags": ["Ecosystems"],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "ID of the Ecosystem to delete"
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response with the deleted Ecosystem",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Ecosystem"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Ecosystem not found"
+          }
+        }
+      }
+    },
+    "/ecosystems/me": {
+      "get": {
+        "summary": "Retrieves Ecosystems of the logged in user",
+        "tags": ["Ecosystems"],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response with the Ecosystems",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Ecosystem"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/ecosystems/me/invites": {
+      "get": {
+        "summary": "Retrieves invitations of the logged in user to ecosystems",
+        "tags": ["Ecosystems"],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response with the Ecosystems",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Ecosystem"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/ecosystems/{id}/invites": {
+      "get": {
+        "summary": "Retrieves invitations of the ecosystem",
+        "tags": ["Ecosystems"],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response with the Invitations",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "participant": {
+                        "type": "string"
+                      },
+                      "status": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["Negotiation"],
+        "summary": "Create an invitation to an ecosystem",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "roles": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "participantId": {
+                    "type": "string",
+                    "description": "The participant ID to invite"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          }
+        }
+      }
+    },
+    "/ecosystems/{id}/invites/accept": {
+      "post": {
+        "tags": ["Ecosystems"],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "description": "Accepts an invitation to an ecosystem",
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          }
+        }
+      }
+    },
+    "/ecosystems/{id}/invites/deny": {
+      "post": {
+        "tags": ["Ecosystems"],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "description": "Denies an invitation to an ecosystem",
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          }
+        }
+      }
+    },
+    "/ecosystems/{id}/requests": {
+      "post": {
+        "tags": ["Ecosystems"],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "description": "Creates a request to join an ecosystem",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "roles": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "offerings": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/components/schemas/EcosystemOfferingPolicy"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          }
+        }
+      }
+    },
+    "/ecosystems/{id}/requests/{requestId}/authorize": {
+      "put": {
+        "tags": ["Ecosystems"],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "description": "Authorizes a join request made to an ecosystem",
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          }
+        }
+      }
+    },
+    "/ecosystems/{id}/requests/{requestId}/reject": {
+      "put": {
+        "tags": ["Ecosystems"],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "description": "Rejects a join request made to an ecosystem",
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          }
+        }
+      }
+    },
+    "/ecosystems/{id}/offerings": {
+      "put": {
+        "tags": ["Ecosystems"],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "description": "Configure the offerings for a participant in an ecosystem",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "offerings": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/components/schemas/EcosystemOfferingPolicy"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          }
+        }
+      }
+    },
+    "/ecosystems/{id}/contract": {
+      "get": {
+        "tags": ["Ecosystems"],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "description": "Retrieve contract for the ecosystem. The format of the contract is defined in the Prometheus-X Contract Manager repository",
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["Ecosystems"],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "description": "Create a contract for the ecosystem. This endpoint is only used if an ecosystem was created and the contract auto-generation failed.",
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/ecosystems/{id}/signature/orchestrator": {
+      "post": {
+        "tags": ["Ecosystems"],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "description": "Apply orchestrator signature on the ecosystem.",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "signature": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          }
+        }
+      }
+    },
+    "/ecosystems/{id}/signature/participant": {
+      "post": {
+        "tags": ["Ecosystems"],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "description": "Apply participant signature on the ecosystem.",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "signature": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          }
+        }
+      }
     }
   },
+
   "components": {
     "securitySchemes": {
       "bearerAuth": {
@@ -1084,1739 +1725,355 @@
       }
     },
     "schemas": {
-      "DataOffering": {
+      "DataResource": {
         "type": "object",
         "properties": {
-          "title": {
-            "type": "string",
-            "description": "Title of the data offering"
-          },
-          "dataType": {
-            "type": "string",
-            "description": "Type of the data"
-          },
-          "dataSize": {
-            "type": "string",
-            "description": "Size of the data"
-          },
-          "description": {
-            "type": "string",
-            "description": "Description of the data offering"
-          },
-          "identifier": {
-            "type": "string",
-            "description": "Identifier of the data offering"
-          },
-          "license": {
-            "type": "string",
-            "description": "License information for the data offering"
-          },
-          "publisher": {
-            "type": "string",
-            "description": "Publisher of the data offering"
-          },
-          "hasPolicy": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            },
-            "description": "Array of policies associated with the data offering"
-          },
-          "offeredBy": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            },
-            "description": "Array of Participant IDs offering the data"
-          },
-          "accrualPeriodicity": {
-            "type": "string",
-            "description": "Accrual periodicity of the data offering"
-          },
-          "businessModel": {
-            "type": "string",
-            "description": "Business model associated with the data offering"
-          },
-          "landingPage": {
-            "type": "string",
-            "description": "Landing page URL for the data offering"
-          },
-          "jsonld": {
-            "type": "string",
-            "description": "JSON-LD representation of the data offering"
-          },
-          "schema_version": {
-            "type": "string",
-            "description": "Schema version of the data offering"
-          }
-        }
-      },
-      "DataOfferingCreation": {
-        "type": "object",
-        "properties": {
-          "title": {
+          "_id": {
             "type": "string"
           },
-          "dataType": {
-            "type": "string",
-            "default": ""
-          },
-          "dataSize": {
-            "type": "string"
-          },
-          "description": {
-            "type": "string"
-          },
-          "identifier": {
-            "type": "string"
-          },
-          "license": {
-            "type": "string",
-            "default": ""
-          },
-          "publisher": {
-            "type": "string"
-          },
-          "hasPolicy": {
+          "aggregationOf": {
             "type": "array",
             "items": {
               "type": "string"
             }
           },
-          "offeredBy": {
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "copyrightOwnedBy": {
             "type": "array",
             "items": {
               "type": "string"
             }
           },
-          "accrualPeriodicity": {
+          "license": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "policy": {
+            "type": "array",
+            "items": {}
+          },
+          "producedBy": {
+            "type": "string"
+          },
+          "exposedThrough": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "obsoleteDateTime": {
             "type": "string",
             "default": ""
           },
-          "businessModel": {
+          "expirationDateTime": {
+            "type": "string",
+            "default": ""
+          },
+          "containsPII": {
+            "type": "boolean"
+          },
+          "category": {
             "type": "string",
             "default": ""
           }
         },
-        "required": [
-          "title",
-          "dataSize",
-          "description",
-          "identifier",
-          "publisher",
-          "offeredBy"
-        ]
+        "required": ["name", "description", "producedBy", "containsPII"]
+      },
+      "SoftwareResource": {
+        "type": "object",
+        "properties": {
+          "providedBy": {
+            "type": "string",
+            "description": "The provider of the software resource"
+          },
+          "name": {
+            "type": "string",
+            "description": "The name of the software resource"
+          },
+          "description": {
+            "type": "string",
+            "description": "A description of the software resource"
+          },
+          "aggregationOf": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "List of aggregation values"
+          },
+          "copyrightOwnedBy": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "List of copyright owners"
+          },
+          "license": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "List of licenses"
+          },
+          "policy": {
+            "type": "array",
+            "items": {},
+            "description": "List of policies"
+          },
+          "category": {
+            "type": "string",
+            "description": "The category of the software resource"
+          },
+          "locationAddress": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "countryCode": {
+                  "type": "string"
+                }
+              }
+            },
+            "description": "List of location addresses with country codes"
+          },
+          "users_clients": {
+            "type": "integer",
+            "description": "Number of users or clients"
+          },
+          "demo_link": {
+            "type": "string",
+            "description": "Link to a demo"
+          },
+          "relevant_project_link": {
+            "type": "string",
+            "description": "Link to a relevant project"
+          }
+        },
+        "required": ["name", "description", "producedBy", "containsPII"]
       },
       "ServiceOffering": {
         "type": "object",
         "properties": {
-          "title": {
+          "name": {
             "type": "string",
-            "required": true
+            "description": "The name of the service offering"
+          },
+          "providedBy": {
+            "type": "string",
+            "description": "The provider of the service offering"
+          },
+          "aggregationOf": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "List of aggregation values"
+          },
+          "dependsOn": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "List of dependencies"
+          },
+          "policy": {
+            "type": "array",
+            "items": {},
+            "description": "List of policies"
+          },
+          "termsAndConditions": {
+            "type": "string",
+            "description": "Terms and conditions of the service offering",
+            "default": ""
+          },
+          "dataProtectionRegime": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "List of data protection regimes"
+          },
+          "dataAccountExport": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "requestType": {
+                  "type": "string",
+                  "enum": [
+                    "API",
+                    "email",
+                    "webform",
+                    "unregisteredLetter",
+                    "registeredLetter",
+                    "supportCenter"
+                  ]
+                },
+                "accessType": {
+                  "type": "string",
+                  "enum": ["digital", "physical"]
+                },
+                "formatType": {
+                  "type": "string"
+                }
+              }
+            },
+            "description": "List of data account export configurations"
+          },
+          "location": {
+            "type": "string",
+            "description": "Location of the service offering",
+            "default": ""
           },
           "description": {
             "type": "string",
-            "required": true
-          },
-          "landingPage": {
-            "type": "string",
-            "required": true
-          },
-          "keywords": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          },
-          "distribution": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          },
-          "accrualPeriodicity": {
-            "type": "string"
-          },
-          "subject": {
-            "type": "string"
-          },
-          "spatial": {
-            "type": "string"
-          },
-          "theme": {
-            "type": "string"
-          },
-          "temporalResolution": {
-            "type": "string"
-          },
-          "businessModel": {
-            "type": "string"
-          },
-          "offeredBy": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          },
-          "license": {
-            "type": "string"
-          },
-          "jsonld": {
-            "type": "string",
-            "required": true
-          },
-          "schema_version": {
-            "type": "string",
-            "required": true,
-            "default": "v0.0.1"
-          }
-        }
-      },
-      "ServiceOfferingCreation": {
-        "type": "object",
-        "properties": {
-          "title": {
-            "type": "string",
-            "required": true
-          },
-          "description": {
-            "type": "string",
-            "required": true
-          },
-          "landingPage": {
-            "type": "string",
+            "description": "Description of the service offering",
             "default": ""
           },
           "keywords": {
             "type": "array",
             "items": {
               "type": "string"
-            }
+            },
+            "description": "List of keywords"
           },
-          "distribution": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          },
-          "accrualPeriodicity": {
-            "type": "string"
-          },
-          "subject": {
-            "type": "string"
-          },
-          "spatial": {
-            "type": "string"
-          },
-          "theme": {
-            "type": "string"
-          },
-          "temporalResolution": {
-            "type": "string"
-          },
-          "businessModel": {
-            "type": "string"
-          },
-          "offeredBy": {
+          "dataResources": {
             "type": "array",
             "items": {
               "type": "string"
             },
-            "required": true
+            "description": "List of data resource IDs"
+          },
+          "softwareResources": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "List of software resource IDs"
+          },
+          "compliantServiceOfferingVC": {
+            "type": "string",
+            "description": "Compliant service offering VC",
+            "default": ""
+          },
+          "serviceOfferingVC": {
+            "type": "string",
+            "description": "Service offering VC",
+            "default": ""
           }
-        },
-        "required": ["title", "description", "offeredBy"]
+        }
       },
-      "ServiceOfferingUpdate": {
+      "ExchangeConfiguration": {
         "type": "object",
         "properties": {
-          "title": {
-            "type": "string"
+          "consumer": {
+            "type": "string",
+            "description": "The consumer in the exchange configuration"
           },
-          "description": {
-            "type": "string"
+          "provider": {
+            "type": "string",
+            "description": "The provider in the exchange configuration"
           },
-          "landingPage": {
-            "type": "string"
+          "consumerServiceOffering": {
+            "type": "string",
+            "description": "The consumer service offering"
           },
-          "keywords": {
+          "providerServiceOffering": {
+            "type": "string",
+            "description": "The provider service offering"
+          },
+          "providerPolicies": {
             "type": "array",
             "items": {
-              "type": "string"
-            }
+              "type": "object",
+              "properties": {
+                "ruleId": {
+                  "type": "string",
+                  "description": "The rule ID for provider policies"
+                },
+                "values": {
+                  "type": "object",
+                  "description": "Values associated with provider policies"
+                }
+              }
+            },
+            "description": "List of provider policies"
           },
-          "distribution": {
+          "consumerPolicies": {
             "type": "array",
             "items": {
-              "type": "string"
-            }
+              "type": "object",
+              "properties": {
+                "ruleId": {
+                  "type": "string",
+                  "description": "The rule ID for consumer policies"
+                },
+                "values": {
+                  "type": "object",
+                  "description": "Values associated with consumer policies"
+                }
+              }
+            },
+            "description": "List of consumer policies"
           },
-          "accrualPeriodicity": {
-            "type": "string"
+          "latestNegotiator": {
+            "type": "string",
+            "description": "The latest negotiator",
+            "default": ""
           },
-          "subject": {
-            "type": "string"
+          "signatures": {
+            "type": "object",
+            "properties": {
+              "consumer": {
+                "type": "string",
+                "description": "Consumer's signature",
+                "default": null
+              },
+              "provider": {
+                "type": "string",
+                "description": "Provider's signature",
+                "default": null
+              }
+            },
+            "description": "Signatures for consumer and provider"
           },
-          "spatial": {
-            "type": "string"
+          "contract": {
+            "type": "string",
+            "description": "The contract associated with the exchange",
+            "default": null
           },
-          "theme": {
-            "type": "string"
-          },
-          "temporalResolution": {
-            "type": "string"
-          },
-          "businessModel": {
-            "type": "string"
-          },
-          "offeredBy": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
+          "negotiationStatus": {
+            "type": "string",
+            "description": "The negotiation status",
+            "enum": ["Pending", "Authorized", "Rejected", "Signed"]
           }
         }
       },
       "Ecosystem": {
         "type": "object",
+        "properties": {}
+      },
+      "EcosystemOfferingPolicy": {
+        "type": "object",
         "properties": {
-          "name": {
+          "serviceOffering": {
             "type": "string",
-            "description": "Name of the ecosystem",
-            "required": true
+            "description": "Service Offering ID"
           },
-          "purposeAndGoals": {
+          "ruleId": {
+            "type": "string",
+            "description": "Rule UID of the policy to configure on the service offering"
+          },
+          "values": {
             "type": "object",
-            "properties": {
-              "keyPurpose": {
-                "type": "string",
-                "description": "Key purpose of the ecosystem",
-                "default": ""
-              },
-              "principles": {
-                "type": "array",
-                "items": {
-                  "type": "string"
-                },
-                "description": "Principles of the ecosystem"
-              },
-              "useCases": {
-                "type": "array",
-                "items": {
-                  "type": "string"
-                },
-                "description": "Use cases of the ecosystem"
-              }
-            },
-            "description": "Purpose and goals of the ecosystem"
-          },
-          "rolesAndResponsibilities": {
-            "type": "object",
-            "properties": {
-              "stakeholders": {
-                "type": "array",
-                "items": {
-                  "type": "object",
-                  "properties": {
-                    "organisation": {
-                      "type": "string",
-                      "description": "Participant ID of the stakeholder",
-                      "required": true
-                    },
-                    "role": {
-                      "type": "string",
-                      "description": "Role of the stakeholder",
-                      "required": true
-                    },
-                    "dataOfferings": {
-                      "type": "array",
-                      "items": {
-                        "type": "string"
-                      },
-                      "description": "Data offerings associated with the stakeholder"
-                    },
-                    "serviceOfferings": {
-                      "type": "array",
-                      "items": {
-                        "type": "string"
-                      },
-                      "description": "Service offerings associated with the stakeholder"
-                    }
-                  }
-                },
-                "description": "Stakeholders and their roles in the ecosystem"
-              }
-            },
-            "description": "Roles and responsibilities within the ecosystem"
-          },
-          "businessLogic": {
-            "type": "object",
-            "properties": {
-              "businessModel": {
-                "type": "string",
-                "description": "Business model of the ecosystem",
-                "default": ""
-              },
-              "payingParties": {
-                "type": "object",
-                "properties": {
-                  "direction": {
-                    "type": "array",
-                    "items": {
-                      "type": "string"
-                    },
-                    "description": "Direction of the paying parties"
-                  },
-                  "payers": {
-                    "type": "array",
-                    "items": {
-                      "type": "string"
-                    },
-                    "description": "Payers within the ecosystem"
-                  }
-                },
-                "description": "Paying parties and their direction in the ecosystem"
-              },
-              "businessCase": {
-                "type": "object",
-                "properties": {
-                  "definition": {
-                    "type": "string",
-                    "description": "Definition of the business case",
-                    "default": ""
-                  }
-                },
-                "description": "Business case and its definition in the ecosystem"
-              },
-              "ecosystemSharing": {
-                "type": "object",
-                "properties": {
-                  "role": {
-                    "type": "string",
-                    "description": "Role in ecosystem sharing",
-                    "default": ""
-                  },
-                  "valueSharing": {
-                    "type": "object",
-                    "properties": {
-                      "businessModel": {
-                        "type": "string",
-                        "description": "Business model for value sharing",
-                        "default": ""
-                      },
-                      "valueNetwork": {
-                        "type": "object",
-                        "properties": {
-                          "direction": {
-                            "type": "string",
-                            "description": "Direction of value network",
-                            "default": ""
-                          }
-                        },
-                        "description": "Value network and its direction"
-                      },
-                      "payers": {
-                        "type": "array",
-                        "items": {
-                          "type": "string"
-                        },
-                        "description": "Payers for value sharing"
-                      }
-                    },
-                    "description": "Value sharing within the ecosystem"
-                  },
-                  "revenueModel": {
-                    "type": "object",
-                    "properties": {
-                      "businessModel": {
-                        "type": "array",
-                        "items": {
-                          "type": "string"
-                        }
-                      },
-                      "payingParties": {
-                        "type": "object",
-                        "properties": {
-                          "direction": {
-                            "type": "array",
-                            "items": {
-                              "type": "string"
-                            }
-                          },
-                          "payers": {
-                            "type": "array",
-                            "items": {
-                              "type": "string"
-                            }
-                          }
-                        },
-                        "description": "Paying parties and their direction"
-                      }
-                    },
-                    "description": "Revenue model within the ecosystem"
-                  },
-                  "benefits": {
-                    "type": "array",
-                    "items": {
-                      "type": "string"
-                    },
-                    "description": "Benefits within the ecosystem"
-                  },
-                  "costs": {
-                    "type": "array",
-                    "items": {
-                      "type": "string"
-                    },
-                    "description": "Costs within the ecosystem"
-                  }
-                },
-                "description": "Ecosystem sharing and its components"
-              }
-            },
-            "description": "Business logic within the ecosystem"
-          },
-          "dataValue": {
-            "type": "object",
-            "properties": {
-              "pricingModel": {
-                "type": "string",
-                "description": "Pricing model for data value",
-                "default": ""
-              },
-              "dataValueSolution": {
-                "type": "object",
-                "properties": {
-                  "provider": {
-                    "type": "string",
-                    "description": "Participant ID of the data value provider",
-                    "required": true
-                  },
-                  "offering": {
-                    "type": "string",
-                    "description": "Participant ID of the data value offering",
-                    "required": true
-                  },
-                  "buildingBlock": {
-                    "type": "string",
-                    "description": "Building block for data value solution",
-                    "default": ""
-                  }
-                },
-                "description": "Data value solution and its components"
-              },
-              "dataNetworkSolutions": {
-                "type": "array",
-                "items": {
-                  "type": "object",
-                  "properties": {
-                    "type": {
-                      "type": "string",
-                      "enum": ["buy", "rent", "build"],
-                      "description": "Type of data network solution (buy, rent, or build)"
-                    },
-                    "pays": {
-                      "type": "array",
-                      "items": {
-                        "type": "string"
-                      },
-                      "description": "Payers within the data network solution"
-                    }
-                  }
-                },
-                "description": "Data network solutions and their types"
-              },
-              "levelOfCommitment": {
-                "type": "array",
-                "items": {
-                  "type": "string"
-                },
-                "description": "Level of commitment within the ecosystem"
-              }
-            },
-            "description": "Data value and its components within the ecosystem"
-          },
-          "governance": {
-            "type": "object",
-            "properties": {
-              "governancePrinciples": {
-                "type": "array",
-                "items": {
-                  "type": "string"
-                },
-                "description": "Governance principles within the ecosystem"
-              },
-              "decisionModel": {
-                "type": "object",
-                "properties": {
-                  "perimeter": {
-                    "type": "string",
-                    "description": "Perimeter of the decision model",
-                    "default": ""
-                  },
-                  "decisionProcess": {
-                    "type": "string",
-                    "description": "Decision process within the ecosystem",
-                    "default": ""
-                  }
-                },
-                "description": "Decision model and its components within the ecosystem"
-              }
-            },
-            "description": "Governance and its components within the ecosystem"
-          },
-          "dataServicesInfrastructure": {
-            "type": "object",
-            "properties": {
-              "infrastructureServices": {
-                "type": "array",
-                "items": {
-                  "type": "string"
-                },
-                "description": "Infrastructure services within the ecosystem"
-              },
-              "dataUsageControl": {
-                "type": "array",
-                "items": {
-                  "type": "string"
-                },
-                "description": "Data usage control within the ecosystem"
-              },
-              "consentManagement": {
-                "type": "array",
-                "items": {
-                  "type": "string"
-                },
-                "description": "Consent management within the ecosystem"
-              },
-              "dataQuality": {
-                "type": "array",
-                "items": {
-                  "type": "string"
-                },
-                "description": "Data quality within the ecosystem"
-              },
-              "operationalMonitoring": {
-                "type": "array",
-                "items": {
-                  "type": "string"
-                },
-                "description": "Operational monitoring within the ecosystem"
-              },
-              "issuesQuestions": {
-                "type": "string",
-                "description": "Issues and questions within the ecosystem",
-                "default": ""
-              },
-              "links": {
-                "type": "array",
-                "items": {
-                  "type": "string"
-                },
-                "description": "Links within the ecosystem"
-              }
-            },
-            "description": "Data services infrastructure and its components within the ecosystem"
-          },
-          "systemDesignAndArchitecture": {
-            "type": "object",
-            "properties": {
-              "systemPrinciples": {
-                "type": "object",
-                "properties": {
-                  "buildingBlocks": {
-                    "type": "array",
-                    "items": {
-                      "type": "string"
-                    },
-                    "description": "Building blocks within the system principles"
-                  },
-                  "requirements": {
-                    "type": "array",
-                    "items": {
-                      "type": "string"
-                    },
-                    "description": "Requirements within the system principles"
-                  },
-                  "architecture": {
-                    "type": "array",
-                    "items": {
-                      "type": "string"
-                    },
-                    "description": "Architecture within the system principles"
-                  }
-                },
-                "description": "System principles and their components"
-              },
-              "metadataFormats": {
-                "type": "array",
-                "items": {
-                  "type": "object",
-                  "properties": {
-                    "name": {
-                      "type": "string",
-                      "description": "Name of the metadata format",
-                      "default": ""
-                    },
-                    "link": {
-                      "type": "string",
-                      "description": "Link to the metadata format",
-                      "default": ""
-                    }
-                  }
-                },
-                "description": "Metadata formats and their components"
-              }
-            },
-            "description": "System design and architecture within the ecosystem"
-          },
-          "functionalRequirements": {
-            "type": "object",
-            "properties": {
-              "technicalInterfaces": {
-                "type": "array",
-                "items": {
-                  "type": "object",
-                  "properties": {
-                    "name": {
-                      "type": "string",
-                      "description": "Name of the technical interface",
-                      "default": ""
-                    },
-                    "link": {
-                      "type": "string",
-                      "description": "Link to the technical interface",
-                      "default": ""
-                    },
-                    "evolutionType": {
-                      "type": "string",
-                      "description": "Evolution type of the technical interface",
-                      "default": ""
-                    }
-                  }
-                },
-                "description": "Technical interfaces and their components"
-              },
-              "acIdentities": {
-                "type": "array",
-                "items": {
-                  "type": "string"
-                },
-                "description": "AC identities within the functional requirements"
-              },
-              "dataUsageControlSolutions": {
-                "type": "array",
-                "items": {
-                  "type": "string"
-                },
-                "description": "Data usage control solutions within the functional requirements"
-              },
-              "transactionManagement": {
-                "type": "array",
-                "items": {
-                  "type": "string"
-                },
-                "description": "Transaction management within the functional requirements"
-              },
-              "dataGovernanceSolution": {
-                "type": "array",
-                "items": {
-                  "type": "string"
-                },
-                "description": "Data governance solutions within the functional requirements"
-              }
-            },
-            "description": "Functional requirements within the ecosystem"
-          },
-          "informationManagement": {
-            "type": "object",
-            "properties": {
-              "dataServices": {
-                "type": "array",
-                "items": {
-                  "type": "string"
-                },
-                "description": "Data services within the information management"
-              },
-              "dataQuality": {
-                "type": "array",
-                "items": {
-                  "type": "string"
-                },
-                "description": "Data quality within the information management"
-              }
-            },
-            "description": "Information management within the ecosystem"
-          },
-          "security": {
-            "type": "object",
-            "properties": {
-              "threatAssessment": {
-                "type": "object",
-                "properties": {
-                  "methods": {
-                    "type": "array",
-                    "items": {
-                      "type": "string"
-                    },
-                    "description": "Methods used for threat assessment"
-                  },
-                  "standards": {
-                    "type": "array",
-                    "items": {
-                      "type": "string"
-                    },
-                    "description": "Standards used for threat assessment"
-                  },
-                  "threats": {
-                    "type": "array",
-                    "items": {
-                      "type": "string"
-                    },
-                    "description": "Threats within the threat assessment"
-                  },
-                  "securityObjectives": {
-                    "type": "array",
-                    "items": {
-                      "type": "string"
-                    },
-                    "description": "Security objectives within the threat assessment"
-                  }
-                },
-                "description": "Threat assessment and its components"
-              },
-              "riskManagementTools": {
-                "type": "array",
-                "items": {
-                  "type": "string"
-                },
-                "description": "Risk management tools used within the ecosystem"
-              }
-            },
-            "description": "Security and its components within the ecosystem"
-          },
-          "privacyAndPersonalData": {
-            "type": "object",
-            "properties": {
-              "inclusionPersonalData": {
-                "type": "boolean",
-                "description": "Flag indicating inclusion of personal data"
-              },
-              "PersonalDataManagementSolution": {
-                "type": "array",
-                "items": {
-                  "type": "string"
-                },
-                "description": "Personal data management solutions"
-              }
-            },
-            "description": "Privacy and personal data within the ecosystem"
-          },
-          "jsonld": {
-            "type": "string",
-            "description": "JSON-LD string",
-            "required": true,
-            "default": ""
-          },
-          "schema_version": {
-            "type": "string",
-            "description": "Schema version",
-            "required": true,
-            "default": "v0.0.1"
-          }
-        },
-        "description": "Schema for an ecosystem"
-      },
-      "EcosystemCreation": {
-        "type": "object",
-        "properties": {
-          "name": {
-            "type": "string"
-          },
-          "purposeAndGoals": {
-            "$ref": "#/components/schemas/PurposeAndGoals"
-          },
-          "rolesAndResponsibilities": {
-            "$ref": "#/components/schemas/RolesAndResponsibilities"
-          },
-          "businessLogic": {
-            "$ref": "#/components/schemas/BusinessLogic"
-          },
-          "dataValue": {
-            "$ref": "#/components/schemas/DataValue"
-          },
-          "governance": {
-            "$ref": "#/components/schemas/Governance"
-          },
-          "dataServicesInfrastructure": {
-            "$ref": "#/components/schemas/DataServicesInfrastructure"
-          },
-          "systemDesignAndArchitecture": {
-            "$ref": "#/components/schemas/SystemDesignAndArchitecture"
-          },
-          "functionalRequirements": {
-            "$ref": "#/components/schemas/FunctionalRequirements"
-          },
-          "informationManagement": {
-            "$ref": "#/components/schemas/InformationManagement"
-          },
-          "security": {
-            "$ref": "#/components/schemas/Security"
-          },
-          "privacyAndPersonalData": {
-            "$ref": "#/components/schemas/PrivacyAndPersonalData"
-          }
-        }
-      },
-      "EcosystemUpdate": {
-        "type": "object",
-        "properties": {
-          "name": {
-            "type": "string"
-          },
-          "purposeAndGoals": {
-            "$ref": "#/components/schemas/PurposeAndGoals"
-          },
-          "rolesAndResponsibilities": {
-            "$ref": "#/components/schemas/RolesAndResponsibilities"
-          },
-          "businessLogic": {
-            "$ref": "#/components/schemas/BusinessLogic"
-          },
-          "dataValue": {
-            "$ref": "#/components/schemas/DataValue"
-          },
-          "governance": {
-            "$ref": "#/components/schemas/Governance"
-          },
-          "dataServicesInfrastructure": {
-            "$ref": "#/components/schemas/DataServicesInfrastructure"
-          },
-          "systemDesignAndArchitecture": {
-            "$ref": "#/components/schemas/SystemDesignAndArchitecture"
-          },
-          "functionalRequirements": {
-            "$ref": "#/components/schemas/FunctionalRequirements"
-          },
-          "informationManagement": {
-            "$ref": "#/components/schemas/InformationManagement"
-          },
-          "security": {
-            "$ref": "#/components/schemas/Security"
-          },
-          "privacyAndPersonalData": {
-            "$ref": "#/components/schemas/PrivacyAndPersonalData"
-          }
-        }
-      },
-      "EcosystemAccessRequestInvitation": {
-        "type": "object",
-        "properties": {
-          "ecosystem": {
-            "$ref": "#/components/schemas/FederatedIdentifier"
-          },
-          "participant": {
-            "$ref": "#/components/schemas/FederatedIdentifier"
-          }
-        },
-        "required": ["ecosystem", "participant"]
-      },
-      "EcosystemAccessRequest": {
-        "type": "object",
-        "properties": {
-          "ecosystem": {
-            "$ref": "#/components/schemas/FederatedIdentifier"
-          },
-          "role": {
-            "type": "string"
-          }
-        },
-        "required": ["ecosystem", "role"]
-      },
-      "Participant": {
-        "type": "object",
-        "properties": {
-          "hasLegallyBindingName": {
-            "type": "string",
-            "required": true
-          },
-          "identifier": {
-            "type": "string",
-            "required": true,
-            "default": ""
-          },
-          "address": {
-            "type": "object",
-            "properties": {
-              "addressLocality": {
-                "type": "string",
-                "default": ""
-              },
-              "addressRegion": {
-                "type": "string",
-                "default": ""
-              },
-              "postalCode": {
-                "type": "string",
-                "default": ""
-              },
-              "streetAddress": {
-                "type": "string",
-                "default": ""
-              }
-            }
-          },
-          "url": {
-            "type": "string",
-            "default": ""
-          },
-          "description": {
-            "type": "string",
-            "required": true,
-            "default": ""
-          },
-          "hasBusinessIdentifier": {
-            "type": "string",
-            "default": ""
-          },
-          "hasMemberParticipant": {
-            "type": "array",
-            "items": {
-              "type": "string",
-              "format": "uuid"
-            }
-          },
-          "hasLogo": {
-            "type": "string",
-            "default": ""
-          },
-          "contactPoint": {
-            "type": "array",
-            "items": {
-              "type": "object",
-              "properties": {
-                "email": {
-                  "type": "string",
-                  "required": true,
-                  "default": ""
-                },
-                "telephone": {
-                  "type": "string",
-                  "required": true,
-                  "default": ""
-                },
-                "contactType": {
-                  "type": "string",
-                  "required": true,
-                  "default": ""
-                }
-              }
-            }
-          },
-          "hasCompanyType": {
-            "type": "string",
-            "default": ""
-          },
-          "hasPhoneNumber": {
-            "type": "string",
-            "required": true,
-            "default": ""
-          },
-          "hasMemberPerson": {
-            "type": "array",
-            "items": {
-              "type": "object",
-              "properties": {
-                "name": {
-                  "type": "string",
-                  "required": true,
-                  "default": ""
-                },
-                "email": {
-                  "type": "string",
-                  "required": true,
-                  "default": ""
-                }
-              }
-            }
-          },
-          "email": {
-            "type": "string",
-            "required": true,
-            "default": ""
-          },
-          "password": {
-            "type": "string",
-            "required": true,
-            "default": ""
-          },
-          "jsonld": {
-            "type": "string",
-            "required": true,
-            "default": ""
-          },
-          "schema_version": {
-            "type": "string",
-            "required": true,
-            "default": "v0.0.1"
-          }
-        },
-        "required": [
-          "hasLegallyBindingName",
-          "identifier",
-          "description",
-          "contactPoint",
-          "hasPhoneNumber",
-          "hasMemberPerson",
-          "email",
-          "password",
-          "jsonld",
-          "schema_version"
-        ]
-      },
-      "ParticipantCreation": {
-        "type": "object",
-        "properties": {
-          "hasLegallyBindingName": {
-            "type": "string"
-          },
-          "identifier": {
-            "type": "string",
-            "default": ""
-          },
-          "address": {
-            "$ref": "#/components/schemas/Address"
-          },
-          "url": {
-            "type": "string",
-            "default": ""
-          },
-          "description": {
-            "type": "string",
-            "default": ""
-          },
-          "hasBusinessIdentifier": {
-            "type": "string",
-            "default": ""
-          },
-          "hasMemberParticipant": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            },
-            "default": []
-          },
-          "hasLogo": {
-            "type": "string",
-            "default": ""
-          },
-          "contactPoint": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/ContactPoint"
-            }
-          },
-          "hasCompanyType": {
-            "type": "string",
-            "default": ""
-          },
-          "hasPhoneNumber": {
-            "type": "string",
-            "required": true
-          },
-          "hasMemberPerson": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/MemberPerson"
-            }
-          },
-          "email": {
-            "type": "string",
-            "required": true
-          },
-          "password": {
-            "type": "string",
-            "required": true
-          },
-          "jsonld": {
-            "type": "string",
-            "default": ""
-          }
-        }
-      },
-      "ParticipantUpdate": {
-        "type": "object",
-        "properties": {
-          "hasLegallyBindingName": {
-            "type": "string"
-          },
-          "identifier": {
-            "type": "string"
-          },
-          "address": {
-            "$ref": "#/components/schemas/Address"
-          },
-          "url": {
-            "type": "string"
-          },
-          "description": {
-            "type": "string"
-          },
-          "hasBusinessIdentifier": {
-            "type": "string"
-          },
-          "hasMemberParticipant": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          },
-          "hasLogo": {
-            "type": "string"
-          },
-          "contactPoint": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/ContactPoint"
-            }
-          },
-          "hasCompanyType": {
-            "type": "string"
-          },
-          "hasPhoneNumber": {
-            "type": "string"
-          },
-          "hasMemberPerson": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/MemberPerson"
-            }
-          },
-          "email": {
-            "type": "string"
-          },
-          "password": {
-            "type": "string"
-          },
-          "jsonld": {
-            "type": "string"
-          }
-        }
-      },
-      "FederatedIdentifier": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "nullable": true
-          },
-          "identifier": {
-            "type": "string",
-            "nullable": true
-          }
-        },
-        "required": ["id", "identifier"]
-      },
-      "PurposeAndGoals": {
-        "type": "object",
-        "properties": {
-          "keyPurpose": {
-            "type": "string"
-          },
-          "principles": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          },
-          "useCases": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          }
-        }
-      },
-      "RolesAndResponsibilities": {
-        "type": "object",
-        "properties": {
-          "stakeholders": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/Stakeholder"
-            }
-          }
-        }
-      },
-      "Stakeholder": {
-        "type": "object",
-        "properties": {
-          "organisation": {
-            "type": "string"
-          },
-          "role": {
-            "type": "string"
-          },
-          "dataOfferings": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          },
-          "serviceOfferings": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          }
-        }
-      },
-      "BusinessLogic": {
-        "type": "object",
-        "properties": {
-          "businessModel": {
-            "type": "string"
-          },
-          "payingParties": {
-            "$ref": "#/components/schemas/PayingParties"
-          },
-          "businessCase": {
-            "$ref": "#/components/schemas/BusinessCase"
-          },
-          "ecosystemSharing": {
-            "$ref": "#/components/schemas/EcosystemSharing"
-          }
-        }
-      },
-      "PayingParties": {
-        "type": "object",
-        "properties": {
-          "direction": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          },
-          "payers": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          }
-        }
-      },
-      "BusinessCase": {
-        "type": "object",
-        "properties": {
-          "definition": {
-            "type": "string"
-          }
-        }
-      },
-      "EcosystemSharing": {
-        "type": "object",
-        "properties": {
-          "role": {
-            "type": "string"
-          },
-          "valueSharing": {
-            "$ref": "#/components/schemas/ValueSharing"
-          },
-          "revenueModel": {
-            "$ref": "#/components/schemas/RevenueModel"
-          },
-          "benefits": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          },
-          "costs": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          }
-        }
-      },
-      "ValueSharing": {
-        "type": "object",
-        "properties": {
-          "businessModel": {
-            "type": "string"
-          },
-          "valueNetwork": {
-            "$ref": "#/components/schemas/ValueNetwork"
-          },
-          "payers": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          }
-        }
-      },
-      "ValueNetwork": {
-        "type": "object",
-        "properties": {
-          "direction": {
-            "type": "string"
-          }
-        }
-      },
-      "RevenueModel": {
-        "type": "object",
-        "properties": {
-          "businessModel": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          },
-          "payingParties": {
-            "$ref": "#/components/schemas/PayingParties"
-          }
-        }
-      },
-      "DataValue": {
-        "type": "object",
-        "properties": {
-          "pricingModel": {
-            "type": "string"
-          },
-          "dataValueSolution": {
-            "$ref": "#/components/schemas/DataValueSolution"
-          },
-          "dataNetworkSolutions": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/DataNetworkSolution"
-            }
-          },
-          "levelOfCommitment": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          }
-        }
-      },
-      "DataValueSolution": {
-        "type": "object",
-        "properties": {
-          "provider": {
-            "type": "string"
-          },
-          "offering": {
-            "type": "string"
-          },
-          "buildingBlock": {
-            "type": "string"
-          }
-        }
-      },
-      "DataNetworkSolution": {
-        "type": "object",
-        "properties": {
-          "type": {
-            "type": "string",
-            "enum": ["buy", "rent", "build"]
-          },
-          "pays": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          }
-        }
-      },
-      "Governance": {
-        "type": "object",
-        "properties": {
-          "governancePrinciples": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          },
-          "decisionModel": {
-            "$ref": "#/components/schemas/DecisionModel"
-          }
-        }
-      },
-      "DecisionModel": {
-        "type": "object",
-        "properties": {
-          "perimeter": {
-            "type": "string"
-          },
-          "decisionProcess": {
-            "type": "string"
-          }
-        }
-      },
-      "DataServicesInfrastructure": {
-        "type": "object",
-        "properties": {
-          "infrastructureServices": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          },
-          "dataUsageControl": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          },
-          "consentManagement": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          },
-          "dataQuality": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          },
-          "operationalMonitoring": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          },
-          "issuesQuestions": {
-            "type": "string"
-          },
-          "links": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          }
-        }
-      },
-      "SystemDesignAndArchitecture": {
-        "type": "object",
-        "properties": {
-          "systemPrinciples": {
-            "$ref": "#/components/schemas/SystemPrinciples"
-          },
-          "metadataFormats": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/MetadataFormat"
-            }
-          }
-        }
-      },
-      "SystemPrinciples": {
-        "type": "object",
-        "properties": {
-          "buildingBlocks": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          },
-          "requirements": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          },
-          "architecture": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          }
-        }
-      },
-      "MetadataFormat": {
-        "type": "object",
-        "properties": {
-          "name": {
-            "type": "string"
-          },
-          "link": {
-            "type": "string"
-          }
-        }
-      },
-      "FunctionalRequirements": {
-        "type": "object",
-        "properties": {
-          "technicalInterfaces": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/TechnicalInterface"
-            }
-          },
-          "acIdentities": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          },
-          "dataUsageControlSolutions": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          },
-          "transactionManagement": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          },
-          "dataGovernanceSolution": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          }
-        }
-      },
-      "TechnicalInterface": {
-        "type": "object",
-        "properties": {
-          "name": {
-            "type": "string"
-          },
-          "link": {
-            "type": "string"
-          },
-          "evolutionType": {
-            "type": "string"
-          }
-        }
-      },
-      "InformationManagement": {
-        "type": "object",
-        "properties": {
-          "dataServices": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          },
-          "dataQuality": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          }
-        }
-      },
-      "Security": {
-        "type": "object",
-        "properties": {
-          "threatAssessment": {
-            "$ref": "#/components/schemas/ThreatAssessment"
-          },
-          "riskManagementTools": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          }
-        }
-      },
-      "ThreatAssessment": {
-        "type": "object",
-        "properties": {
-          "methods": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          },
-          "standards": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          },
-          "threats": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          },
-          "securityObjectives": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          }
-        }
-      },
-      "PrivacyAndPersonalData": {
-        "type": "object",
-        "properties": {
-          "inclusionPersonalData": {
-            "type": "boolean"
-          },
-          "PersonalDataManagementSolution": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          }
-        }
-      },
-      "Address": {
-        "type": "object",
-        "properties": {
-          "addressLocality": {
-            "type": "string",
-            "default": ""
-          },
-          "addressRegion": {
-            "type": "string",
-            "default": ""
-          },
-          "postalCode": {
-            "type": "string",
-            "default": ""
-          },
-          "streetAddress": {
-            "type": "string",
-            "default": ""
-          }
-        }
-      },
-      "ContactPoint": {
-        "type": "object",
-        "properties": {
-          "email": {
-            "type": "string",
-            "required": true
-          },
-          "telephone": {
-            "type": "string",
-            "required": true
-          },
-          "contactType": {
-            "type": "string",
-            "required": true
-          }
-        }
-      },
-      "MemberPerson": {
-        "type": "object",
-        "properties": {
-          "name": {
-            "type": "string",
-            "required": true
-          },
-          "email": {
-            "type": "string",
-            "required": true
+            "description": "The differend values of the policy to configure based on the rule's requiredFields"
           }
         }
       }

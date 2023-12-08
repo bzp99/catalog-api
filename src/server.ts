@@ -1,18 +1,31 @@
 import express, { Application } from "express";
 import cors from "cors";
-import { loadRoutes } from "./routes";
 import { loadMongoose } from "./config/database";
+import { invalidEndpointHandler } from "./middleware/invalidEndpointHandler";
+import { globalErrorHandler } from "./middleware/globalErrorHandler";
+import swaggerUI from "swagger-ui-express";
+import swaggerSpec from "../docs/swagger.json";
+import { CONFIG } from "./config/environment";
+import { setupRoutes } from "./routes";
 
-export const startServer = (testPort?: number) => {
+export const startServer = async (testPort?: number) => {
   loadMongoose();
 
   const app: Application = express();
-  const port = testPort || process.env.PORT || 3000;
+  const port = testPort || CONFIG.port || 3000;
 
   app.use(express.json());
   app.use(cors());
 
-  loadRoutes(app);
+  app.get("/health", (_, res) => {
+    res.json({ status: "OK" });
+  });
+  app.use("/docs", swaggerUI.serve, swaggerUI.setup(swaggerSpec));
+
+  await setupRoutes(app);
+
+  app.use(invalidEndpointHandler);
+  app.use(globalErrorHandler);
 
   // Start the server
   const server = app.listen(port, () => {

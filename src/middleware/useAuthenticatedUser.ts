@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import Participant from "../models/Participant/Participant.model";
+import { Participant } from "../models/Participant";
 import { NotFoundError } from "../errors/NotFoundError";
 
 /**

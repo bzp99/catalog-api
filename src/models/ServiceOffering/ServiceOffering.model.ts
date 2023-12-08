@@ -1,84 +1,62 @@
-import { Schema, model } from "mongoose";
-import { IServiceOffering } from "../../types/models";
+import { Schema } from "mongoose";
+import {
+  IServiceOffering,
+  IServiceOfferingModel,
+  IServiceOfferingMethods,
+} from "../../types/serviceoffering";
 
-const serviceOfferingSchema = new Schema<IServiceOffering>(
+export const serviceOfferingSchema = new Schema<
+  IServiceOffering,
+  IServiceOfferingModel,
+  IServiceOfferingMethods
+>(
   {
-    title: {
-      type: String,
-      required: true,
-    },
-    description: {
-      type: String,
-      required: true,
-      default: "",
-    },
-    landingPage: {
-      type: String,
-      required: true,
-      default: "",
-    },
-    distribution: {
-      type: [String],
-      required: true,
-      default: [],
-    },
-    accrualPeriodicity: {
-      type: String,
-      required: true,
-      default: "",
-    },
-    subject: {
-      type: String,
-      required: true,
-      default: "",
-    },
-    spatial: {
-      type: String,
-      required: true,
-      default: "",
-    },
-    theme: { type: String, default: "" },
-    keyword: [{ type: String }],
-    temporalResolution: {
-      type: String,
-      required: true,
-      default: "",
-    },
-    businessModel: {
-      type: String,
-      required: true,
-      default: "",
-    },
-    offeredBy: [
+    // Gaia-x
+    name: { type: String, required: true },
+    providedBy: { type: String },
+    aggregationOf: [{ type: String }],
+    dependsOn: [{ type: String }],
+    policy: [{ type: Schema.Types.Mixed }],
+    termsAndConditions: { type: String, default: "" },
+    dataProtectionRegime: [{ type: String }],
+    dataAccountExport: [
       {
-        type: Schema.Types.ObjectId,
-        ref: "Participant",
-        required: true,
+        requestType: {
+          type: String,
+          enum: [
+            "API",
+            "email",
+            "webform",
+            "unregisteredLetter",
+            "registeredLetter",
+            "supportCenter",
+          ],
+        },
+        accessType: {
+          type: String,
+          enum: ["digital", "physical"],
+        },
+        formatType: { type: String },
       },
     ],
-    license: {
-      type: String,
-      default: "",
-    },
-    jsonld: {
-      type: String,
-      required: true,
-      default: "",
-    },
-    schema_version: {
-      type: String,
-      required: true,
-      default: "v0.0.1",
-    },
+
+    // Visions defined
+    location: { type: String, default: "" },
+    description: { type: String, default: "" },
+    keywords: [String],
+    dataResources: [{ type: Schema.Types.ObjectId, ref: "DataResource" }],
+    softwareResources: [
+      { type: Schema.Types.ObjectId, ref: "SoftwareResource" },
+    ],
+
+    // Gaia-x federation
+    compliantServiceOfferingVC: { type: String, default: "" },
+    serviceOfferingVC: { type: String, default: "" },
+
+    schema_version: { type: String, default: "1" },
   },
-  { timestamps: true }
+  {
+    timestamps: true,
+    query: {},
+  }
 );
-
-serviceOfferingSchema.index({ theme: "text", keyword: "text" });
-
-const ServiceOffering = model<IServiceOffering>(
-  "ServiceOffering",
-  serviceOfferingSchema
-);
-
-export default ServiceOffering;

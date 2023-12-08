@@ -1,30 +1,27 @@
 import { expect } from "chai";
 import request from "supertest";
-import { loginCredentials, testParticipant } from "./testAccount";
+import { testParticipantOrganizationAdmin } from "./testAccount";
 import { config } from "dotenv";
 config();
 
 import { startServer } from "../src/server";
 import { IncomingMessage, Server, ServerResponse } from "http";
 import {
-  sampleDataOffering,
+  sampleDataResource,
+  sampleSoftwareResource,
   sampleEcosystem,
   sampleServiceOffering,
 } from "./sampleData";
+import { Application } from "express";
 
-export let app: Express.Application;
+export let app: Application;
 export let server: Server<typeof IncomingMessage, typeof ServerResponse>;
 
-before((done) => {
+before(async () => {
   // Start the server and obtain the app and server instances
-  const serverInstance = startServer(3001);
+  const serverInstance = await startServer(3001);
   app = serverInstance.app;
   server = serverInstance.server;
-
-  // Wait for the server to start before proceeding
-  server.on("listening", () => {
-    done();
-  });
 });
 
 after((done) => {
@@ -41,11 +38,11 @@ let dataOfferingId = "";
 let serviceOfferingId = "";
 
 describe("Initialize with Participant creation and login", () => {
-  it("Should create a participant and respond with the created participant", async () => {
-    const participantData = testParticipant;
+  it("Should signup and create a participant", async () => {
+    const participantData = testParticipantOrganizationAdmin;
 
     const response = await request(app)
-      .post("/v1/participants")
+      .post("/v1/auth/signup")
       .send(participantData)
       .expect(201);
 
@@ -57,7 +54,10 @@ describe("Initialize with Participant creation and login", () => {
   it("should login and return a token", async () => {
     const response = await request(app)
       .post("/v1/auth/login")
-      .send(loginCredentials)
+      .send({
+        email: testParticipantOrganizationAdmin.email,
+        password: testParticipantOrganizationAdmin.password,
+      })
       .expect(200);
     jwt = response.body.token;
   });
@@ -93,9 +93,9 @@ describe("Ecosystem tests", () => {
 describe("Service offering management", () => {
   it("Should create a service offering", async () => {
     const res = await request(app)
-      .post("/v1/services")
+      .post("/v1/serviceofferings")
       .set("Authorization", `Bearer ${jwt}`)
-      .send({ ...sampleServiceOffering, offeredBy: [participantId] })
+      .send({ ...sampleServiceOffering, providedBy: participantId })
       .expect(201);
 
     serviceOfferingId = res.body._id;
@@ -103,14 +103,14 @@ describe("Service offering management", () => {
 
   it("Should retrieve the service offering by id", async () => {
     await request(app)
-      .get("/v1/services/" + serviceOfferingId)
+      .get("/v1/serviceofferings/" + serviceOfferingId)
       .set("Authorization", `Bearer ${jwt}`)
       .expect(200);
   });
 
   it("Should retrieve a list of service offerings by the user", async () => {
     const res = await request(app)
-      .get("/v1/services/me")
+      .get("/v1/serviceofferings/me")
       .set("Authorization", `Bearer ${jwt}`)
       .expect(200);
 
@@ -119,42 +119,7 @@ describe("Service offering management", () => {
 
   it("Should delete the service offering", async () => {
     await request(app)
-      .delete("/v1/services/" + serviceOfferingId)
-      .set("Authorization", `Bearer ${jwt}`)
-      .expect(200);
-  });
-});
-
-describe("Data offering management", () => {
-  it("Should create a data offering", async () => {
-    const res = await request(app)
-      .post("/v1/data")
-      .set("Authorization", `Bearer ${jwt}`)
-      .send({ ...sampleDataOffering, offeredBy: [participantId] })
-      .expect(201);
-
-    dataOfferingId = res.body._id;
-  });
-
-  it("Should retrieve the data offering by id", async () => {
-    await request(app)
-      .get("/v1/data/" + dataOfferingId)
-      .set("Authorization", `Bearer ${jwt}`)
-      .expect(200);
-  });
-
-  it("Should retrieve a list of data offerings by the user", async () => {
-    const res = await request(app)
-      .get("/v1/data/me")
-      .set("Authorization", `Bearer ${jwt}`)
-      .expect(200);
-
-    expect(res.body).to.be.an("array");
-  });
-
-  it("Should delete the data offering", async () => {
-    await request(app)
-      .delete("/v1/data/" + dataOfferingId)
+      .delete("/v1/serviceofferings/" + serviceOfferingId)
       .set("Authorization", `Bearer ${jwt}`)
       .expect(200);
   });

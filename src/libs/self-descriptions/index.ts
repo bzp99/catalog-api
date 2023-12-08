@@ -1,0 +1,1 @@
+export { buildResolvableSelfDescriptionURI } from "./buildResolvableURI";

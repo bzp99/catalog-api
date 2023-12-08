@@ -3,6 +3,7 @@ import { BadRequestError } from "../errors/BadRequestError";
 import { BadEndpointError } from "../errors/BadEndpointError";
 import { ForbiddenError } from "../errors/ForbiddenError";
 import { NotFoundError } from "../errors/NotFoundError";
+import { CONFIG } from "../config/environment";
 
 export const globalErrorHandler = (
   err: Error,
@@ -22,8 +23,8 @@ export const globalErrorHandler = (
     return res.status(500).json({
       error: "Internal Server Error",
       message: "Something went wrong",
-      devMsg: process.env.NODE_ENV === "development" ? err.message : undefined,
-      devStack: process.env.NODE_ENV === "development" ? err.stack : undefined,
+      devMsg: CONFIG.env === "development" ? err.message : undefined,
+      devStack: CONFIG.env === "development" ? err.stack : undefined,
     });
   }
 
