@@ -1,163 +1,69 @@
-import { NextFunction, Request, Response } from "express";
-import { ServiceOffering } from "../../../models";
-import { serviceOfferingPopulation } from "../../../utils/schemaPopulation";
+import { Router } from "express";
+import { body, check } from "express-validator";
+import { verifyJwtMiddleware } from "../../../middleware/auth";
+import {
+  createServiceOffering,
+  deleteServiceOffering,
+  getServiceOfferingsForParticipant,
+  getSessionParticipantServiceOfferings,
+  updateServiceOffering,
+} from "../../../controllers/private/v1/serviceOfferings.private.controller";
+import {
+  isDataAccountExportArray,
+  validate,
+} from "../../../middleware/validator";
 
-const DEFAULT_QUERY_OPTIONS = {
-  page: 0,
-  limit: 50,
-};
+const router: Router = Router();
 
-/**
- * Creates a new service offering
- */
-export const createServiceOffering = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-  try {
-    const serviceOffering = new ServiceOffering({
-      ...req.body,
-      providedBy: req.user.id,
-    });
-    await serviceOffering.save();
+router.use(verifyJwtMiddleware);
 
-    return res.status(201).json(serviceOffering);
-  } catch (err) {
-    next(err);
-  }
-};
+router.get("/me", getSessionParticipantServiceOfferings);
+router.get("/participant/:id", getServiceOfferingsForParticipant);
 
-/**
- * Returns the service offerings for a specific participant
- */
-export const getServiceOfferingsForParticipant = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-  try {
-    const payload = await getParticipantServiceOfferings({
-      req,
-      participantId: req.params.id,
-    });
-    return res.json(payload);
-  } catch (err) {
-    next(err);
-  }
-};
+router.post(
+  "/",
+  [
+    body("aggregationOf").exists().isArray().notEmpty(),
+    body("name").exists().isString().trim(),
+    body("description").exists().isString().trim(),
+    body("policy").exists().isArray(),
+    body("termsAndConditions").exists().isString().trim(),
+    body("dataProtectionRegime").exists().isArray(),
+    body("dataAccountExport").exists().custom(isDataAccountExportArray),
+    body("location").exists().isString().trim(),
+    body("keywords").exists().isArray(),
+    body("dataResources").exists().isArray(),
+    body("softwareResources").exists().isArray(),
+  ],
+  validate,
+  createServiceOffering
+);
 
-/**
- * Gets all service offerings of the authenticated participant
- */
-export const getSessionParticipantServiceOfferings = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-  try {
-    const payload = await getParticipantServiceOfferings({
-      req,
-      participantId: req.user.id,
-    });
-    return res.json(payload);
-  } catch (err) {
-    next(err);
-  }
-};
+router.put(
+  "/:id",
+  [
+    check("id").isMongoId(),
+    body("aggregationOf").optional().isArray().notEmpty(),
+    body("name").optional().isString().trim(),
+    body("description").optional().isString().trim(),
+    body("policy").optional().isArray(),
+    body("termsAndConditions").optional().isString().trim(),
+    body("dataProtectionRegime").optional().isArray(),
+    body("dataAccountExport").optional().custom(isDataAccountExportArray),
+    body("location").optional().isString().trim(),
+    body("keywords").optional().isArray(),
+    body("dataResources").optional().isArray(),
+    body("softwareResources").optional().isArray(),
+  ],
+  validate,
+  updateServiceOffering
+);
 
-export const updateServiceOffering = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-  try {
-    const updatedServiceOffering = await ServiceOffering.findByIdAndUpdate(
-      req.params.id,
-      req.body,
-      { new: true, runValidators: true }
-    );
+router.delete(
+  "/:id",
+  [check("id").isString().isMongoId()],
+  validate,
+  deleteServiceOffering
+);
 
-    if (!updatedServiceOffering) {
-      return res.status(404).json({
-        req,
-        res,
-        code: 404,
-        errorMsg: "Resource not found",
-        message: "The service offering could not be found",
-      });
-    }
-
-    return res.json(updatedServiceOffering);
-  } catch (err) {
-    next(err);
-  }
-};
-
-export const deleteServiceOffering = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-  try {
-    const serviceOffering = await ServiceOffering.findByIdAndDelete(
-      req.params.id
-    );
-    if (!serviceOffering) {
-      return res.status(404).json({
-        req,
-        res,
-        code: 404,
-        errorMsg: "Resource not found",
-        message: "The service offering could not be found",
-      });
-    }
-
-    return res.status(204).json(serviceOffering);
-  } catch (err) {
-    next(err);
-  }
-};
-
-const getParticipantServiceOfferings = async ({
-  req,
-  participantId,
-}: {
-  req: Request;
-  participantId: string;
-}) => {
-  const { limit, page, populated } = req.query;
-
-  const queryOptions = {
-    ...DEFAULT_QUERY_OPTIONS,
-    limit: parseInt(limit?.toString()) || 0,
-    page: parseInt(page?.toString()) || 0,
-  };
-
-  const query = { providedBy: participantId };
-  const queryBuilder =
-    populated === "true"
-      ? ServiceOffering.find(query).populate(serviceOfferingPopulation)
-      : ServiceOffering.find(query);
-
-  const [serviceOfferings, count] = await Promise.all([
-    queryBuilder
-      .limit(queryOptions.limit)
-      .skip(queryOptions.page * queryOptions.limit),
-    ServiceOffering.countDocuments(query),
-  ]);
-
-  return {
-    code: 200,
-    data: {
-      limit: queryOptions.limit,
-      page: queryOptions.page,
-      pages:
-        count / queryOptions.limit < 1
-          ? 1
-          : Math.ceil(count / queryOptions.limit),
-      count,
-      result: serviceOfferings,
-    },
-  };
-};
+export default router;

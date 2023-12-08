@@ -15,6 +15,38 @@ export const isBuildingBlocksArray = (value: any[]) => {
   return true;
 };
 
+export const isDataAccountExportArray = (value: any[]) => {
+  if (!Array.isArray(value)) {
+    throw new Error("Data Account Export must be an array");
+  }
+
+  const validRequestTypes = [
+    "API",
+    "email",
+    "webform",
+    "unregisteredLetter",
+    "registeredLetter",
+    "supportCenter",
+  ];
+  const validAccessTypes = ["digital", "physical"];
+
+  for (const dataAccount of value) {
+    if (
+      !dataAccount ||
+      typeof dataAccount !== "object" ||
+      !dataAccount.requestType ||
+      !validRequestTypes.includes(dataAccount.requestType) ||
+      !dataAccount.accessType ||
+      !validAccessTypes.includes(dataAccount.accessType) ||
+      !dataAccount.formatType
+    ) {
+      throw new Error("Invalid dataAccountExport structure");
+    }
+  }
+
+  return true;
+};
+
 export const isRolesAndRulesArray = (value: any[]) => {
   for (const item of value) {
     if (

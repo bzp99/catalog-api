@@ -33,7 +33,10 @@ r.post("/signup", async (req: Request, res: Response, next: NextFunction) => {
 
     await Promise.all([newAdmin.save(), newParticipant.save()]);
 
-    return res.json({ success: "Successfully signed up" });
+    return res.status(201).json({
+      admin: { ...newAdmin.toObject(), password: undefined },
+      participant: { ...newParticipant.toObject() },
+    });
   } catch (err) {
     next(err);
   }

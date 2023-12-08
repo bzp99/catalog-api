@@ -22,7 +22,7 @@ export const ecosystemSchema = new Schema<
       required: false,
       default: "default_ecosystem.jpg",
     },
-    useCases: [{ type: Types.ObjectId, ref: "UseCase" }],
+    useCases: [{ type: Schema.Types.Mixed }],
     joinRequests: [
       {
         participant: { type: String },
