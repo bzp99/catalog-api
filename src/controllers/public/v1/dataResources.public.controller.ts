@@ -3,6 +3,8 @@ import { DataResource } from "../../../models/DataResource";
 import { buildResolvableSelfDescriptionURI } from "../../../libs/self-descriptions";
 import { mapCatalog } from "../../../libs/dcat";
 import { ResourceTypes } from "../../../libs/dcat/types";
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import { GlobalDataType } from "../../../models/GlobalDataType";
 
 const DEFAULT_QUERY_OPTIONS = {
   page: 0,
@@ -37,7 +39,7 @@ export const getDataResources = async (
 
     const [resources, count] = await Promise.all([
       query
-        .populate([{ path: "category", model: "GlobalDataType" }])
+        .populate([{ path: "category", model: GlobalDataType }])
         .limit(queryOptions?.limit)
         .skip(queryOptions?.page * queryOptions?.limit)
         .lean(),
@@ -127,7 +129,9 @@ export const getDCATDataResources = async (
 
     const [resources, count] = await Promise.all([
       query
-        .populate([{ path: "category", model: "GlobalDataType" }])
+        .populate([
+          { path: "category", model: GlobalDataType, select: "-_id -__v" },
+        ])
         .limit(queryOptions?.limit)
         .skip(queryOptions?.page * queryOptions?.limit)
         .lean(),

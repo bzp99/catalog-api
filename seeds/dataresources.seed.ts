@@ -1,9 +1,15 @@
-import { DataResource } from "../src/models";
+import { DataResource, GlobalDataType } from "../src/models";
 import { IDataResource } from "../src/types/dataresource";
 
 export async function seedDataResources() {
   try {
     // DataResources examples seeding.
+    const globalDataTypeIds: string[] = await GlobalDataType.find({}, "_id")
+      .lean()
+      .then((globalDataTypes) =>
+        globalDataTypes.map((globalDataType) => globalDataType._id.toString())
+      );
+
     const dataResources: IDataResource[] = [];
     for (let i = 0; i < 5; i++) {
       const dataResource: IDataResource = {
@@ -13,7 +19,7 @@ export async function seedDataResources() {
           `https://www.example.com/website${i}`,
         ],
         containsPII: i % 2 === 0,
-        category: `Category ${i}`,
+        category: globalDataTypeIds[i],
         schema_version: `1.0.${i}`,
         jsonld: `{}`,
         createdAt: new Date(),

@@ -31,11 +31,13 @@ export const mapDataResource = (
   dataset.theme = new skos.Concept();
   dataset.theme.definition = resource.category;
   dataset.theme.inScheme = new skos.ConceptScheme();
-  dataset.theme.inScheme.themes = resource.subCategories.map((subCategory) => {
-    const concept = new skos.Concept();
-    concept.definition = subCategory;
-    return concept;
-  });
+  dataset.theme.inScheme.themes = (resource.subCategories || []).map(
+    (subCategory) => {
+      const concept = new skos.Concept();
+      concept.definition = subCategory;
+      return concept;
+    }
+  );
   dataset.distribution = new dcat.Distribution();
   dataset.distribution.downloadURL = "";
   dataset.distribution.mediaType = "";

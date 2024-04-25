@@ -3,10 +3,12 @@ import { CONFIG } from "../src/config/environment";
 import { seedDataResources } from "./dataresources.seed";
 import { seedSoftwareResources } from "./softwareresources.seed";
 import { seedServiceOfferings } from "./serviceofferings.seed";
+import { seedGlobalDataType } from "./globaldatatypes.seed";
 
 async function connectAndSeed(url: string) {
   try {
     await mongoose.connect(url, { retryWrites: true });
+    await seedGlobalDataType();
     await seedDataResources();
     await seedSoftwareResources();
     await seedServiceOfferings();
