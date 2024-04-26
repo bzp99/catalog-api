@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { check } from "express-validator";
 import {
+  getDCATServiceOfferingById,
   getDCATServiceOfferings,
   getServiceOfferingById,
   getServiceOfferings,
@@ -19,5 +20,11 @@ router.get(
   validate,
   getServiceOfferingById
 );
-
+router.get(
+  "/dcat/:id",
+  passthroughMe,
+  [check("id").isMongoId()],
+  validate,
+  getDCATServiceOfferingById
+);
 export default router;

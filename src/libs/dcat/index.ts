@@ -1,1 +1,6 @@
-export { mapCatalog } from "./lib/mapper";
+export {
+  mapCatalog,
+  mapDataResource,
+  mapSoftwareResource,
+  mapServiceOffering,
+} from "./lib/mapper";

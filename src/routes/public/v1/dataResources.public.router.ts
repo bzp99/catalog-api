@@ -1,5 +1,6 @@
 import { Router } from "express";
 import {
+  getDCATDataResourceById,
   getDCATDataResources,
   getDataResourceById,
   getDataResources,
@@ -10,6 +11,8 @@ const router: Router = Router();
 
 router.get("/", getDataResources);
 router.get("/dcat", getDCATDataResources);
+
 router.get("/:id", passthroughMe, getDataResourceById);
+router.get("/dcat/:id", passthroughMe, getDCATDataResourceById);
 
 export default router;

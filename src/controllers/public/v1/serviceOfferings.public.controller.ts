@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import { ServiceOffering } from "../../../models";
 import { serviceOfferingPopulation } from "../../../utils/schemaPopulation";
-import { mapCatalog } from "../../../libs/dcat";
+import { mapCatalog, mapServiceOffering } from "../../../libs/dcat";
 import { ResourceTypes } from "../../../libs/dcat/types";
 
 const DEFAULT_QUERY_OPTIONS = {
@@ -93,6 +93,43 @@ export const getServiceOfferingById = async (
     }
 
     return res.json(serviceOffering);
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const getDCATServiceOfferingById = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { populated } = req.query;
+
+    let serviceOffering;
+
+    if (populated && populated === "true") {
+      serviceOffering = await ServiceOffering.findById(req.params.id)
+        .populate(serviceOfferingPopulation)
+        .lean();
+    } else {
+      serviceOffering = await ServiceOffering.findById(req.params.id).lean();
+    }
+
+    if (!serviceOffering) {
+      return res.status(404).json({
+        code: 404,
+        errorMsg: "Resource not found",
+        message: "The service offering could not be found",
+      });
+    }
+
+    return res.json(
+      mapServiceOffering({
+        ...serviceOffering,
+        _id: serviceOffering._id.toString(),
+      })
+    );
   } catch (err) {
     next(err);
   }
