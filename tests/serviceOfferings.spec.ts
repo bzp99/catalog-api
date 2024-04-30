@@ -1,20 +1,22 @@
 import { expect } from "chai";
 import request from "supertest";
-import { config } from "dotenv";
-import { startServer } from "../src/server";
-import { Application } from "express";
-import { IncomingMessage, Server, ServerResponse } from "http";
 import { testProvider4 } from "./testAccount";
+import { config } from "dotenv";
+config();
+import { startServer } from "../src/server";
+import { IncomingMessage, Server, ServerResponse } from "http";
+
 import {
   sampleDataResource,
   sampleUpdatedProviderServiceOffering,
   sampleProviderServiceOffering,
 } from "./sampleData";
 
-config();
+import { Application } from "express";
 
 export let app: Application;
 export let server: Server<typeof IncomingMessage, typeof ServerResponse>;
+
 
 let providerId = "";
 let dataResourcesId = "";

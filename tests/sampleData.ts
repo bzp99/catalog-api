@@ -5,7 +5,6 @@ export const sampleDataResource = {
   copyrightOwnedBy: ["Owner 1", "Owner 2"],
   license: ["License 1"],
   policy: [{ key1: "value1" }],
-  producedBy: "Producer",
   exposedThrough: ["Endpoint 1", "Endpoint 2"],
   obsoleteDateTime: "2022-12-31",
   expirationDateTime: "2023-12-31",
@@ -20,7 +19,6 @@ export const sampleUpdatedDataResource = {
   copyrightOwnedBy: ["Owner 1", "Owner 2"],
   license: ["License 1"],
   policy: [{ key1: "value1" }],
-  producedBy: "Producer",
   exposedThrough: ["Endpoint 1", "Endpoint 2"],
   obsoleteDateTime: "2022-12-31",
   expirationDateTime: "2024-12-31",
@@ -96,7 +94,7 @@ export const sampleEcosystem1 = {
     },
   ],
 };
-export const sampleUpdatedEcosystem1 = {
+export const sampleUpdatedEcosystem = {
   name: "Updated Ecosystem",
   description: "This is an updated sample ecosystem description.",  
   provides: ["Data", "Users"],
@@ -130,6 +128,27 @@ export const sampleInvitation = {
   ],
   participant: ""
 };
+
+export const sampleOfferings = {
+  "offerings": [
+    {
+      "serviceOffering": "Service 1",
+      "values": {
+        "key1": "value1",
+        "key2": "value2"
+      },
+      "policy": [
+        {
+          "ruleId": "Rule 1",
+          "values": {
+            "key1": "value1",
+            "key2": "value2"
+          }
+        }
+      ]
+    }
+  ]
+};
 export const sampleServiceOffering = {
   name: "<string>",
   providedBy: "<string>",
@@ -158,6 +177,8 @@ export const sampleServiceOffering = {
   compliantServiceOfferingVC: "",
   serviceOfferingVC: "",
 };
+
+
 export const sampleProviderServiceOffering = {
   name: "<string>",
   providedBy: "<string>",
@@ -288,24 +309,22 @@ export const sampleSoftwareResource = {
   copyrightOwnedBy: ["Owner 1", "Owner 2"],
   license: ["License 1"],
   policy: [{ key1: "value1" }],
-  producedBy: "Producer",
-  exposedThrough: ["Endpoint 1", "Endpoint 2"],
-  obsoleteDateTime: "2022-12-31",
-  expirationDateTime: "2023-12-31",
-  containsPII: true,
+  users_clients: "Sample users_clients",
+  demo_link: "",
+  relevant_project_link: "",
   category: "Sample Category",
+  locationAddress: [],
 };
 export const sampleUpdatedSoftwareResource = {
-  aggregationOf: ["Resource 1",],
-  name: "Sample software Resource",
-  description: "This is an updated software resource description.",
+  aggregationOf: ["Resource 1"],
+  name: "Updated software Resource",
+  description: "This is an updated sample software resource description.",
   copyrightOwnedBy: ["Owner 1", "Owner 2"],
-  license: ["License 1"],
+  license: ["License 2"],
   policy: [{ key1: "value1" }],
-  producedBy: "Producer",
-  exposedThrough: ["Endpoint 1",],
-  obsoleteDateTime: "2022-12-31",
-  expirationDateTime: "2023-12-31",
-  containsPII: true,
+  users_clients: "Sample users_clients",
+  demo_link: "",
+  relevant_project_link: "",
   category: "Sample Category",
+  locationAddress: [],
 };
