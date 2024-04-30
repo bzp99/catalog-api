@@ -14,6 +14,7 @@ import {
   sampleServiceOffering,
 } from "./sampleData";
 import { Application } from "express";
+import { mockContract } from "./fixtures/fixture.contract";
 
 export let app: Application;
 export let server: Server<typeof IncomingMessage, typeof ServerResponse>;
@@ -23,6 +24,7 @@ before(async () => {
   const serverInstance = await startServer(3001);
   app = serverInstance.app;
   server = serverInstance.server;
+  mockContract();
 });
 
 after((done) => {

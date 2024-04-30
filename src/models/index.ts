@@ -1,3 +1,4 @@
+export { GlobalDataType } from "./GlobalDataType";
 export { DataResource } from "./DataResource";
 export { SoftwareResource } from "./SoftwareResource";
 export { Ecosystem } from "./Ecosystem";
