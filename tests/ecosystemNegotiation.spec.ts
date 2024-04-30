@@ -8,7 +8,9 @@ import { testProvider2, testOrchestrator } from "./fixtures/testAccount";
 import {
   sampleDataResource,
   sampleEcosystem,
+  sampleUpdatedEcosystem,
   sampleProviderServiceOffering,
+  sampleOfferings,
   sampleInvitation,
 } from "./fixtures/sampleData";
 
@@ -101,6 +103,32 @@ describe("Ecosystem routes tests", () => {
     expect(response.body).to.be.an("array").and.to.not.be.empty;
   });
 
+  it("should update an ecosystem", async () => {
+    const response = await request(app)
+      .put(`/v1/ecosystems/${ecosystemId}`)
+      .set("Authorization", `Bearer ${orchestJwt}`)
+      .send(sampleUpdatedEcosystem)
+      .expect(200);
+    ecosystemId = response.body._id;
+  });
+
+  it("should getMyEcosystems", async () => {
+    const response = await request(app)
+      .get("/v1/ecosystems/me")
+      .set("Authorization", `Bearer ${orchestJwt}`);
+    expect(response.status).to.equal(200);
+    expect(response.body).to.be.an("array").and.to.not.be.empty;
+  });
+  it("should apply Orchestrator Signature", async () => {
+    const response = await request(app)
+      .put(`/v1/ecosystems/${ecosystemId}/signature/orchestrator`)
+      .set("Authorization", `Bearer ${orchestJwt}`)
+      .send({ 
+        signature: "hasSigned" 
+      })
+      .expect(200);
+  });
+
   it("should create invitation to join ecosystem", async () => {
     const response = await request(app)
       .post(`/v1/ecosystems/${ecosystemId}/invites`)
@@ -112,6 +140,45 @@ describe("Ecosystem routes tests", () => {
     expect(response.body.status).to.equal("Requested");
     expect(response.body.latestNegotiator).to.equal(orchestId);
     ecosystemId = response.body._id;
+  });
+  it("should get All Invitations for a participant", async () => {
+    const response = await request(app)
+      .get("/v1/ecosystems/me/invites")
+      .set("Authorization", `Bearer ${providerJwt}`)
+      .expect(200)
+      expect(response.body).to.be.an("array").and.to.not.be.empty;
+  });
+  it("should get all pending invitations for an orchestrator of ecosystem", async () => {
+    const response = await request(app)
+      .get("/v1/ecosystems/invites")
+      .set("Authorization", `Bearer ${orchestJwt}`)
+      .expect(200)
+      expect(response.body).to.be.an("array").and.to.not.be.empty;
+  });
+
+  it("should accept invitation to join ecosystem", async () => {
+    const response = await request(app)
+      .post(`/v1/ecosystems/${ecosystemId}/invites/accept`)
+      .set("Authorization", `Bearer ${providerJwt}`)
+      .expect(200);
+  });
+
+  it("should configure Participant Ecosystem Offerings", async () => {
+    const response = await request(app)
+      .put(`/v1/ecosystems/${ecosystemId}/offerings`)
+      .set("Authorization", `Bearer ${providerJwt}`)
+      .send(sampleOfferings)
+      .expect(200);
+  });
+  
+  it("should apply Participant Signature", async () => {
+    const response = await request(app)
+      .put(`/v1/ecosystems/${ecosystemId}/signature/participant`)
+      .set("Authorization", `Bearer ${providerJwt}`)
+      .send({ 
+        signature: "hasSigned" 
+      })
+      .expect(200);
   });
 
   it("should delete the ecosystem and return the deleted ecosystem", async () => {
