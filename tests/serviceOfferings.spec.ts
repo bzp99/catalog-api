@@ -1,17 +1,18 @@
 import { expect } from "chai";
 import request from "supertest";
-import { config } from "dotenv";
-import { startServer } from "../src/server";
-import { Application } from "express";
-import { IncomingMessage, Server, ServerResponse } from "http";
 import { testProvider4 } from "./fixtures/testAccount";
+import { config } from "dotenv";
+config();
+import { startServer } from "../src/server";
+import { IncomingMessage, Server, ServerResponse } from "http";
+
 import {
   sampleDataResource,
   sampleUpdatedProviderServiceOffering,
   sampleProviderServiceOffering,
 } from "./fixtures/sampleData";
 
-config();
+import { Application } from "express";
 
 export let app: Application;
 export let server: Server<typeof IncomingMessage, typeof ServerResponse>;
