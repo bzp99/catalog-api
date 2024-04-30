@@ -4,12 +4,12 @@ import { config } from "dotenv";
 import { startServer } from "../src/server";
 import { Application } from "express";
 import { IncomingMessage, Server, ServerResponse } from "http";
-import { testProvider4 } from "./testAccount";
+import { testProvider4 } from "./fixtures/testAccount";
 import {
   sampleDataResource,
   sampleUpdatedProviderServiceOffering,
   sampleProviderServiceOffering,
-} from "./sampleData";
+} from "./fixtures/sampleData";
 
 config();
 
@@ -36,12 +36,10 @@ before(async () => {
   console.log(providerId);
 
   // Login provider
-  const providerAuthResponse = await request(app)
-    .post("/v1/auth/login")
-    .send({
-      email: testProvider4.email,
-      password: testProvider4.password,
-    });
+  const providerAuthResponse = await request(app).post("/v1/auth/login").send({
+    email: testProvider4.email,
+    password: testProvider4.password,
+  });
   jwt = providerAuthResponse.body.token;
   console.log(jwt);
 
@@ -99,15 +97,11 @@ describe("Service offering management", () => {
   });
 
   it("Should get all ServiceOfferings", async () => {
-    const res = await request(app)
-      .get("/v1/serviceofferings")
-      .expect(200);
+    const res = await request(app).get("/v1/serviceofferings").expect(200);
   });
 
   it("Should get DCAT ServiceOfferings", async () => {
-    const res = await request(app)
-      .get("/v1/serviceofferings/dcat")
-      .expect(200);
+    const res = await request(app).get("/v1/serviceofferings/dcat").expect(200);
   });
 
   it("Should get DCAT ServiceOffering by id", async () => {

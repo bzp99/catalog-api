@@ -4,15 +4,23 @@ import { config } from "dotenv";
 import { startServer } from "../src/server";
 import { Application } from "express";
 import { IncomingMessage, Server, ServerResponse } from "http";
-import { testProvider1 } from "./testAccount";
-import { sampleDataResource, sampleUpdatedDataResource } from "./sampleData";
-
+import { testProvider1 } from "./fixtures/testAccount";
+import {
+  sampleDataResource,
+  sampleUpdatedDataResource,
+} from "./fixtures/sampleData";
+import { stub } from "sinon";
+import * as loadMongoose from "../src/config/database";
+import { closeMongoMemory, openMongoMemory } from "./utils.ts/mongoMemory";
 config();
 
 export let app: Application;
 export let server: Server<typeof IncomingMessage, typeof ServerResponse>;
 
 before(async () => {
+  stub(loadMongoose, "loadMongoose").callsFake(() => {
+    openMongoMemory();
+  });
   // Start the server and obtain the app and server instances
   const serverInstance = await startServer(3001);
   app = serverInstance.app;
@@ -22,6 +30,7 @@ before(async () => {
 after((done) => {
   // Close the server after all tests are completed
   server.close(() => {
+    closeMongoMemory();
     done();
   });
 });
@@ -101,9 +110,7 @@ describe("Data Resources Routes Tests", () => {
   });
 
   it("should get all dataResources", async () => {
-    const response = await request(app)
-      .get("/v1/dataResources")
-      .expect(200);
+    const response = await request(app).get("/v1/dataResources").expect(200);
     //assertions
     //expect response not empty
   });

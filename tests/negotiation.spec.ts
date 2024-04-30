@@ -5,10 +5,7 @@ config();
 import { startServer } from "../src/server";
 import { IncomingMessage, Server, ServerResponse } from "http";
 import { Application } from "express";
-import { 
-  testProvider3,
-  testConsumer
- } from "./testAccount";
+import { testProvider3, testConsumer } from "./fixtures/testAccount";
 
 import {
   sampleDataResource,
@@ -16,22 +13,20 @@ import {
   sampleProviderServiceOffering,
   sampleConsumerServiceOffering,
   sampleBilateralNegotiation,
-} from "./sampleData";
+} from "./fixtures/sampleData";
 
 export let app: Application;
 export let server: Server<typeof IncomingMessage, typeof ServerResponse>;
 
-let providerId="";
-let consumerId="";
-let dataResourceId=""
-let softwareResourceId=""
-let consumerJwt="";
-let providerJwt="";
+let providerId = "";
+let consumerId = "";
+let dataResourceId = "";
+let softwareResourceId = "";
+let consumerJwt = "";
+let providerJwt = "";
 let ConsumerServiceOfferingId = "";
 let providerServiceOfferingId = "";
-let negotiationId="";
-
-
+let negotiationId = "";
 
 before(async () => {
   // Start the server and obtain the app and server instances
@@ -43,29 +38,25 @@ before(async () => {
   const providerData = testProvider3;
   const providerResponse = await request(app)
     .post("/v1/auth/signup")
-    .send(providerData)
-    providerId = providerResponse.body.participant._id;
+    .send(providerData);
+  providerId = providerResponse.body.participant._id;
   //create consumer
   const consumerData = testConsumer;
   const consumerResponse = await request(app)
     .post("/v1/auth/signup")
-    .send(consumerData)
-    consumerId = consumerResponse.body.participant._id;
+    .send(consumerData);
+  consumerId = consumerResponse.body.participant._id;
   //login provider
-  const providerAuthResponse = await request(app)
-  .post("/v1/auth/login")
-  .send({
+  const providerAuthResponse = await request(app).post("/v1/auth/login").send({
     email: testProvider3.email,
     password: testProvider3.password,
-})
+  });
   providerJwt = providerAuthResponse.body.token;
   //login consumer
-  const consumerAuthResponse = await request(app)
-  .post("/v1/auth/login")
-  .send({
+  const consumerAuthResponse = await request(app).post("/v1/auth/login").send({
     email: testConsumer.email,
     password: testConsumer.password,
-})
+  });
   consumerJwt = consumerAuthResponse.body.token;
 
   //create data resouurce
@@ -73,29 +64,29 @@ before(async () => {
   const dataResponse = await request(app)
     .post("/v1/dataResources")
     .set("Authorization", `Bearer ${providerJwt}`)
-    .send(dataResourceData)
-    dataResourceId = dataResponse.body._id;
+    .send(dataResourceData);
+  dataResourceId = dataResponse.body._id;
   //create software resource
   const softawreResourceData = sampleSoftwareResource;
   const serviceResponse = await request(app)
-      .post("/v1/softwareresources")
-      .set("Authorization", `Bearer ${consumerJwt}`)
-      .send(softawreResourceData)
-      softwareResourceId = serviceResponse.body.id; 
-  
+    .post("/v1/softwareresources")
+    .set("Authorization", `Bearer ${consumerJwt}`)
+    .send(softawreResourceData);
+  softwareResourceId = serviceResponse.body.id;
+
   //create Service Offerings
   //DP
   const resProvider = await request(app)
-      .post("/v1/serviceofferings")
-      .set("Authorization", `Bearer ${providerJwt}`)
-      .send({ ...sampleProviderServiceOffering, providedBy: providerId })
-    providerServiceOfferingId = resProvider.body._id;
+    .post("/v1/serviceofferings")
+    .set("Authorization", `Bearer ${providerJwt}`)
+    .send({ ...sampleProviderServiceOffering, providedBy: providerId });
+  providerServiceOfferingId = resProvider.body._id;
   //SP
   const resConsumer = await request(app)
-      .post("/v1/serviceofferings")
-      .set("Authorization", `Bearer ${consumerJwt}`)
-      .send({ ...sampleConsumerServiceOffering, providedBy: consumerId })
-    ConsumerServiceOfferingId = resConsumer.body._id;
+    .post("/v1/serviceofferings")
+    .set("Authorization", `Bearer ${consumerJwt}`)
+    .send({ ...sampleConsumerServiceOffering, providedBy: consumerId });
+  ConsumerServiceOfferingId = resConsumer.body._id;
 });
 
 after((done) => {
@@ -106,7 +97,6 @@ after((done) => {
 });
 
 describe("Bilateral Negotiation Routes Tests", () => {
-
   it("should Create a service offering access request", async () => {
     const negotiationData = sampleBilateralNegotiation;
     const response = await request(app)
@@ -126,28 +116,30 @@ describe("Bilateral Negotiation Routes Tests", () => {
     const response = await request(app)
       .put(`/v1/negotiation/${negotiationId}`)
       .set("Authorization", `Bearer ${providerJwt}`)
-      .send(
-        {
-          policy: [
+      .send({
+        policy: [
           {
-          "ruleId": "rule1",
-          "values": {
-            "key1": "value1",
-          }
-        }]
-      }
-    )
+            ruleId: "rule1",
+            values: {
+              key1: "value1",
+            },
+          },
+        ],
+      })
       .expect(200);
-      expect(response.body).to.be.an("object");
-      expect(response.body).to.have.property("negotiationStatus", "Negotiation");
-      expect(response.body).to.have.property("latestNegotiator").and.to.equal(response.body.provider);
-      expect(response.body.consumerPolicies).to.be.an('array').and.to.not.be.empty;
-      expect(response.body.consumerPolicies[0]).to.deep.include({
-        ruleId: "rule1",
-        values: {
-          key1: "value1",
-        }
-      });
+    expect(response.body).to.be.an("object");
+    expect(response.body).to.have.property("negotiationStatus", "Negotiation");
+    expect(response.body)
+      .to.have.property("latestNegotiator")
+      .and.to.equal(response.body.provider);
+    expect(response.body.consumerPolicies).to.be.an("array").and.to.not.be
+      .empty;
+    expect(response.body.consumerPolicies[0]).to.deep.include({
+      ruleId: "rule1",
+      values: {
+        key1: "value1",
+      },
+    });
   });
 
   it("should accept negotiation", async () => {
@@ -166,7 +158,7 @@ describe("Bilateral Negotiation Routes Tests", () => {
       .put(`/v1/negotiation/${negotiationId}/sign`)
       .set("Authorization", `Bearer ${consumerJwt}`)
       .send({
-        signature:'hasSigned'
+        signature: "hasSigned",
       })
       .expect(200);
   });
@@ -175,7 +167,7 @@ describe("Bilateral Negotiation Routes Tests", () => {
       .put(`/v1/negotiation/${negotiationId}/sign`)
       .set("Authorization", `Bearer ${consumerJwt}`)
       .send({
-        signature:'hasSigned'
+        signature: "hasSigned",
       })
       .expect(200);
   });
@@ -185,59 +177,59 @@ describe("Bilateral Negotiation Routes Tests", () => {
       .put("/v1/negotiation/")
       .set("Authorization", `Bearer ${providerJwt}`)
       .expect(200);
-      expect(response.body).to.be.an("object").that.is.not.empty;
-    });
+    expect(response.body).to.be.an("object").that.is.not.empty;
+  });
 
   it("should get exchange configuration by ID as data provider", async () => {
     const response = await request(app)
       .get(`/v1/negotiation/${negotiationId}`)
       .set("Authorization", `Bearer ${providerJwt}`)
       .expect(200);
-      expect(response.body.negotiationStatus).to.equal('Signed');
-      expect(response.body).to.have.property('signatures');
-      expect(response.body.signatures.consumer).to.not.be.null;
-      expect(response.body.signatures.provider).to.not.be.null;
-    });
+    expect(response.body.negotiationStatus).to.equal("Signed");
+    expect(response.body).to.have.property("signatures");
+    expect(response.body.signatures.consumer).to.not.be.null;
+    expect(response.body.signatures.provider).to.not.be.null;
+  });
   it("should get exchange configuration by ID as service provider", async () => {
     const response = await request(app)
       .get(`/v1/negotiation/${negotiationId}`)
       .set("Authorization", `Bearer ${consumerJwt}`)
       .expect(200);
-      expect(response.body.negotiationStatus).to.equal('Signed');
-      expect(response.body).to.have.property('signatures');
-      expect(response.body.signatures.consumer).to.not.be.null;
-      expect(response.body.signatures.provider).to.not.be.null;
-    });
+    expect(response.body.negotiationStatus).to.equal("Signed");
+    expect(response.body).to.have.property("signatures");
+    expect(response.body.signatures.consumer).to.not.be.null;
+    expect(response.body.signatures.provider).to.not.be.null;
+  });
   it("should negociate exchange configuration policies", async () => {
     const response = await request(app)
       .put(`/v1/negotiation/${negotiationId}/negociate`)
       .set("Authorization", `Bearer ${consumerJwt}`)
-      .send(
-        {
-          policy: [
+      .send({
+        policy: [
           {
-          "ruleId": "rule1",
-          "values": {
-            "key1": "value1",
-            "key2": "value2"
-          }
-        }]
-        }
-      )
+            ruleId: "rule1",
+            values: {
+              key1: "value1",
+              key2: "value2",
+            },
+          },
+        ],
+      })
       .expect(200);
-      expect(response.body).to.be.an("object");
-      expect(response.body).to.have.property("negotiationStatus", "Negotiation");
-      expect(response.body)
-        .to.have.property("latestNegotiator")
-        .and.to.equal(response.body.consumer);
-      expect(response.body).to.have.property("policy");
-      expect(response.body.providerPolicies).to.be.an('array').and.to.not.be.empty;
-      expect(response.body.providerPolicies[0]).to.deep.include({
-        ruleId: "rule1",
-        values: {
-          key1: "value1",
-          key2: "value2"
-        }
-      });
+    expect(response.body).to.be.an("object");
+    expect(response.body).to.have.property("negotiationStatus", "Negotiation");
+    expect(response.body)
+      .to.have.property("latestNegotiator")
+      .and.to.equal(response.body.consumer);
+    expect(response.body).to.have.property("policy");
+    expect(response.body.providerPolicies).to.be.an("array").and.to.not.be
+      .empty;
+    expect(response.body.providerPolicies[0]).to.deep.include({
+      ruleId: "rule1",
+      values: {
+        key1: "value1",
+        key2: "value2",
+      },
+    });
   });
 });

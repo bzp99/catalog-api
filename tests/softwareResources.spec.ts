@@ -4,8 +4,11 @@ import { config } from "dotenv";
 import { startServer } from "../src/server";
 import { Application } from "express";
 import { IncomingMessage, Server, ServerResponse } from "http";
-import { testConsumer } from "./testAccount";
-import { sampleSoftwareResource, sampleUpdatedSoftwareResource } from "./sampleData";
+import { testConsumer } from "./fixtures/testAccount";
+import {
+  sampleSoftwareResource,
+  sampleUpdatedSoftwareResource,
+} from "./fixtures/sampleData";
 
 config();
 
@@ -111,8 +114,7 @@ describe("Software Resources Routes Tests", () => {
       .set("Authorization", `Bearer ${jwt}`)
       .expect(200);
     //assertions
-    //expect 
+    //expect
   });
   // test error get software resources deleted
-
 });

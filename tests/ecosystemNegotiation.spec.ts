@@ -4,13 +4,13 @@ import { config } from "dotenv";
 import { startServer } from "../src/server";
 import { IncomingMessage, Server, ServerResponse } from "http";
 import { Application } from "express";
-import { testProvider2, testOrchestrator } from "./testAccount";
+import { testProvider2, testOrchestrator } from "./fixtures/testAccount";
 import {
   sampleDataResource,
   sampleEcosystem,
   sampleProviderServiceOffering,
   sampleInvitation,
-} from "./sampleData";
+} from "./fixtures/sampleData";
 
 config();
 
@@ -47,21 +47,17 @@ before(async () => {
   orchestId = orchestResponse.body.participant._id;
 
   // Login provider
-  const providerAuthResponse = await request(app)
-    .post("/v1/auth/login")
-    .send({
-      email: testProvider2.email,
-      password: testProvider2.password,
-    });
+  const providerAuthResponse = await request(app).post("/v1/auth/login").send({
+    email: testProvider2.email,
+    password: testProvider2.password,
+  });
   providerJwt = providerAuthResponse.body.token;
 
   // Login orchestrator
-  const orchestAuthResponse = await request(app)
-    .post("/v1/auth/login")
-    .send({
-      email: testOrchestrator.email,
-      password: testOrchestrator.password,
-    });
+  const orchestAuthResponse = await request(app).post("/v1/auth/login").send({
+    email: testOrchestrator.email,
+    password: testOrchestrator.password,
+  });
   orchestJwt = orchestAuthResponse.body.token;
 
   // Create data resource

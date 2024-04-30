@@ -1,6 +1,6 @@
 import { expect } from "chai";
 import request from "supertest";
-import { testParticipantOrganizationAdmin } from "./testAccount";
+import { testParticipantOrganizationAdmin } from "./fixtures/testAccount";
 import { config } from "dotenv";
 config();
 
@@ -12,7 +12,7 @@ import {
   sampleSoftwareResource,
   sampleEcosystem,
   sampleServiceOffering,
-} from "./sampleData";
+} from "./fixtures/sampleData";
 import { Application } from "express";
 import { mockContract } from "./fixtures/fixture.contract";
 
@@ -21,7 +21,7 @@ export let server: Server<typeof IncomingMessage, typeof ServerResponse>;
 
 before(async () => {
   // Start the server and obtain the app and server instances
-  const serverInstance = await startServer(3003);
+  const serverInstance = await startServer(3001);
   app = serverInstance.app;
   server = serverInstance.server;
   mockContract();
