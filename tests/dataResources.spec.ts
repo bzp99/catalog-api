@@ -1,24 +1,16 @@
 import { expect } from "chai";
 import request from "supertest";
 import { config } from "dotenv";
-config();
-
 import { startServer } from "../src/server";
 import { Application } from "express";
 import { IncomingMessage, Server, ServerResponse } from "http";
+import { testProvider1 } from "./testAccount";
+import { sampleDataResource, sampleUpdatedDataResource } from "./sampleData";
 
-import { 
-  testProvider,
- } from "./testAccount";
-
-import {
-  sampleDataResource,
-  sampleUpdatedDataResource,
-} from "./sampleData";
+config();
 
 export let app: Application;
 export let server: Server<typeof IncomingMessage, typeof ServerResponse>;
-
 
 before(async () => {
   // Start the server and obtain the app and server instances
@@ -33,32 +25,30 @@ after((done) => {
     done();
   });
 });
+
 let providerId = "";
-let dataResourcesId;
+let dataResourcesId: "";
 let jwt = "";
 
-
-describe(" Data Resources Routes Tests", () => {
-
+describe("Data Resources Routes Tests", () => {
   it("sign up and login participant", async () => {
-  //create provider
-  const providerData = testProvider;
-  const providerResponse = await request(app)
-    .post("/v1/auth/signup")
-    .send(providerData)
+    // Create provider
+    const providerData = testProvider1;
+    const providerResponse = await request(app)
+      .post("/v1/auth/signup")
+      .send(providerData);
     providerId = providerResponse.body.participant._id;
-    console.log(providerId)
-  //login provider
-  const response = await request(app)
-  .post("/v1/auth/login")
-  .send({
-    email: testProvider.email,
-    password: testProvider.password,
-  })
-  .expect(200);
-jwt = response.body.token;
-console.log(jwt)
-})
+
+    // Login provider
+    const response = await request(app)
+      .post("/v1/auth/login")
+      .send({
+        email: testProvider1.email,
+        password: testProvider1.password,
+      })
+      .expect(200);
+    jwt = response.body.token;
+  });
 
   it("should create data resource", async () => {
     const dataResourceData = sampleDataResource;
@@ -67,11 +57,12 @@ console.log(jwt)
       .set("Authorization", `Bearer ${jwt}`)
       .send(dataResourceData)
       .expect(201);
-      dataResourcesId = response.body._id; 
-      console.log(dataResourcesId)
+    dataResourcesId = response.body._id;
+
     expect(response.body).to.be.an("object");
     //assertions
   });
+
   it("should update data resource", async () => {
     const updatedDataResourceData = sampleUpdatedDataResource;
 
@@ -82,38 +73,39 @@ console.log(jwt)
       .expect(200);
     //assertions
   });
-  it("should get data resource by ID-public", async () => {
 
+  it("should get data resource by ID-public", async () => {
     const response = await request(app)
       .get(`/v1/dataResources/${dataResourcesId}`)
       .expect(200);
     //assertions
-    //expect reponse id = dataresourceid
+    //expect response id = dataresourceid
   });
+
   it("should get data resource by ID-protected", async () => {
     const response = await request(app)
       .get(`/v1/dataResources/${dataResourcesId}`)
       .set("Authorization", `Bearer ${jwt}`)
       .expect(200);
     //assertions
-    //expect reponse id = dataresourceid
+    //expect response id = dataresourceid
   });
-  it("should get Participant DataResources", async () => {
 
+  it("should get Participant DataResources", async () => {
     const response = await request(app)
       .get("/v1/dataResources/me")
       .set("Authorization", `Bearer ${jwt}`)
       .expect(200);
     //assertions
-    //expect reponse not empty
+    //expect response not empty
   });
-  it("should get all dataResources", async () => {
 
+  it("should get all dataResources", async () => {
     const response = await request(app)
       .get("/v1/dataResources")
       .expect(200);
     //assertions
-    //expect reponse not empty
+    //expect response not empty
   });
 
   it("should delete DataResources", async () => {
@@ -122,8 +114,7 @@ console.log(jwt)
       .set("Authorization", `Bearer ${jwt}`)
       .expect(200);
     //assertions
-    //expect 
+    //expect
     //error test get data resources deleted
   });
-
 });

@@ -82,6 +82,7 @@
     "joi": "^17.9.2",
     "jsonld": "^8.2.0",
     "jsonwebtoken": "^9.0.1",
+    "mongodb-memory-server": "^9.2.0",
     "mongoose": "^7.3.2",
     "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^4.6.3"
