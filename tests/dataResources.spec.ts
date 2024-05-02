@@ -18,8 +18,8 @@ export let app: Application;
 export let server: Server<typeof IncomingMessage, typeof ServerResponse>;
 
 before(async () => {
-  stub(loadMongoose, "loadMongoose").callsFake(() => {
-    openMongoMemory();
+  stub(loadMongoose, "loadMongoose").callsFake(async () => {
+    await openMongoMemory();
   });
   // Start the server and obtain the app and server instances
   const serverInstance = await startServer(3001);

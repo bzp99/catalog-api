@@ -5,6 +5,7 @@ export const openMongoMemory = async () => {
   mongoServer = await MongoMemoryServer.create();
   const mongoUri = mongoServer.getUri();
   await mongoose.connect(mongoUri);
+  console.log("\x1b[93m> Mongoose Memory Connected\x1b[0m");
 };
 
 export const closeMongoMemory = async () => {
