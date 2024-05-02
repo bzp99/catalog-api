@@ -13,6 +13,9 @@ import {
   sampleOfferings,
   sampleInvitation,
 } from "./fixtures/sampleData";
+import { stub } from "sinon";
+import * as loadMongoose from "../src/config/database";
+import { closeMongoMemory, openMongoMemory } from "./utils.ts/mongoMemory";
 
 config();
 
@@ -28,66 +31,74 @@ let providerServiceOfferingId = "";
 let negotiationId = "";
 let ecosystemId = "";
 
-before(async () => {
-  // Start the server and obtain the app and server instances
-  const serverInstance = await startServer(3002);
-  await serverInstance.promise;
-
-  app = serverInstance.app;
-  server = serverInstance.server;
-
-  // Create provider
-  const providerData = testProvider2;
-  const providerResponse = await request(app)
-    .post("/v1/auth/signup")
-    .send(providerData);
-  providerId = providerResponse.body.participant._id;
-
-  // Create orchestrator
-  const orchestData = testOrchestrator;
-  const orchestResponse = await request(app)
-    .post("/v1/auth/signup")
-    .send(orchestData);
-  orchestId = orchestResponse.body.participant._id;
-
-  // Login provider
-  const providerAuthResponse = await request(app).post("/v1/auth/login").send({
-    email: testProvider2.email,
-    password: testProvider2.password,
-  });
-  providerJwt = providerAuthResponse.body.token;
-
-  // Login orchestrator
-  const orchestAuthResponse = await request(app).post("/v1/auth/login").send({
-    email: testOrchestrator.email,
-    password: testOrchestrator.password,
-  });
-  orchestJwt = orchestAuthResponse.body.token;
-
-  // Create data resource
-  const dataResourceData = sampleDataResource;
-  const dataResponse = await request(app)
-    .post("/v1/dataResources")
-    .set("Authorization", `Bearer ${providerJwt}`)
-    .send(dataResourceData);
-  dataResourceId = dataResponse.body._id;
-
-  // Create service offerings
-  const resProvider = await request(app)
-    .post("/v1/serviceofferings")
-    .set("Authorization", `Bearer ${providerJwt}`)
-    .send({ ...sampleProviderServiceOffering, providedBy: providerId });
-  providerServiceOfferingId = resProvider.body._id;
-});
-
-after((done) => {
-  // Close the server after all tests are completed
-  server.close(() => {
-    done();
-  });
-});
-
 describe("Ecosystem routes tests", () => {
+  let loadMongooseStub;
+  before(async () => {
+    loadMongooseStub = stub(loadMongoose, "loadMongoose").callsFake(
+      async () => {
+        await openMongoMemory();
+      }
+    );
+    // Start the server and obtain the app and server instances
+    const serverInstance = await startServer(3001);
+    await serverInstance.promise;
+
+    app = serverInstance.app;
+    server = serverInstance.server;
+
+    // Create provider
+    const providerData = testProvider2;
+    const providerResponse = await request(app)
+      .post("/v1/auth/signup")
+      .send(providerData);
+    providerId = providerResponse.body.participant._id;
+
+    // Create orchestrator
+    const orchestData = testOrchestrator;
+    const orchestResponse = await request(app)
+      .post("/v1/auth/signup")
+      .send(orchestData);
+    orchestId = orchestResponse.body.participant._id;
+
+    // Login provider
+    const providerAuthResponse = await request(app)
+      .post("/v1/auth/login")
+      .send({
+        email: testProvider2.email,
+        password: testProvider2.password,
+      });
+    providerJwt = providerAuthResponse.body.token;
+
+    // Login orchestrator
+    const orchestAuthResponse = await request(app).post("/v1/auth/login").send({
+      email: testOrchestrator.email,
+      password: testOrchestrator.password,
+    });
+    orchestJwt = orchestAuthResponse.body.token;
+
+    // Create data resource
+    const dataResourceData = sampleDataResource;
+    const dataResponse = await request(app)
+      .post("/v1/dataResources")
+      .set("Authorization", `Bearer ${providerJwt}`)
+      .send(dataResourceData);
+    dataResourceId = dataResponse.body._id;
+
+    // Create service offerings
+    const resProvider = await request(app)
+      .post("/v1/serviceofferings")
+      .set("Authorization", `Bearer ${providerJwt}`)
+      .send({ ...sampleProviderServiceOffering, providedBy: providerId });
+    providerServiceOfferingId = resProvider.body._id;
+  });
+
+  after(() => {
+    // Close the server after all tests are completed
+    loadMongooseStub.restore();
+    closeMongoMemory();
+    server.close();
+  });
+
   it("should create a new ecosystem", async () => {
     const response = await request(app)
       .post("/v1/ecosystems")

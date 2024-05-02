@@ -13,55 +13,66 @@ import {
 } from "./fixtures/sampleData";
 
 import { Application } from "express";
+import { stub } from "sinon";
+import * as loadMongoose from "../src/config/database";
+import { closeMongoMemory, openMongoMemory } from "./utils.ts/mongoMemory";
 
-export let app: Application;
-export let server: Server<typeof IncomingMessage, typeof ServerResponse>;
+let app: Application;
+let server: Server<typeof IncomingMessage, typeof ServerResponse>;
 
 let providerId = "";
 let dataResourcesId = "";
 let jwt = "";
 let serviceOfferingId = "";
 
-before(async () => {
-  // Start the server and obtain the app and server instances
-  const serverInstance = await startServer(3005);
-  await serverInstance.promise;
-  app = serverInstance.app;
-  server = serverInstance.server;
-
-  // Create provider
-  const providerData = testProvider4;
-  const providerResponse = await request(app)
-    .post("/v1/auth/signup")
-    .send(providerData);
-  providerId = providerResponse.body.participant._id;
-  console.log(providerId);
-
-  // Login provider
-  const providerAuthResponse = await request(app).post("/v1/auth/login").send({
-    email: testProvider4.email,
-    password: testProvider4.password,
-  });
-  jwt = providerAuthResponse.body.token;
-  console.log(jwt);
-
-  // Create data resources
-  const dataResourceData = sampleDataResource;
-  const dataResponse = await request(app)
-    .post("/v1/dataResources")
-    .set("Authorization", `Bearer ${jwt}`)
-    .send(dataResourceData);
-  dataResourcesId = dataResponse.body._id;
-});
-
-after((done) => {
-  // Close the server after all tests are completed
-  server.close(() => {
-    done();
-  });
-});
-
 describe("Service offering management", () => {
+  let loadMongooseStub;
+  before(async () => {
+    loadMongooseStub = stub(loadMongoose, "loadMongoose").callsFake(
+      async () => {
+        await openMongoMemory();
+      }
+    );
+    // Start the server and obtain the app and server instances
+    const serverInstance = await startServer(3001);
+    await serverInstance.promise;
+    app = serverInstance.app;
+    server = serverInstance.server;
+
+    // Create provider
+    const providerData = testProvider4;
+    const providerResponse = await request(app)
+      .post("/v1/auth/signup")
+      .send(providerData);
+    providerId = providerResponse.body.participant._id;
+    console.log(providerId);
+
+    // Login provider
+    const providerAuthResponse = await request(app)
+      .post("/v1/auth/login")
+      .send({
+        email: testProvider4.email,
+        password: testProvider4.password,
+      });
+    jwt = providerAuthResponse.body.token;
+    console.log(jwt);
+
+    // Create data resources
+    const dataResourceData = sampleDataResource;
+    const dataResponse = await request(app)
+      .post("/v1/dataResources")
+      .set("Authorization", `Bearer ${jwt}`)
+      .send(dataResourceData);
+    dataResourcesId = dataResponse.body._id;
+  });
+
+  after(async () => {
+    // Close the server after all tests are completed
+    loadMongooseStub.restore();
+    await closeMongoMemory();
+    server.close();
+  });
+
   it("Should create a service offering", async () => {
     const res = await request(app)
       .post("/v1/serviceofferings")

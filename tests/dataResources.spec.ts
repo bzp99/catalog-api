@@ -14,32 +14,34 @@ import * as loadMongoose from "../src/config/database";
 import { closeMongoMemory, openMongoMemory } from "./utils.ts/mongoMemory";
 config();
 
-export let app: Application;
-export let server: Server<typeof IncomingMessage, typeof ServerResponse>;
-
-before(async () => {
-  stub(loadMongoose, "loadMongoose").callsFake(async () => {
-    await openMongoMemory();
-  });
-  // Start the server and obtain the app and server instances
-  const serverInstance = await startServer(3001);
-  app = serverInstance.app;
-  server = serverInstance.server;
-});
-
-after((done) => {
-  // Close the server after all tests are completed
-  server.close(() => {
-    closeMongoMemory();
-    done();
-  });
-});
-
+let app: Application;
+let server: Server<typeof IncomingMessage, typeof ServerResponse>;
 let providerId = "";
 let dataResourcesId: "";
 let jwt = "";
 
 describe("Data Resources Routes Tests", () => {
+  let loadMongooseStub;
+  before(async () => {
+    loadMongooseStub = stub(loadMongoose, "loadMongoose").callsFake(
+      async () => {
+        await openMongoMemory();
+      }
+    );
+    // Start the server and obtain the app and server instances
+    const serverInstance = await startServer(3001);
+    await serverInstance.promise;
+    app = serverInstance.app;
+    server = serverInstance.server;
+  });
+
+  after(async () => {
+    // Close the server after all tests are completed
+    loadMongooseStub.restore();
+    await closeMongoMemory();
+    server.close();
+  });
+
   it("sign up and login participant", async () => {
     // Create provider
     const providerData = testProvider1;

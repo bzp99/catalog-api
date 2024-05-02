@@ -14,6 +14,9 @@ import {
   sampleConsumerServiceOffering,
   sampleBilateralNegotiation,
 } from "./fixtures/sampleData";
+import { stub } from "sinon";
+import * as loadMongoose from "../src/config/database";
+import { closeMongoMemory, openMongoMemory } from "./utils.ts/mongoMemory";
 
 export let app: Application;
 export let server: Server<typeof IncomingMessage, typeof ServerResponse>;
@@ -28,76 +31,86 @@ let ConsumerServiceOfferingId = "";
 let providerServiceOfferingId = "";
 let negotiationId = "";
 
-before(async () => {
-  // Start the server and obtain the app and server instances
-  const serverInstance = await startServer(3004);
-  await serverInstance.promise;
-  app = serverInstance.app;
-  server = serverInstance.server;
-
-  //create provider
-  const providerData = testProvider3;
-  const providerResponse = await request(app)
-    .post("/v1/auth/signup")
-    .send(providerData);
-  providerId = providerResponse.body.participant._id;
-  //create consumer
-  const consumerData = testConsumer;
-  const consumerResponse = await request(app)
-    .post("/v1/auth/signup")
-    .send(consumerData);
-  consumerId = consumerResponse.body.participant._id;
-  //login provider
-  const providerAuthResponse = await request(app).post("/v1/auth/login").send({
-    email: testProvider3.email,
-    password: testProvider3.password,
-  });
-  providerJwt = providerAuthResponse.body.token;
-  //login consumer
-  const consumerAuthResponse = await request(app).post("/v1/auth/login").send({
-    email: testConsumer.email,
-    password: testConsumer.password,
-  });
-  consumerJwt = consumerAuthResponse.body.token;
-
-  //create data resouurce
-  const dataResourceData = sampleDataResource;
-  const dataResponse = await request(app)
-    .post("/v1/dataResources")
-    .set("Authorization", `Bearer ${providerJwt}`)
-    .send(dataResourceData);
-  dataResourceId = dataResponse.body._id;
-  //create software resource
-  const softawreResourceData = sampleSoftwareResource;
-  const serviceResponse = await request(app)
-    .post("/v1/softwareresources")
-    .set("Authorization", `Bearer ${consumerJwt}`)
-    .send(softawreResourceData);
-  softwareResourceId = serviceResponse.body.id;
-
-  //create Service Offerings
-  //DP
-  const resProvider = await request(app)
-    .post("/v1/serviceofferings")
-    .set("Authorization", `Bearer ${providerJwt}`)
-    .send({ ...sampleProviderServiceOffering, providedBy: providerId });
-  providerServiceOfferingId = resProvider.body._id;
-  //SP
-  const resConsumer = await request(app)
-    .post("/v1/serviceofferings")
-    .set("Authorization", `Bearer ${consumerJwt}`)
-    .send({ ...sampleConsumerServiceOffering, providedBy: consumerId });
-  ConsumerServiceOfferingId = resConsumer.body._id;
-});
-
-after((done) => {
-  // Close the server after all tests are completed
-  server.close(() => {
-    done();
-  });
-});
-
 describe("Bilateral Negotiation Routes Tests", () => {
+  let loadMongooseStub;
+  before(async () => {
+    loadMongooseStub = stub(loadMongoose, "loadMongoose").callsFake(
+      async () => {
+        await openMongoMemory();
+      }
+    );
+    // Start the server and obtain the app and server instances
+    const serverInstance = await startServer(3001);
+    await serverInstance.promise;
+    app = serverInstance.app;
+    server = serverInstance.server;
+
+    //create provider
+    const providerData = testProvider3;
+    const providerResponse = await request(app)
+      .post("/v1/auth/signup")
+      .send(providerData);
+    providerId = providerResponse.body.participant._id;
+    //create consumer
+    const consumerData = testConsumer;
+    const consumerResponse = await request(app)
+      .post("/v1/auth/signup")
+      .send(consumerData);
+    consumerId = consumerResponse.body.participant._id;
+    //login provider
+    const providerAuthResponse = await request(app)
+      .post("/v1/auth/login")
+      .send({
+        email: testProvider3.email,
+        password: testProvider3.password,
+      });
+    providerJwt = providerAuthResponse.body.token;
+    //login consumer
+    const consumerAuthResponse = await request(app)
+      .post("/v1/auth/login")
+      .send({
+        email: testConsumer.email,
+        password: testConsumer.password,
+      });
+    consumerJwt = consumerAuthResponse.body.token;
+
+    //create data resouurce
+    const dataResourceData = sampleDataResource;
+    const dataResponse = await request(app)
+      .post("/v1/dataResources")
+      .set("Authorization", `Bearer ${providerJwt}`)
+      .send(dataResourceData);
+    dataResourceId = dataResponse.body._id;
+    //create software resource
+    const softawreResourceData = sampleSoftwareResource;
+    const serviceResponse = await request(app)
+      .post("/v1/softwareresources")
+      .set("Authorization", `Bearer ${consumerJwt}`)
+      .send(softawreResourceData);
+    softwareResourceId = serviceResponse.body.id;
+
+    //create Service Offerings
+    //DP
+    const resProvider = await request(app)
+      .post("/v1/serviceofferings")
+      .set("Authorization", `Bearer ${providerJwt}`)
+      .send({ ...sampleProviderServiceOffering, providedBy: providerId });
+    providerServiceOfferingId = resProvider.body._id;
+    //SP
+    const resConsumer = await request(app)
+      .post("/v1/serviceofferings")
+      .set("Authorization", `Bearer ${consumerJwt}`)
+      .send({ ...sampleConsumerServiceOffering, providedBy: consumerId });
+    ConsumerServiceOfferingId = resConsumer.body._id;
+  });
+
+  after(async () => {
+    // Close the server after all tests are completed
+    loadMongooseStub.restore();
+    closeMongoMemory();
+    server.close();
+  });
+
   it("should Create a service offering access request", async () => {
     const negotiationData = sampleBilateralNegotiation;
     const response = await request(app)

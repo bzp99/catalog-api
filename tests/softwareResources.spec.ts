@@ -9,6 +9,9 @@ import {
   sampleSoftwareResource,
   sampleUpdatedSoftwareResource,
 } from "./fixtures/sampleData";
+import { stub } from "sinon";
+import * as loadMongoose from "../src/config/database";
+import { closeMongoMemory, openMongoMemory } from "./utils.ts/mongoMemory";
 
 config();
 
@@ -19,39 +22,45 @@ let consumerId = "";
 let softwareResourceId: "";
 let jwt = "";
 
-before(async () => {
-  // Start the server and obtain the app and server instances
-  const serverInstance = await startServer(3006);
-  await serverInstance.promise;
-  app = serverInstance.app;
-  server = serverInstance.server;
-
-  // Create consumer
-  const consumerData = testConsumer;
-  const consumerResponse = await request(app)
-    .post("/v1/auth/signup")
-    .send(consumerData);
-  consumerId = consumerResponse.body.participant._id;
-
-  // Login consumer
-  const response = await request(app)
-    .post("/v1/auth/login")
-    .send({
-      email: testConsumer.email,
-      password: testConsumer.password,
-    })
-    .expect(200);
-  jwt = response.body.token;
-});
-
-after((done) => {
-  // Close the server after all tests are completed
-  server.close(() => {
-    done();
-  });
-});
-
 describe("Software Resources Routes Tests", () => {
+  let loadMongooseStub;
+  before(async () => {
+    loadMongooseStub = stub(loadMongoose, "loadMongoose").callsFake(
+      async () => {
+        await openMongoMemory();
+      }
+    );
+    // Start the server and obtain the app and server instances
+    const serverInstance = await startServer(3001);
+    await serverInstance.promise;
+    app = serverInstance.app;
+    server = serverInstance.server;
+
+    // Create consumer
+    const consumerData = testConsumer;
+    const consumerResponse = await request(app)
+      .post("/v1/auth/signup")
+      .send(consumerData);
+    consumerId = consumerResponse.body.participant._id;
+
+    // Login consumer
+    const response = await request(app)
+      .post("/v1/auth/login")
+      .send({
+        email: testConsumer.email,
+        password: testConsumer.password,
+      })
+      .expect(200);
+    jwt = response.body.token;
+  });
+
+  after(async () => {
+    // Close the server after all tests are completed
+    loadMongooseStub.restore();
+    closeMongoMemory();
+    server.close();
+  });
+
   it("should create software resource", async () => {
     const softwareResourceData = sampleSoftwareResource;
     const response = await request(app)

@@ -9,7 +9,7 @@ import { CONFIG } from "./config/environment";
 import { setupRoutes } from "./routes";
 
 export const startServer = async (testPort?: number) => {
-  loadMongoose();
+  await loadMongoose();
 
   const app: Application = express();
   const port = testPort || CONFIG.port || 3000;
