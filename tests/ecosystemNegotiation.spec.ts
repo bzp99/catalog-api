@@ -31,6 +31,8 @@ let ecosystemId = "";
 before(async () => {
   // Start the server and obtain the app and server instances
   const serverInstance = await startServer(3002);
+  await serverInstance.promise;
+
   app = serverInstance.app;
   server = serverInstance.server;
 
@@ -123,8 +125,8 @@ describe("Ecosystem routes tests", () => {
     const response = await request(app)
       .put(`/v1/ecosystems/${ecosystemId}/signature/orchestrator`)
       .set("Authorization", `Bearer ${orchestJwt}`)
-      .send({ 
-        signature: "hasSigned" 
+      .send({
+        signature: "hasSigned",
       })
       .expect(200);
   });
@@ -145,15 +147,15 @@ describe("Ecosystem routes tests", () => {
     const response = await request(app)
       .get("/v1/ecosystems/me/invites")
       .set("Authorization", `Bearer ${providerJwt}`)
-      .expect(200)
-      expect(response.body).to.be.an("array").and.to.not.be.empty;
+      .expect(200);
+    expect(response.body).to.be.an("array").and.to.not.be.empty;
   });
   it("should get all pending invitations for an orchestrator of ecosystem", async () => {
     const response = await request(app)
       .get("/v1/ecosystems/invites")
       .set("Authorization", `Bearer ${orchestJwt}`)
-      .expect(200)
-      expect(response.body).to.be.an("array").and.to.not.be.empty;
+      .expect(200);
+    expect(response.body).to.be.an("array").and.to.not.be.empty;
   });
 
   it("should accept invitation to join ecosystem", async () => {
@@ -170,13 +172,13 @@ describe("Ecosystem routes tests", () => {
       .send(sampleOfferings)
       .expect(200);
   });
-  
+
   it("should apply Participant Signature", async () => {
     const response = await request(app)
       .put(`/v1/ecosystems/${ecosystemId}/signature/participant`)
       .set("Authorization", `Bearer ${providerJwt}`)
-      .send({ 
-        signature: "hasSigned" 
+      .send({
+        signature: "hasSigned",
       })
       .expect(200);
   });

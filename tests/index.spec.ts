@@ -22,6 +22,7 @@ export let server: Server<typeof IncomingMessage, typeof ServerResponse>;
 before(async () => {
   // Start the server and obtain the app and server instances
   const serverInstance = await startServer(3001);
+  await serverInstance.promise;
   app = serverInstance.app;
   server = serverInstance.server;
   mockContract();

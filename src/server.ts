@@ -28,10 +28,15 @@ export const startServer = async (testPort?: number) => {
   app.use(globalErrorHandler);
 
   // Start the server
+  let resolve;
+  const promise = new Promise((r) => {
+    resolve = r;
+  });
   const server = app.listen(port, () => {
     //eslint-disable-next-line
     console.log(`Catalog-Registry running on: http://localhost:${port}`);
+    resolve(); // Resolve the promise from the outside
   });
 
-  return { server, app }; // For tests
+  return { server, app, promise }; // For tests
 };
