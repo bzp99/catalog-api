@@ -1,6 +1,6 @@
 import { expect } from "chai";
 import request from "supertest";
-import { testProvider4 } from "./fixtures/testAccount";
+import { testProvider5 } from "./fixtures/testAccount";
 import { config } from "dotenv";
 config();
 import { startServer } from "../src/server";
@@ -11,7 +11,6 @@ import {
   sampleUpdatedProviderServiceOffering,
   sampleProviderServiceOffering,
 } from "./fixtures/sampleData";
-
 import { Application } from "express";
 import { stub } from "sinon";
 import * as loadMongoose from "../src/config/database";
@@ -25,7 +24,7 @@ let dataResourcesId = "";
 let jwt = "";
 let serviceOfferingId = "";
 
-describe("Service offering management", () => {
+describe("Service Offering Routes Tests", () => {
   let loadMongooseStub;
   before(async () => {
     loadMongooseStub = stub(loadMongoose, "loadMongoose").callsFake(
@@ -40,7 +39,7 @@ describe("Service offering management", () => {
     server = serverInstance.server;
 
     // Create provider
-    const providerData = testProvider4;
+    const providerData = testProvider5;
     const providerResponse = await request(app)
       .post("/v1/auth/signup")
       .send(providerData);
@@ -51,8 +50,8 @@ describe("Service offering management", () => {
     const providerAuthResponse = await request(app)
       .post("/v1/auth/login")
       .send({
-        email: testProvider4.email,
-        password: testProvider4.password,
+        email: testProvider5.email,
+        password: testProvider5.password,
       });
     jwt = providerAuthResponse.body.token;
     console.log(jwt);

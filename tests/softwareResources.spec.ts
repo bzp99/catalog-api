@@ -4,7 +4,7 @@ import { config } from "dotenv";
 import { startServer } from "../src/server";
 import { Application } from "express";
 import { IncomingMessage, Server, ServerResponse } from "http";
-import { testConsumer } from "./fixtures/testAccount";
+import { testConsumer4 } from "./fixtures/testAccount";
 import {
   sampleSoftwareResource,
   sampleUpdatedSoftwareResource,
@@ -37,7 +37,7 @@ describe("Software Resources Routes Tests", () => {
     server = serverInstance.server;
 
     // Create consumer
-    const consumerData = testConsumer;
+    const consumerData = testConsumer4;
     const consumerResponse = await request(app)
       .post("/v1/auth/signup")
       .send(consumerData);
@@ -47,8 +47,8 @@ describe("Software Resources Routes Tests", () => {
     const response = await request(app)
       .post("/v1/auth/login")
       .send({
-        email: testConsumer.email,
-        password: testConsumer.password,
+        email: testConsumer4.email,
+        password: testConsumer4.password,
       })
       .expect(200);
     jwt = response.body.token;

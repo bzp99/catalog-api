@@ -55,10 +55,14 @@ export const sampleEcosystem = {
   rolesAndObligations: [
     {
       role: "Role 6",
-      ruleId: "Rule 2",
-      values: { key2: "value2" },
+      ruleId: "rule-access-5",
+      "values": {
+        "dateBegin": "2024-01-01",
+        "dateEnd": "2026-01-01"
+      }
     },
   ],
+
   buildingBlocks: [
     {
       buildingBlock: "Block 1",
@@ -88,10 +92,13 @@ export const sampleEcosystem1 = {
   },
   rolesAndObligations: [
     {
-      role: "Role 6",
-      ruleId: "Rule 2",
-      values: { key2: "value2" },
-    },
+      role: "Orchestrator",
+      ruleId: "rule-access-5",
+      "values": {
+        "dateBegin": "2024-01-01",
+        "dateEnd": "2026-01-01"
+      }
+    }
   ],
 };
 export const sampleUpdatedEcosystem = {
@@ -115,9 +122,12 @@ export const sampleUpdatedEcosystem = {
   },
   rolesAndObligations: [
     {
-      role: "Role 6",
-      ruleId: "Rule 2",
-      values: { key2: "value3" },
+      role: "Orchestrator",
+      ruleId: "rule-access-5",
+      "values": {
+        "dateBegin": "2024-01-01",
+        "dateEnd": "2026-02-02"
+      }
     },
   ],
 };
@@ -126,29 +136,50 @@ export const sampleInvitation = {
   roles: [
     "data provider"
   ],
-  participant: ""
+  participantId: ""
 };
 
 export const sampleOfferings = {
   "offerings": [
     {
-      "serviceOffering": "Service 1",
+      "serviceOffering": "",
       "values": {
         "key1": "value1",
         "key2": "value2"
       },
       "policy": [
         {
-          "ruleId": "Rule 1",
+          "ruleId": "rule-access-5",
           "values": {
-            "key1": "value1",
-            "key2": "value2"
+            "dateBegin": "2024-01-01",
+            "dateEnd": "2026-01-01"
           }
         }
       ]
     }
   ]
 };
+
+export const sampleJoinRequest = {
+  "roles": [
+    "service provider"
+  ],
+  "offerings": [
+    {
+      "serviceOffering": "",
+      "policy": [
+        {
+          "ruleId": "rule-access-5",
+          "values": {
+            "dateBegin": "2024-01-01",
+            "dateEnd": "2026-01-01"
+          }
+        }
+      ]
+    }
+  ]
+};
+
 export const sampleServiceOffering = {
   name: "<string>",
   providedBy: "<string>",
@@ -296,10 +327,10 @@ export const sampleUpdatedConsumerServiceOffering = {
 
 export const sampleBilateralNegotiation = {
   
-  consumer:"",
   provider:"",
-  consumerServiceOffering:"",
+  consumer:"",
   providerServiceOffering:"",
+  consumerServiceOffering:"",
 };
 
 export const sampleSoftwareResource = {
