@@ -242,8 +242,8 @@ describe("Ecosystem routes tests", () => {
     const response = await request(app)
       .post(`/v1/ecosystems/${ecosystemId}/signature/orchestrator`)
       .set("Authorization", `Bearer ${orchestJwt}`)
-      .send({ 
-        signature: "hasSigned" 
+      .send({
+        signature: "hasSigned",
       })
       .expect(200);
   });
@@ -281,8 +281,8 @@ describe("Ecosystem routes tests", () => {
     const response = await request(app)
       .get("/v1/ecosystems/invites")
       .set("Authorization", `Bearer ${orchestJwt}`)
-      .expect(200)
-      expect(response.body).to.be.an("array").and.to.not.be.empty;
+      .expect(200);
+    expect(response.body).to.be.an("array").and.to.not.be.empty;
   });
 
   it("should accept invitation to join ecosystem", async () => {
@@ -307,7 +307,7 @@ describe("Ecosystem routes tests", () => {
       .send(modifiedSampleOfferings)
       .expect(200);
   });
-  
+
   it("should apply Participant Signature", async () => {
     const response = await request(app)
       .post(`/v1/ecosystems/${ecosystemId}/signature/participant`)

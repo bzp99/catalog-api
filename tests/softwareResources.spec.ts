@@ -24,6 +24,7 @@ before(async () => {
 
   // Start the server and obtain the app and server instances
   const serverInstance = await startServer(3006);
+  await serverInstance.promise;
   app = serverInstance.app;
   server = serverInstance.server;
 
