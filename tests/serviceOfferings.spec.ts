@@ -1,6 +1,6 @@
 import { expect } from "chai";
 import request from "supertest";
-import { testProvider4 } from "./fixtures/testAccount";
+import { testProvider5 } from "./fixtures/testAccount";
 import { config } from "dotenv";
 config();
 import { startServer } from "../src/server";
@@ -11,6 +11,7 @@ import {
   sampleUpdatedProviderServiceOffering,
   sampleProviderServiceOffering,
 } from "./fixtures/sampleData";
+import { closeMongoMemory } from "./utils.ts/mongoMemory";
 
 import { Application } from "express";
 
@@ -23,13 +24,14 @@ let jwt = "";
 let serviceOfferingId = "";
 
 before(async () => {
+
   // Start the server and obtain the app and server instances
   const serverInstance = await startServer(3005);
   app = serverInstance.app;
   server = serverInstance.server;
 
   // Create provider
-  const providerData = testProvider4;
+  const providerData = testProvider5;
   const providerResponse = await request(app)
     .post("/v1/auth/signup")
     .send(providerData);
@@ -38,8 +40,8 @@ before(async () => {
 
   // Login provider
   const providerAuthResponse = await request(app).post("/v1/auth/login").send({
-    email: testProvider4.email,
-    password: testProvider4.password,
+    email: testProvider5.email,
+    password: testProvider5.password,
   });
   jwt = providerAuthResponse.body.token;
   console.log(jwt);
@@ -60,7 +62,7 @@ after((done) => {
   });
 });
 
-describe("Service offering management", () => {
+describe("Service Offering Routes Tests", () => {
   it("Should create a service offering", async () => {
     const res = await request(app)
       .post("/v1/serviceofferings")

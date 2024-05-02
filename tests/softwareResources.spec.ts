@@ -4,11 +4,12 @@ import { config } from "dotenv";
 import { startServer } from "../src/server";
 import { Application } from "express";
 import { IncomingMessage, Server, ServerResponse } from "http";
-import { testConsumer } from "./fixtures/testAccount";
+import { testConsumer4 } from "./fixtures/testAccount";
 import {
   sampleSoftwareResource,
   sampleUpdatedSoftwareResource,
 } from "./fixtures/sampleData";
+import { closeMongoMemory } from "./utils.ts/mongoMemory";
 
 config();
 
@@ -20,13 +21,14 @@ let softwareResourceId: "";
 let jwt = "";
 
 before(async () => {
+
   // Start the server and obtain the app and server instances
   const serverInstance = await startServer(3006);
   app = serverInstance.app;
   server = serverInstance.server;
 
   // Create consumer
-  const consumerData = testConsumer;
+  const consumerData = testConsumer4;
   const consumerResponse = await request(app)
     .post("/v1/auth/signup")
     .send(consumerData);
@@ -36,8 +38,8 @@ before(async () => {
   const response = await request(app)
     .post("/v1/auth/login")
     .send({
-      email: testConsumer.email,
-      password: testConsumer.password,
+      email: testConsumer4.email,
+      password: testConsumer4.password,
     })
     .expect(200);
   jwt = response.body.token;

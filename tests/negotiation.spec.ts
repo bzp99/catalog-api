@@ -5,8 +5,8 @@ config();
 import { startServer } from "../src/server";
 import { IncomingMessage, Server, ServerResponse } from "http";
 import { Application } from "express";
-import { testProvider3, testConsumer } from "./fixtures/testAccount";
-
+import { mockContract } from "./fixtures/fixture.contract";
+import { testProvider4, testConsumer3 } from "./fixtures/testAccount";
 import {
   sampleDataResource,
   sampleSoftwareResource,
@@ -14,7 +14,7 @@ import {
   sampleConsumerServiceOffering,
   sampleBilateralNegotiation,
 } from "./fixtures/sampleData";
-
+import { closeMongoMemory } from "./utils.ts/mongoMemory";
 export let app: Application;
 export let server: Server<typeof IncomingMessage, typeof ServerResponse>;
 
@@ -24,38 +24,41 @@ let dataResourceId = "";
 let softwareResourceId = "";
 let consumerJwt = "";
 let providerJwt = "";
-let ConsumerServiceOfferingId = "";
+let consumerServiceOfferingId = "";
 let providerServiceOfferingId = "";
 let negotiationId = "";
 
 before(async () => {
+
   // Start the server and obtain the app and server instances
   const serverInstance = await startServer(3004);
   app = serverInstance.app;
   server = serverInstance.server;
+  mockContract();
+
 
   //create provider
-  const providerData = testProvider3;
+  const providerData = testProvider4;
   const providerResponse = await request(app)
     .post("/v1/auth/signup")
     .send(providerData);
   providerId = providerResponse.body.participant._id;
   //create consumer
-  const consumerData = testConsumer;
+  const consumerData = testConsumer3;
   const consumerResponse = await request(app)
     .post("/v1/auth/signup")
     .send(consumerData);
   consumerId = consumerResponse.body.participant._id;
   //login provider
   const providerAuthResponse = await request(app).post("/v1/auth/login").send({
-    email: testProvider3.email,
-    password: testProvider3.password,
+    email: testProvider4.email,
+    password: testProvider4.password,
   });
   providerJwt = providerAuthResponse.body.token;
   //login consumer
   const consumerAuthResponse = await request(app).post("/v1/auth/login").send({
-    email: testConsumer.email,
-    password: testConsumer.password,
+    email: testConsumer3.email,
+    password: testConsumer3.password,
   });
   consumerJwt = consumerAuthResponse.body.token;
 
@@ -86,7 +89,7 @@ before(async () => {
     .post("/v1/serviceofferings")
     .set("Authorization", `Bearer ${consumerJwt}`)
     .send({ ...sampleConsumerServiceOffering, providedBy: consumerId });
-  ConsumerServiceOfferingId = resConsumer.body._id;
+  consumerServiceOfferingId = resConsumer.body._id;
 });
 
 after((done) => {
@@ -102,7 +105,14 @@ describe("Bilateral Negotiation Routes Tests", () => {
     const response = await request(app)
       .post("/v1/negotiation")
       .set("Authorization", `Bearer ${providerJwt}`)
-      .send(negotiationData)
+      .send(
+        {...negotiationData,
+          provider:providerId,
+          consumer:consumerId,
+          providerServiceOffering:providerServiceOfferingId,
+          consumerServiceOffering:consumerServiceOfferingId
+        }
+      )
       .expect(200);
 
     expect(response.body).to.be.an("object");
@@ -119,10 +129,11 @@ describe("Bilateral Negotiation Routes Tests", () => {
       .send({
         policy: [
           {
-            ruleId: "rule1",
-            values: {
-              key1: "value1",
-            },
+            ruleId: "rule-access-5",
+            "values": {
+              "dateBegin": "2024-01-01",
+              "dateEnd": "2026-01-01"
+            }
           },
         ],
       })
@@ -135,10 +146,11 @@ describe("Bilateral Negotiation Routes Tests", () => {
     expect(response.body.consumerPolicies).to.be.an("array").and.to.not.be
       .empty;
     expect(response.body.consumerPolicies[0]).to.deep.include({
-      ruleId: "rule1",
-      values: {
-        key1: "value1",
-      },
+        ruleId: "rule-access-5",
+        "values": {
+          "dateBegin": "2024-01-01",
+          "dateEnd": "2026-01-01"
+        }
     });
   });
 
@@ -149,8 +161,7 @@ describe("Bilateral Negotiation Routes Tests", () => {
       .expect(200);
     expect(response.body).to.be.an("object");
     expect(response.body).to.have.property(
-      "negotiationStatus",
-      "SignatureReady"
+      "negotiationStatus","SignatureReady"
     );
   });
   it("should sign exchange configuration by data provider", async () => {
@@ -207,11 +218,11 @@ describe("Bilateral Negotiation Routes Tests", () => {
       .send({
         policy: [
           {
-            ruleId: "rule1",
-            values: {
-              key1: "value1",
-              key2: "value2",
-            },
+            ruleId: "rule-access-5",
+            "values": {
+              "dateBegin": "2022-02-02",
+              "dateEnd": "2023-03-03"
+            }
           },
         ],
       })
@@ -225,11 +236,11 @@ describe("Bilateral Negotiation Routes Tests", () => {
     expect(response.body.providerPolicies).to.be.an("array").and.to.not.be
       .empty;
     expect(response.body.providerPolicies[0]).to.deep.include({
-      ruleId: "rule1",
-      values: {
-        key1: "value1",
-        key2: "value2",
-      },
+        ruleId: "rule-access-5",
+        "values": {
+            "dateBegin": "2022-02-02",
+            "dateEnd": "2023-03-03"
+          }
     });
   });
 });

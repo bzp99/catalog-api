@@ -40,10 +40,38 @@ export const testProvider4 = {
   firstName: "test",
   lastName: "provider4",
 };
-export const testConsumer = {
-  email: "consumer@example.com",
+export const testProvider5 = {
+  email: "provider5@example.com",
   password: "Password@123!",
-  participantName: "consumerOrganization",
+  participantName: "providerOrganization5",
   firstName: "test",
-  lastName: "consumer",
+  lastName: "provider5",
+};
+export const testConsumer1 = {
+  email: "consumer1@example.com",
+  password: "Password@123!",
+  participantName: "consumerOrganization1",
+  firstName: "test",
+  lastName: "consumer1",
+}
+export const testConsumer2 = {
+  email: "consumer2@example.com",
+  password: "Password@123!",
+  participantName: "consumerOrganization2",
+  firstName: "test",
+  lastName: "consumer2",
+}
+export const testConsumer3 = {
+  email: "consumer3@example.com",
+  password: "Password@123!",
+  participantName: "consumerOrganization3",
+  firstName: "test",
+  lastName: "consumer3",
+}
+export const testConsumer4 = {
+  email: "consumer4@example.com",
+  password: "Password@123!",
+  participantName: "consumerOrganization4",
+  firstName: "test",
+  lastName: "consumer4",
 }

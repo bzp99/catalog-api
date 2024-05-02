@@ -22,7 +22,7 @@ before(async () => {
     await openMongoMemory();
   });
   // Start the server and obtain the app and server instances
-  const serverInstance = await startServer(3001);
+  const serverInstance = await startServer(3009);
   app = serverInstance.app;
   server = serverInstance.server;
 });
@@ -100,7 +100,7 @@ describe("Data Resources Routes Tests", () => {
     //expect response id = dataresourceid
   });
 
-  it("should get Participant DataResources", async () => {
+  it("should get Participant Data Resources", async () => {
     const response = await request(app)
       .get("/v1/dataResources/me")
       .set("Authorization", `Bearer ${jwt}`)
@@ -109,13 +109,25 @@ describe("Data Resources Routes Tests", () => {
     //expect response not empty
   });
 
+  it("Should get DCAT Data Resources", async () => {
+    const res = await request(app).get("/v1/dataResources/dcat").expect(200);
+  });
+
+  it("Should get DCAT Data Resource by id", async () => {
+    const res = await request(app)
+      .get(`/v1/dataResources/dcat/${dataResourcesId}`)
+      .expect(200);
+  });
+
   it("should get all dataResources", async () => {
-    const response = await request(app).get("/v1/dataResources").expect(200);
+    const response = await request(app)
+    .get("/v1/dataResources")
+    .expect(200);
     //assertions
     //expect response not empty
   });
 
-  it("should delete DataResources", async () => {
+  it("should delete DataResource by id", async () => {
     const response = await request(app)
       .delete(`/v1/dataResources/${dataResourcesId}`)
       .set("Authorization", `Bearer ${jwt}`)
