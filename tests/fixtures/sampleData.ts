@@ -9,7 +9,7 @@ export const sampleDataResource = {
   obsoleteDateTime: "2022-12-31",
   expirationDateTime: "2023-12-31",
   containsPII: true,
-  category: "Sample Category",
+  category: "5f8ed518651f1648e0d8162d",
 };
 
 export const sampleUpdatedDataResource = {
@@ -23,7 +23,7 @@ export const sampleUpdatedDataResource = {
   obsoleteDateTime: "2022-12-31",
   expirationDateTime: "2024-12-31",
   containsPII: true,
-  category: "Sample Category",
+  category: "5f8ed518651f1648e0d8162d",
 };
 
 export const sampleEcosystem = {
@@ -340,10 +340,10 @@ export const sampleSoftwareResource = {
   copyrightOwnedBy: ["Owner 1", "Owner 2"],
   license: ["License 1"],
   policy: [{ key1: "value1" }],
-  users_clients: "Sample users_clients",
+  users_clients: 22,
   demo_link: "",
   relevant_project_link: "",
-  category: "Sample Category",
+  category: "5f8ed518651f1648e0d8162d",
   locationAddress: [],
 };
 export const sampleUpdatedSoftwareResource = {
@@ -353,9 +353,7 @@ export const sampleUpdatedSoftwareResource = {
   copyrightOwnedBy: ["Owner 1", "Owner 2"],
   license: ["License 2"],
   policy: [{ key1: "value1" }],
-  users_clients: "Sample users_clients",
-  demo_link: "",
-  relevant_project_link: "",
-  category: "Sample Category",
-  locationAddress: [],
+  users_clients: 23,
+  category: "5f8ed518651f1648e0d8162d",
+  locationAddress:[]
 };

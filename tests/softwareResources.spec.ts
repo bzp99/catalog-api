@@ -68,8 +68,10 @@ describe("Software Resources Routes Tests", () => {
       .set("Authorization", `Bearer ${jwt}`)
       .send(softwareResourceData)
       .expect(201);
-    softwareResourceId = response.body.id;
+    softwareResourceId = response.body._id;
     expect(response.body).to.be.an("object");
+    expect(response.body.providedBy).to.equal(consumerId);
+
     //assertions
   });
 
@@ -122,7 +124,7 @@ describe("Software Resources Routes Tests", () => {
     const response = await request(app)
       .delete(`/v1/softwareresources/${softwareResourceId}`)
       .set("Authorization", `Bearer ${jwt}`)
-      .expect(200);
+      .expect(204);
     //assertions
     //expect
   });
