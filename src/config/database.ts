@@ -18,3 +18,7 @@ export async function loadMongoose() {
 
   return connection;
 }
+
+export async function closeMongoose() {
+  await mongoose.disconnect();
+}

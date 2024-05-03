@@ -47,9 +47,9 @@ export const methods = (
   schema.methods.cancelInvitation = async function ({
     participant,
   }: EcosystemCancelMethodOptions) {
-    const idx = this.invitations.findIndex(
-      (inv: any) => inv.particiant.toString() === participant.toString()
-    );
+    const idx = this.invitations.findIndex((inv: any) => {
+      return inv.participant.toString() === participant.toString();
+    });
 
     if (idx === -1) return this as any;
 

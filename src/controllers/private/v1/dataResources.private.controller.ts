@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import { buildResolvableSelfDescriptionURI } from "../../../libs/self-descriptions";
 import { DataResource } from "../../../models/DataResource";
+import { GlobalDataType } from "../../../models/GlobalDataType";
 
 const DEFAULT_QUERY_OPTIONS = {
   page: 0,
@@ -53,7 +54,7 @@ export const getParticipantDataResources = async (
           {
             path: "category",
             match: { category: { $ne: "" } },
-            model: "GlobalDataType",
+            model: GlobalDataType,
           },
         ])
         .limit(queryOptions?.limit)

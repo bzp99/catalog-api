@@ -176,7 +176,6 @@ export const updateEcosystemById = async (
           }
         );
       }
-
       // Inject rules in contract
       if (rolesAndObligations && rolesAndObligations.length) {
         try {
@@ -264,6 +263,7 @@ export const createJoinRequest = async (
     const isParticipant = ecosystem.participants.some(
       (participant) => participant.participant === participantId
     );
+
     if (isParticipant) {
       return res.status(400).json({
         req,
@@ -489,7 +489,6 @@ export const denyInvitation = async (
         message: "Ecosystem not found",
       });
     }
-
     const result = await ecosystem.cancelInvitation({
       participant: req.user.id,
     });
@@ -522,7 +521,7 @@ export const getJoinRequests = async (
     }
 
     let result = [];
-    if (["Pending", "Authorized", "Rejected"].includes(filter.toString())) {
+    if (["Pending", "Authorized", "Rejected"].includes(filter?.toString())) {
       result = ecosystem.joinRequests.filter((jr) => jr.status === filter);
     } else {
       result = ecosystem.joinRequests;
