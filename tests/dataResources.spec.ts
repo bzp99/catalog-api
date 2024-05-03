@@ -131,7 +131,7 @@ describe("Data Resources Routes Tests", () => {
     const response = await request(app)
       .delete(`/v1/dataResources/${dataResourcesId}`)
       .set("Authorization", `Bearer ${jwt}`)
-      .expect(200);
+      .expect(204);
     //assertions
     //expect
     //error test get data resources deleted
