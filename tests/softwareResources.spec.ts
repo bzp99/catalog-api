@@ -77,7 +77,6 @@ describe("Software Resources Routes Tests", () => {
 
   it("should update software resource", async () => {
     const updatedSoftwareResourceData = sampleUpdatedSoftwareResource;
-
     const response = await request(app)
       .put(`/v1/softwareresources/${softwareResourceId}`)
       .set("Authorization", `Bearer ${jwt}`)

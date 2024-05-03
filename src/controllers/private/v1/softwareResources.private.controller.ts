@@ -2,6 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import { buildResolvableSelfDescriptionURI } from "../../../libs/self-descriptions";
 import { SoftwareResource } from "../../../models";
 import { mapSoftwareResource } from "../../../libs/dcat";
+import { GlobalPurpose } from "../../../models/GlobalPurpose";
 
 const DEFAULT_QUERY_OPTIONS = {
   page: 0,
@@ -50,7 +51,7 @@ export const getParticipantSoftwareResources = async (
       SoftwareResource.find({
         providedBy: req.user.id,
       })
-        .populate([{ path: "category", model: "GlobalPurpose" }])
+        .populate([{ path: "category", model: GlobalPurpose }])
         .limit(queryOptions?.limit)
         .skip(queryOptions?.page * queryOptions?.limit)
         .lean(),
