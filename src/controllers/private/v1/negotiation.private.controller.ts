@@ -168,8 +168,9 @@ export const authorizeExchangeConfiguration = async (
 
     exchangeConf.providerPolicies = policy;
     exchangeConf.negotiationStatus = "Authorized";
-    await exchangeConf.save();
+    exchangeConf.latestNegotiator = req.user.id;
 
+    await exchangeConf.save();
     return res.status(200).json(exchangeConf);
   } catch (err) {
     next(err);
@@ -204,7 +205,6 @@ export const negotiateExchangeConfigurationPolicy = async (
     exchangeConf.latestNegotiator = req.user.id;
 
     await exchangeConf.save();
-
     return res.json(exchangeConf);
   } catch (err) {
     next(err);

@@ -40,9 +40,11 @@ export const generateBilateralContract = async (
       "Content-Type": "application/json",
     },
     data: {
-      dataProvider: options.dataProvider,
-      dataConsumer: options.dataConsumer,
-      serviceOffering: options.serviceOffering,
+      contract: {
+        dataProvider: options.dataProvider,
+        dataConsumer: options.dataConsumer,
+        serviceOffering: options.serviceOffering,
+      },
     },
   });
   return res.data;

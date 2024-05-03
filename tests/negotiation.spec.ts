@@ -5,7 +5,7 @@ config();
 import { startServer } from "../src/server";
 import { IncomingMessage, Server, ServerResponse } from "http";
 import { Application } from "express";
-import { mockContract } from "./fixtures/fixture.contract";
+import { mockBilateralContract } from "./fixtures/fixture.contract";
 import { testProvider4, testConsumer3 } from "./fixtures/testAccount";
 import {
   sampleDataResource,
@@ -44,7 +44,7 @@ describe("Bilateral Negotiation Routes Tests", () => {
     await serverInstance.promise;
     app = serverInstance.app;
     server = serverInstance.server;
-    mockContract();
+    mockBilateralContract();
 
     //create provider
     const providerData = testProvider4;
@@ -133,6 +133,7 @@ describe("Bilateral Negotiation Routes Tests", () => {
     expect(response.body).to.have.property("negotiationStatus", "Requested");
     negotiationId = response.body._id;
   });
+
   it("should authorize negotiation", async () => {
     const response = await request(app)
       .put(`/v1/negotiation/${negotiationId}`)
@@ -150,13 +151,13 @@ describe("Bilateral Negotiation Routes Tests", () => {
       })
       .expect(200);
     expect(response.body).to.be.an("object");
-    expect(response.body).to.have.property("negotiationStatus", "Negotiation");
+    expect(response.body).to.have.property("negotiationStatus", "Authorized");
     expect(response.body)
       .to.have.property("latestNegotiator")
       .and.to.equal(response.body.provider);
-    expect(response.body.consumerPolicies).to.be.an("array").and.to.not.be
+    expect(response.body.providerPolicies).to.be.an("array").and.to.not.be
       .empty;
-    expect(response.body.consumerPolicies[0]).to.deep.include({
+    expect(response.body.providerPolicies[0]).to.deep.include({
       ruleId: "rule-access-5",
       values: {
         dateBegin: "2024-01-01",
@@ -197,10 +198,10 @@ describe("Bilateral Negotiation Routes Tests", () => {
 
   it("should get all exchange configurations for a participant", async () => {
     const response = await request(app)
-      .put("/v1/negotiation/")
+      .get("/v1/negotiation/")
       .set("Authorization", `Bearer ${providerJwt}`)
       .expect(200);
-    expect(response.body).to.be.an("object").that.is.not.empty;
+    expect(response.body).to.be.an("array").that.is.not.empty;
   });
 
   it("should get exchange configuration by ID as data provider", async () => {
@@ -217,7 +218,7 @@ describe("Bilateral Negotiation Routes Tests", () => {
   });
   it("should negociate exchange configuration policies", async () => {
     const response = await request(app)
-      .put(`/v1/negotiation/${negotiationId}/negociate`)
+      .put(`/v1/negotiation/${negotiationId}/negotiate`)
       .set("Authorization", `Bearer ${consumerJwt}`)
       .send({
         policy: [
@@ -236,7 +237,7 @@ describe("Bilateral Negotiation Routes Tests", () => {
     expect(response.body)
       .to.have.property("latestNegotiator")
       .and.to.equal(response.body.consumer);
-    expect(response.body).to.have.property("policy");
+    expect(response.body).to.have.property("providerPolicies");
     expect(response.body.providerPolicies).to.be.an("array").and.to.not.be
       .empty;
     expect(response.body.providerPolicies[0]).to.deep.include({
