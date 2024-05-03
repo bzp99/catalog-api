@@ -32,7 +32,6 @@ export const mockBilateralContract = () => {
   });
 
   mock.onPut(`${contractUrl}/policies/${contractId}`).reply((config) => {
-    console.log("mock put contract..............");
     try {
       const injections = JSON.parse(config.data);
       for (const injection of injections) {
@@ -98,7 +97,7 @@ export const mockContract = () => {
     createdAt: date,
     updatedAt: date,
   };
-  let contract = {};
+  let contract: any = {};
 
   const contractUrl = "http://localhost:8888/contracts";
   const contractId = "50726f6d6574686575732d58";
@@ -127,6 +126,67 @@ export const mockContract = () => {
         _id: contractId,
       };
       return [200, contract];
+    } catch (e) {
+      console.log(e);
+      return [500, { error: "Internal Server Error" }];
+    }
+  });
+
+  mock.onPut(`${contractUrl}/policies/${contractId}`).reply((config) => {
+    try {
+      const injections = JSON.parse(config.data);
+      for (const injection of injections) {
+        const { role } = injection;
+        let roleIndex = contract.rolesAndObligations.findIndex(
+          (entry) => entry.role === role
+        );
+        if (roleIndex === -1) {
+          contract.rolesAndObligations.push({
+            role,
+            policies: [],
+          });
+          roleIndex = contract.rolesAndObligations.length - 1;
+        }
+        const roleEntry = contract.rolesAndObligations[roleIndex];
+        roleEntry.policies.push({
+          description: "mock-description",
+          permission: [],
+          prohibition: [],
+        });
+      }
+      return [200, { contract }];
+    } catch (e) {
+      console.log(e);
+      return [500, { error: "Internal Server Error" }];
+    }
+  });
+
+  mock.onPut(`${contractUrl}/sign/${contractId}`).reply((config) => {
+    try {
+      const injections = JSON.parse(config.data);
+      const { participant, signature } = injections;
+      const existingMember = contract.members.find(
+        (member) => member.participant === participant
+      );
+      if (existingMember) {
+        existingMember.signature = signature;
+      } else {
+        contract.members.push({
+          participant,
+          signature,
+        });
+      }
+      const orchestratorSignature = contract.members.find(
+        (member) => member.role === "orchestrator"
+      );
+      if (
+        contract.members.length >= 2 &&
+        orchestratorSignature &&
+        orchestratorSignature.signature
+      ) {
+        contract.status = "signed";
+      }
+      return [200, { contract }];
     } catch (e) {
       console.log(e);
       return [500, { error: "Internal Server Error" }];

@@ -294,7 +294,7 @@ describe("Ecosystem routes tests", () => {
   });
   it("should get all pending invitations for an orchestrator of ecosystem", async () => {
     const response = await request(app)
-      .get("/v1/ecosystems/invites")
+      .get(`/v1/ecosystems/${ecosystemId}/invites`)
       .set("Authorization", `Bearer ${orchestJwt}`)
       .expect(200);
     expect(response.body).to.be.an("array").and.to.not.be.empty;
@@ -358,7 +358,7 @@ describe("Ecosystem routes tests", () => {
     const response = await request(app)
       .get(`/v1/ecosystems/${ecosystemId}/requests`)
       .set("Authorization", `Bearer ${orchestJwt}`)
-      .expect(201);
+      .expect(200);
     const matchingResponse1 = response.body.find(
       (item) => item.participant === provider2Id
     );
