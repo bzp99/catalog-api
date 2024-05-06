@@ -1,6 +1,8 @@
 import { NextFunction, Request, Response } from "express";
 import { buildResolvableSelfDescriptionURI } from "../../../libs/self-descriptions";
 import { SoftwareResource } from "../../../models";
+import { mapSoftwareResource } from "../../../libs/dcat";
+import { GlobalPurpose } from "../../../models/GlobalPurpose";
 
 const DEFAULT_QUERY_OPTIONS = {
   page: 0,
@@ -49,7 +51,7 @@ export const getParticipantSoftwareResources = async (
       SoftwareResource.find({
         providedBy: req.user.id,
       })
-        .populate([{ path: "category", model: "GlobalPurpose" }])
+        .populate([{ path: "category", model: GlobalPurpose }])
         .limit(queryOptions?.limit)
         .skip(queryOptions?.page * queryOptions?.limit)
         .lean(),
@@ -108,6 +110,42 @@ export const getSoftwareResourceById = async (
     );
 
     return res.json(softwareResource);
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const getDCATSoftwareResourceById = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const softwareResource = await SoftwareResource.findById(
+      req.params.id
+    ).lean();
+    if (!softwareResource) {
+      return res.status(404).json({
+        code: 404,
+        errorMsg: "Resource not found",
+        message: "The software resource could not be found",
+      });
+    }
+
+    softwareResource.copyrightOwnedBy = softwareResource.copyrightOwnedBy.map(
+      (v) => buildResolvableSelfDescriptionURI("participants", v)
+    );
+    softwareResource.providedBy = buildResolvableSelfDescriptionURI(
+      "participants",
+      softwareResource.providedBy
+    );
+
+    return res.json(
+      mapSoftwareResource({
+        ...softwareResource,
+        _id: softwareResource._id.toString(),
+      })
+    );
   } catch (err) {
     next(err);
   }

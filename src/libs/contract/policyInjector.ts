@@ -56,7 +56,7 @@ export const batchInjectRoleAndObligations = async (
       CONFIG.contractServiceEndpoint +
       "/contracts/policies/" +
       options.contractId,
-    method: "POST",
+    method: "PUT",
     headers: {
       "Content-Type": "application/json",
     },
@@ -73,7 +73,7 @@ export const injectPolicyInBilateralContract = async (
       CONFIG.contractServiceEndpoint +
       "/contracts/policy/" +
       options.contractId,
-    method: "POST",
+    method: "PUT",
     headers: {
       "Content-Type": "application/json",
     },
@@ -91,7 +91,7 @@ export const batchInjectPoliciesInBilateralContract = async (
       CONFIG.contractServiceEndpoint +
       "/bilaterals/policies/" +
       options.contractId,
-    method: "POST",
+    method: "PUT",
     headers: {
       "Content-Type": "application/json",
     },

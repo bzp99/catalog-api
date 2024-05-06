@@ -92,7 +92,7 @@ export const isEcosystemOfferingPolicyArray = (value: any[]) => {
     if (
       typeof item !== "object" ||
       !item.serviceOffering ||
-      typeof item?.values !== "object"
+      !Array.isArray(item.policy)
     ) {
       throw new Error("Invalid array item structure");
     }

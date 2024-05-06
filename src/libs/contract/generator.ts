@@ -40,9 +40,11 @@ export const generateBilateralContract = async (
       "Content-Type": "application/json",
     },
     data: {
-      dataProvider: options.dataProvider,
-      dataConsumer: options.dataConsumer,
-      serviceOffering: options.serviceOffering,
+      contract: {
+        dataProvider: options.dataProvider,
+        dataConsumer: options.dataConsumer,
+        serviceOffering: options.serviceOffering,
+      },
     },
   });
   return res.data;
@@ -58,8 +60,10 @@ export const generateEcosystemContract = async (
       "Content-Type": "application/json",
     },
     data: {
-      ecosystem: options.ecosystem,
-      orchestrator: options.orchestrator,
+      contract: {
+        ecosystem: options.ecosystem,
+        orchestrator: options.orchestrator,
+      },
     },
   });
   return res.data;
