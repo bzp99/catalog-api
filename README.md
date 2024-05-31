@@ -43,6 +43,16 @@ cp .env.sample .env
 # Setup your variables in .env
 ```
 
+### Docker
+1. Clone the repository from GitHub: `git clone https://github.com/Prometheus-X-association/catalog-api.git`
+2. Navigate to the project directory: `cd catalog-api` and copy the .env.sample to .env `cp .env.sample .env`
+3. Configure the application by setting up the necessary environment variables. You will need to specify database connection details and other relevant settings.
+4. Create a docker network using `docker network create ptx`
+5. Start the application: `docker-compose up -d`
+6. If you need to rebuild the image `docker-compose build` and restart with: `docker-compose up -d`
+7. If you don't want to use the mongodb container from the docker compose you can use the command `docker run -d -p your-port:your-port --name catalog-api catalog-api` after running `docker-compose build`
+
+
 ### Running the API
 
 Start the development server:
