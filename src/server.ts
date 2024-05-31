@@ -6,7 +6,7 @@ import { globalErrorHandler } from "./middleware/globalErrorHandler";
 import swaggerUI from "swagger-ui-express";
 import swaggerSpec from "../docs/swagger.json";
 import { CONFIG } from "./config/environment";
-import { setupRoutes } from "./routes";
+import routes from "./libs/loaders/routes";
 
 export const startServer = async (testPort?: number) => {
   await loadMongoose();
@@ -22,7 +22,7 @@ export const startServer = async (testPort?: number) => {
   });
   app.use("/docs", swaggerUI.serve, swaggerUI.setup(swaggerSpec));
 
-  await setupRoutes(app);
+  routes(app);
 
   app.use(invalidEndpointHandler);
   app.use(globalErrorHandler);
