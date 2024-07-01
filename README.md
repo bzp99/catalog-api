@@ -52,6 +52,27 @@ cp .env.sample .env
 6. If you need to rebuild the image `docker-compose build` and restart with: `docker-compose up -d`
 7. If you don't want to use the mongodb container from the docker compose you can use the command `docker run -d -p your-port:your-port --name catalog-api catalog-api` after running `docker-compose build`
 
+## Terraform
+
+1. Install Terraform: Ensure Terraform is installed on your machine.
+2. Configure Kubernetes: Ensure you have access to your Kubernetes cluster and kubectl is configured.
+3. Initialize Terraform: Run the following commands from the terraform directory.
+```sh
+cd terraform
+terraform init
+```
+4. Apply the Configuration: Apply the Terraform configuration to create the resources.
+```sh
+terraform apply
+```
+5. Retrieve Service IP: After applying the configuration, retrieve the service IP.
+```sh
+terraform output catalog_api_service_ip
+```
+
+> * Replace placeholder values in the `kubernetes_secret` resource with actual values from your `.env`.
+> * Ensure the `server_port` value matches the port used in your application.
+> * Adjust the `host_path` in the `kubernetes_persistent_volume` resource to an appropriate path on your Kubernetes nodes.
 
 ### Running the API
 
