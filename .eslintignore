@@ -12,3 +12,4 @@ scripts/
 docs
 terraform/
 templates/
+values.yaml

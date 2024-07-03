@@ -5,15 +5,6 @@ image:
   tag: latest
   pullPolicy: IfNotPresent
 
-mongodb:
-  image:
-    repository: mongo
-    tag: latest
-    pullPolicy: IfNotPresent
-  volume:
-    storage: 5Gi
-    path: /mnt/data
-
 service:
   type: LoadBalancer
   port: 3000
@@ -24,7 +15,7 @@ env:
   MONGO_USERNAME: ""
   MONGO_PASSWORD: ""
   MONGO_PORT: "27017"
-  MONGO_HOST: "catalog-api-mongodb"
+  MONGO_HOST: "your_mongo_host"
   MONGO_DATABASE: "ptx-catalog"
   API_URL: "http://localhost:3000/v1"
   JWT_SECRET_KEY: "abc123"

@@ -100,7 +100,7 @@ terraform output catalog_api_service_ip
 
 > * Replace placeholder values in the `values.yaml` file with actual values from your `.env`.
 > * Ensure the `port` value matches the port used in your application.
-> * Adjust the `mongodb.volume.path` in the `values.yaml` file to an appropriate path on your Kubernetes nodes.
+> * Configure your MongoDB connection details in the values.yaml file to point to your managed MongoDB instance.
 
 ### Running the API
 
