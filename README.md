@@ -74,6 +74,34 @@ terraform output catalog_api_service_ip
 > * Ensure the `server_port` value matches the port used in your application.
 > * Adjust the `host_path` in the `kubernetes_persistent_volume` resource to an appropriate path on your Kubernetes nodes.
 
+### Deployment with Helm
+
+1. **Install Helm**: Ensure Helm is installed on your machine. You can install it following the instructions [here](https://helm.sh/docs/intro/install/).
+
+2. **Package the Helm chart**:
+    ```sh
+    helm package ./path/to/catalog-api
+    ```
+
+3. **Deploy the Helm chart**:
+    ```sh
+    helm install catalog-api ./path/to/catalog-api
+    ```
+
+4. **Verify the deployment**:
+    ```sh
+    kubectl get all -n catalog-api
+    ```
+
+5. **Retrieve Service IP**:
+    ```sh
+    kubectl get svc -n catalog-api
+    ```
+
+> * Replace placeholder values in the `values.yaml` file with actual values from your `.env`.
+> * Ensure the `port` value matches the port used in your application.
+> * Adjust the `mongodb.volume.path` in the `values.yaml` file to an appropriate path on your Kubernetes nodes.
+
 ### Running the API
 
 Start the development server:
