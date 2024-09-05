@@ -1,52 +1,100 @@
-import fs from "fs";
-import path from "path";
-import { Application } from "express";
+import e, { Application } from "express";
 
-const importRouter = async (routerPath: string) => {
-  const routerModule = await import(routerPath);
-  return routerModule.default;
+// public routers
+import auth from "./public/v1/auth";
+import ecosystemsPublicRouter from "./public/v1/ecosystems.public.router";
+import catalogPublicRouter from "./public/v1/catalog.public.router";
+import dataResourcesPublicRouter from "./public/v1/dataResources.public.router";
+import softwareResourcesPublicRouter from "./public/v1/softwareResources.public.router";
+import serviceOfferingsPublicRouter from "./public/v1/serviceOfferings.public.router";
+
+//private routers
+import dataResourcesPrivateRouter from "./private/v1/dataResources.private.router";
+import ecosystemsPrivateRouter from "./private/v1/ecosystems.private.router";
+import negotiationPrivateRouter from "./private/v1/negotiation.private.router";
+import participantsPrivateRouter from "./private/v1/participants.private.router";
+import representationsPrivateRouter from "./private/v1/representations.private.router";
+import serviceOfferingsPrivateRouter from "./private/v1/serviceOfferings.private.router";
+import softwareResourcesPrivateRouter from "./private/v1/softwareResources.private.router";
+
+type RouterSetup = {
+  prefix: string;
+  routers: {
+    prefix: string;
+    router: e.Router;
+  }[];
+  middleware?: () => unknown;
 };
 
-export const setupRoutes = async (app: Application) => {
-  const routesDir = path.join(__dirname);
-  const routerMap = new Map();
+const PublicRoutersV1 = [
+  {
+    prefix: "/auth",
+    router: auth,
+  },
+  {
+    prefix: "/ecosystems",
+    router: ecosystemsPublicRouter,
+  },
+  {
+    prefix: "/catalog",
+    router: catalogPublicRouter,
+  },
+  {
+    prefix: "/dataresources",
+    router: dataResourcesPublicRouter,
+  },
+  {
+    prefix: "/softwaresources",
+    router: softwareResourcesPublicRouter,
+  },
+  {
+    prefix: "/serviceofferings",
+    router: serviceOfferingsPublicRouter,
+  },
+];
 
-  // Load all routers
-  for (const accessType of ["private", "public"]) {
-    const accessTypeDir = path.join(routesDir, accessType);
-    for (const version of fs.readdirSync(accessTypeDir)) {
-      const versionDir = path.join(accessTypeDir, version);
-      for (const routerFile of fs.readdirSync(versionDir)) {
-        const resourceName = routerFile.split(".")[0];
-        const routerPath = `/${version}/${resourceName.toLowerCase()}`;
-        const fullPath = path.join(versionDir, routerFile);
+const PrivateRoutersV1 = [
+  {
+    prefix: "/dataresources",
+    router: dataResourcesPrivateRouter,
+  },
+  {
+    prefix: "/ecosystems",
+    router: ecosystemsPrivateRouter,
+  },
+  {
+    prefix: "/negotiation",
+    router: negotiationPrivateRouter,
+  },
+  {
+    prefix: "/participants",
+    router: participantsPrivateRouter,
+  },
+  {
+    prefix: "/representations",
+    router: representationsPrivateRouter,
+  },
+  {
+    prefix: "/serviceofferings",
+    router: serviceOfferingsPrivateRouter,
+  },
+  {
+    prefix: "/softwaresources",
+    router: softwareResourcesPrivateRouter,
+  },
+];
 
-        if (!routerMap.has(routerPath)) {
-          routerMap.set(routerPath, {
-            private: null,
-            public: null,
-          });
-        }
+const routersToSetup = [{ prefix: "", routers: PrivateRoutersV1}, {prefix: "", routers: PublicRoutersV1}];
 
-        const router = await importRouter(fullPath);
-
-        if (accessType === "private") {
-          routerMap.get(routerPath).private = router;
-        } else {
-          routerMap.get(routerPath).public = router;
-        }
-      }
-    }
-  }
-
-  // Apply routers to the app
-  for (const [basePath, routers] of routerMap) {
-    if (routers.private && routers.public) {
-      app.use(basePath, routers.public, routers.private);
-    } else if (routers.private) {
-      app.use(basePath, routers.private);
-    } else if (routers.public) {
-      app.use(basePath, routers.public);
-    }
-  }
+export const setupRoutes = (app: Application) => {
+  routersToSetup.forEach((config: RouterSetup) => {
+    const { prefix, middleware } = config;
+    config.routers.forEach((router) => {
+      const fullPrefix = prefix + router.prefix;
+      // Use middleware, if available, preventing
+      // its definition across route configurations.
+      const routers = middleware ? [middleware, router.router] : router.router;
+      app.use(fullPrefix, routers);
+    });
+  });
 };
