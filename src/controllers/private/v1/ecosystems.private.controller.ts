@@ -701,7 +701,7 @@ export const applyOrchestratorSignature = async (
     try {
       const contract = await signContract({
         contractId: ecosystem.contract,
-        participant: req.user.id,
+        participant: `${process.env.API_URL}/catalog/participants/${req.user.id}`,
         signature: signature,
         role: "orchestrator", // As defined by Contract BB
       });
@@ -775,7 +775,7 @@ export const applyParticipantSignature = async (
     try {
       const contract = await signContract({
         contractId: ecosystem.contract,
-        participant: req.user.id,
+        participant: `${process.env.API_URL}/catalog/participants/${req.user.id}`,
         signature: signature,
         role: "participant",
       });
