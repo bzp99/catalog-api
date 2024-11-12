@@ -188,7 +188,9 @@ export const getDataResourceSD = async (
   next: NextFunction
 ) => {
   try {
-    const resource = await DataResource.findById(req.params.id).lean();
+    const resource = await DataResource.findById(req.params.id)
+      .populate([{ path: "representation", model: "Representation" }])
+      .lean();
     const result = {
       "@context": CONFIG.apiUrl + "/dataresource",
       "@type": "DataResource",
@@ -209,7 +211,12 @@ export const getSoftwareResourceSD = async (
   next: NextFunction
 ) => {
   try {
-    const resource = await SoftwareResource.findById(req.params.id).lean();
+    const resource = await SoftwareResource.findById(req.params.id)
+      .populate({
+        path: "representation",
+        model: "Representation",
+      })
+      .lean();
     const result = {
       "@context": CONFIG.apiUrl + "/softwareresource",
       "@type": "SoftwareResource",
