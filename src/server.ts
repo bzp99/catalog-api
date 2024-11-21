@@ -7,9 +7,14 @@ import swaggerUI from "swagger-ui-express";
 import swaggerSpec from "../docs/swagger.json";
 import { CONFIG } from "./config/environment";
 import { setupRoutes } from "./routes";
+import { getSwaggerConfig } from "./config/swagger";
+import fs from "fs";
 
 export const startServer = async (testPort?: number) => {
   await loadMongoose();
+
+  const swaggerConfig = getSwaggerConfig();
+  fs.writeFileSync("docs/swagger.json", JSON.stringify(swaggerConfig, null, 2));
 
   const app: Application = express();
   const port = testPort || CONFIG.port || 3000;
