@@ -101,6 +101,7 @@ export const sampleEcosystem1 = {
     }
   ],
 };
+
 export const sampleUpdatedEcosystem = {
   name: "Updated Ecosystem",
   description: "This is an updated sample ecosystem description.",  
@@ -372,4 +373,49 @@ export const sampleUpdatedRepresentation = (resourceID: string) => {
     url: "http://test.api.com/test/{userId}",
     credential: "5f8ed518651f1648e0d8162b"
   }
+};
+
+export const sampleProviderInfrastructureService = {
+  name: "<string>",
+  providedBy: "<string>",
+  aggregationOf: ["<string>", "<string>"],
+  dependsOn: ["<string>", "<string>"],
+  termsAndConditions: "",
+  dataProtectionRegime: ["<string>", "<string>"],
+  dataAccountExport: [
+    {
+      requestType: "webform",
+      accessType: "digital",
+      formatType: "<string>",
+    },
+    {
+      requestType: "API",
+      accessType: "physical",
+      formatType: "<string>",
+    },
+  ],
+  policy: [],
+  location: "",
+  description: "",
+  keywords: ["<string>", "<string>"],
+  dataResources: [],
+  softwareResources: [],
+  compliantServiceOfferingVC: "",
+  serviceOfferingVC: "",
+  maximumConsumption: "100",
+  maximumPerformance: "High",
+};
+
+export const sampleProviderInfrastructureServiceDraft = {
+  name: "<string>",
+  policy: [],
+  category: [],
+  description: "",
+  detailedDescription: "",
+};
+
+export const sampleUpdatedProviderInfrastructureService = {
+  name: "Updated Infrastructure Service",
+  inputFormat: "XML",
+  outputFormat: "XML",
 };

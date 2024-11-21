@@ -49,18 +49,18 @@ describe("Bilateral Negotiation Routes Tests", () => {
     //create provider
     const providerData = testProvider4;
     const providerResponse = await request(app)
-      .post("/v1/auth/signup")
+      .post(`${process.env.API_PREFIX}/auth/signup`)
       .send(providerData);
     providerId = providerResponse.body.participant._id;
     //create consumer
     const consumerData = testConsumer3;
     const consumerResponse = await request(app)
-      .post("/v1/auth/signup")
+      .post(`${process.env.API_PREFIX}/auth/signup`)
       .send(consumerData);
     consumerId = consumerResponse.body.participant._id;
     //login provider
     const providerAuthResponse = await request(app)
-      .post("/v1/auth/login")
+      .post(`${process.env.API_PREFIX}/auth/login`)
       .send({
         email: testProvider4.email,
         password: testProvider4.password,
@@ -68,7 +68,7 @@ describe("Bilateral Negotiation Routes Tests", () => {
     providerJwt = providerAuthResponse.body.token;
     //login consumer
     const consumerAuthResponse = await request(app)
-      .post("/v1/auth/login")
+      .post(`${process.env.API_PREFIX}/auth/login`)
       .send({
         email: testConsumer3.email,
         password: testConsumer3.password,
@@ -78,14 +78,14 @@ describe("Bilateral Negotiation Routes Tests", () => {
     //create data resouurce
     const dataResourceData = sampleDataResource;
     const dataResponse = await request(app)
-      .post("/v1/dataResources")
+      .post(`${process.env.API_PREFIX}/dataResources`)
       .set("Authorization", `Bearer ${providerJwt}`)
       .send(dataResourceData);
     dataResourceId = dataResponse.body._id;
     //create software resource
     const softawreResourceData = sampleSoftwareResource;
     const serviceResponse = await request(app)
-      .post("/v1/softwareresources")
+      .post(`${process.env.API_PREFIX}/softwareresources`)
       .set("Authorization", `Bearer ${consumerJwt}`)
       .send(softawreResourceData);
     softwareResourceId = serviceResponse.body.id;
@@ -93,13 +93,13 @@ describe("Bilateral Negotiation Routes Tests", () => {
     //create Service Offerings
     //DP
     const resProvider = await request(app)
-      .post("/v1/serviceofferings")
+      .post(`${process.env.API_PREFIX}/serviceofferings`)
       .set("Authorization", `Bearer ${providerJwt}`)
       .send({ ...sampleProviderServiceOffering, providedBy: providerId });
     providerServiceOfferingId = resProvider.body._id;
     //SP
     const resConsumer = await request(app)
-      .post("/v1/serviceofferings")
+      .post(`${process.env.API_PREFIX}/serviceofferings`)
       .set("Authorization", `Bearer ${consumerJwt}`)
       .send({ ...sampleConsumerServiceOffering, providedBy: consumerId });
     consumerServiceOfferingId = resConsumer.body._id;
@@ -115,7 +115,7 @@ describe("Bilateral Negotiation Routes Tests", () => {
   it("should Create a service offering access request", async () => {
     const negotiationData = sampleBilateralNegotiation;
     const response = await request(app)
-      .post("/v1/negotiation")
+      .post(`${process.env.API_PREFIX}/negotiation`)
       .set("Authorization", `Bearer ${providerJwt}`)
       .send({
         ...negotiationData,
@@ -136,7 +136,7 @@ describe("Bilateral Negotiation Routes Tests", () => {
 
   it("should authorize negotiation", async () => {
     const response = await request(app)
-      .put(`/v1/negotiation/${negotiationId}`)
+      .put(`${process.env.API_PREFIX}/negotiation/${negotiationId}`)
       .set("Authorization", `Bearer ${providerJwt}`)
       .send({
         policy: [
@@ -168,7 +168,7 @@ describe("Bilateral Negotiation Routes Tests", () => {
 
   it("should accept negotiation", async () => {
     const response = await request(app)
-      .put(`/v1/negotiation/${negotiationId}/accept`)
+      .put(`${process.env.API_PREFIX}/negotiation/${negotiationId}/accept`)
       .set("Authorization", `Bearer ${consumerJwt}`)
       .expect(200);
     expect(response.body).to.be.an("object");
@@ -179,7 +179,7 @@ describe("Bilateral Negotiation Routes Tests", () => {
   });
   it("should sign exchange configuration by data provider", async () => {
     const response = await request(app)
-      .put(`/v1/negotiation/${negotiationId}/sign`)
+      .put(`${process.env.API_PREFIX}/negotiation/${negotiationId}/sign`)
       .set("Authorization", `Bearer ${consumerJwt}`)
       .send({
         signature: "hasSigned",
@@ -188,7 +188,7 @@ describe("Bilateral Negotiation Routes Tests", () => {
   });
   it("should sign exchange configuration by service provider", async () => {
     const response = await request(app)
-      .put(`/v1/negotiation/${negotiationId}/sign`)
+      .put(`${process.env.API_PREFIX}/negotiation/${negotiationId}/sign`)
       .set("Authorization", `Bearer ${consumerJwt}`)
       .send({
         signature: "hasSigned",
@@ -198,7 +198,7 @@ describe("Bilateral Negotiation Routes Tests", () => {
 
   it("should get all exchange configurations for a participant", async () => {
     const response = await request(app)
-      .get("/v1/negotiation/")
+      .get(`${process.env.API_PREFIX}/negotiation/`)
       .set("Authorization", `Bearer ${providerJwt}`)
       .expect(200);
     expect(response.body).to.be.an("array").that.is.not.empty;
@@ -206,19 +206,19 @@ describe("Bilateral Negotiation Routes Tests", () => {
 
   it("should get exchange configuration by ID as data provider", async () => {
     const response = await request(app)
-      .get(`/v1/negotiation/${negotiationId}`)
+      .get(`${process.env.API_PREFIX}/negotiation/${negotiationId}`)
       .set("Authorization", `Bearer ${providerJwt}`)
       .expect(200);
   });
   it("should get exchange configuration by ID as service provider", async () => {
     const response = await request(app)
-      .get(`/v1/negotiation/${negotiationId}`)
+      .get(`${process.env.API_PREFIX}/negotiation/${negotiationId}`)
       .set("Authorization", `Bearer ${consumerJwt}`)
       .expect(200);
   });
   it("should negociate exchange configuration policies", async () => {
     const response = await request(app)
-      .put(`/v1/negotiation/${negotiationId}/negotiate`)
+      .put(`${process.env.API_PREFIX}/negotiation/${negotiationId}/negotiate`)
       .set("Authorization", `Bearer ${consumerJwt}`)
       .send({
         policy: [

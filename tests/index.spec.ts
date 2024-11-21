@@ -46,7 +46,7 @@ describe("Main Catalog Api Test Cases", () => {
       const participantData = testParticipantOrganizationAdmin;
 
       const response = await request(app)
-        .post("/v1/auth/signup")
+        .post(`${process.env.API_PREFIX}/auth/signup`)
         .send(participantData)
         .expect(201);
 
@@ -58,7 +58,7 @@ describe("Main Catalog Api Test Cases", () => {
 
     it("should login and return a token", async () => {
       const response = await request(app)
-        .post("/v1/auth/login")
+        .post(`${process.env.API_PREFIX}/auth/login`)
         .send({
           email: testParticipantOrganizationAdmin.email,
           password: testParticipantOrganizationAdmin.password,
@@ -71,7 +71,7 @@ describe("Main Catalog Api Test Cases", () => {
   describe("Ecosystem tests", () => {
     it("should create a new ecosystem", async () => {
       const response = await request(app)
-        .post("/v1/ecosystems")
+        .post(`${process.env.API_PREFIX}/ecosystems`)
         .set("Authorization", `Bearer ${jwt}`)
         .send(sampleEcosystem)
         .expect(201);
@@ -81,7 +81,7 @@ describe("Main Catalog Api Test Cases", () => {
 
     it("should return a valid response with an array of elements", async () => {
       const response = await request(app)
-        .get("/v1/ecosystems/me")
+        .get(`${process.env.API_PREFIX}/ecosystems/me`)
         .set("Authorization", `Bearer ${jwt}`);
       expect(response.status).to.equal(200);
       expect(response.body).to.be.an("array");
@@ -89,7 +89,7 @@ describe("Main Catalog Api Test Cases", () => {
 
     it("should delete the ecosystem and return the deleted ecosystem", async () => {
       const response = await request(app)
-        .delete("/v1/ecosystems/" + ecosystemId)
+        .delete(`${process.env.API_PREFIX}/ecosystems/${ecosystemId}`)
         .set("Authorization", `Bearer ${jwt}`);
       expect(response.status).to.equal(200);
     });
@@ -98,7 +98,7 @@ describe("Main Catalog Api Test Cases", () => {
   describe("Service offering management", () => {
     it("Should create a service offering", async () => {
       const res = await request(app)
-        .post("/v1/serviceofferings")
+        .post(`${process.env.API_PREFIX}/serviceofferings`)
         .set("Authorization", `Bearer ${jwt}`)
         .send({ ...sampleServiceOffering, providedBy: participantId })
         .expect(201);
@@ -108,21 +108,21 @@ describe("Main Catalog Api Test Cases", () => {
 
     it("Should retrieve the service offering by id", async () => {
       await request(app)
-        .get("/v1/serviceofferings/" + serviceOfferingId)
+        .get(`${process.env.API_PREFIX}/serviceofferings/${serviceOfferingId}`)
         .set("Authorization", `Bearer ${jwt}`)
         .expect(200);
     });
 
     it("Should retrieve a list of service offerings for the user", async () => {
       const res = await request(app)
-        .get("/v1/serviceofferings/me")
+        .get(`${process.env.API_PREFIX}/serviceofferings/me`)
         .set("Authorization", `Bearer ${jwt}`)
         .expect(200);
     });
 
     it("Should delete the service offering", async () => {
       await request(app)
-        .delete("/v1/serviceofferings/" + serviceOfferingId)
+        .delete(`${process.env.API_PREFIX}/serviceofferings/${serviceOfferingId}`)
         .set("Authorization", `Bearer ${jwt}`)
         .expect(204);
     });

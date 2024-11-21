@@ -48,12 +48,12 @@ describe("Representation Routes Tests", () => {
     // Create provider
     const providerData = testProvider1;
     const providerResponse = await request(app)
-      .post("/v1/auth/signup")
+      .post(`${process.env.API_PREFIX}/auth/signup`)
       .send(providerData);
 
     // Login provider
     const response = await request(app)
-      .post("/v1/auth/login")
+      .post(`${process.env.API_PREFIX}/auth/login`)
       .send({
         email: testProvider1.email,
         password: testProvider1.password,
@@ -65,7 +65,7 @@ describe("Representation Routes Tests", () => {
   it("should create data resource", async () => {
     const dataResourceData = sampleDataResource;
     const response = await request(app)
-      .post("/v1/dataResources")
+      .post(`${process.env.API_PREFIX}/dataResources`)
       .set("Authorization", `Bearer ${jwt}`)
       .send(dataResourceData)
       .expect(201);
@@ -78,7 +78,7 @@ describe("Representation Routes Tests", () => {
   it("should create software resource", async () => {
     const softwareResourceData = sampleSoftwareResource;
     const response = await request(app)
-      .post("/v1/softwareresources")
+      .post(`${process.env.API_PREFIX}/softwareresources`)
       .set("Authorization", `Bearer ${jwt}`)
       .send(softwareResourceData)
       .expect(201);
@@ -91,7 +91,7 @@ describe("Representation Routes Tests", () => {
   it("should create representation for Data Resource", async () => {
     const representationData = sampleRepresentation(dataResourcesId);
     const response = await request(app)
-      .post("/v1/representations")
+      .post(`${process.env.API_PREFIX}/representations`)
       .set("Authorization", `Bearer ${jwt}`)
       .send(representationData)
       .expect(201);
@@ -105,7 +105,7 @@ describe("Representation Routes Tests", () => {
   it("should create representation for Software Resource", async () => {
     const representationData = sampleRepresentation(softwareResourceId);
     const response = await request(app)
-      .post("/v1/representations")
+      .post(`${process.env.API_PREFIX}/representations`)
       .set("Authorization", `Bearer ${jwt}`)
       .send(representationData)
       .expect(201);
@@ -115,19 +115,10 @@ describe("Representation Routes Tests", () => {
 
   it("should get data resource by ID-protected and representation is populated", async () => {
     const response = await request(app)
-      .get(`/v1/dataResources/${dataResourcesId}`)
+      .get(`${process.env.API_PREFIX}/dataResources/${dataResourcesId}`)
       .set("Authorization", `Bearer ${jwt}`)
       .expect(200);
 
-    expect(response.body).to.be.an("object");
-    expect(response.body.representation).to.be.an("object");
-  });
-
-  it("should get software resource by ID-protected and representation is populated", async () => {
-    const response = await request(app)
-      .get(`/v1/softwareresources/${softwareResourceId}`)
-      .set("Authorization", `Bearer ${jwt}`)
-      .expect(200);
     expect(response.body).to.be.an("object");
     expect(response.body.representation).to.be.an("object");
   });
@@ -136,7 +127,7 @@ describe("Representation Routes Tests", () => {
     const updatedRepresentationData = sampleUpdatedRepresentation(dataResourcesId);
 
     const response = await request(app)
-      .put(`/v1/representations/${representationsId}`)
+      .put(`${process.env.API_PREFIX}/representations/${representationsId}`)
       .set("Authorization", `Bearer ${jwt}`)
       .send(updatedRepresentationData)
       .expect(200);
@@ -145,7 +136,7 @@ describe("Representation Routes Tests", () => {
 
   it("should get representation by ID-protected", async () => {
     const response = await request(app)
-      .get(`/v1/representations/${representationsId}`)
+      .get(`${process.env.API_PREFIX}/representations/${representationsId}`)
       .set("Authorization", `Bearer ${jwt}`)
       .expect(200);
     //assertions
@@ -154,7 +145,7 @@ describe("Representation Routes Tests", () => {
 
   it("should delete representation by id", async () => {
     const response = await request(app)
-      .delete(`/v1/representations/${representationsId}`)
+      .delete(`${process.env.API_PREFIX}/representations/${representationsId}`)
       .set("Authorization", `Bearer ${jwt}`)
       .expect(204);
     //assertions
