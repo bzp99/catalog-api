@@ -5,6 +5,7 @@ import {
   Participant,
   ServiceOffering,
   SoftwareResource,
+  InfrastructureService,
 } from "../../../models";
 import { CONFIG } from "../../../config/environment";
 
@@ -268,6 +269,37 @@ export const getServiceOfferingSD = async (
       "@context": CONFIG.apiUrl + "/serviceoffering",
       "@type": "ServiceOffering",
       ...serviceOffering,
+    };
+    return res.json(result);
+  } catch (err) {
+    next(err);
+  }
+};
+
+/**
+ * Get an infrastructure service self-description by ID
+ */
+export const getInfrastructureServiceSD = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const infrastructureService = await InfrastructureService.findById(
+      req.params.id
+    ).lean();
+
+    infrastructureService["dataResources"] = infrastructureService[
+      "dataResources"
+    ].map((dr) => `${process.env.API_URL}/catalog/dataresources/${dr}`);
+    infrastructureService["softwareResources"] = infrastructureService[
+      "softwareResources"
+    ].map((sr) => `${process.env.API_URL}/catalog/softwareresources/${sr}`);
+
+    const result = {
+      "@context": process.env.API_URL + "/infrastructureService",
+      "@type": "InfrastructureService",
+      ...infrastructureService,
     };
     return res.json(result);
   } catch (err) {

@@ -7,6 +7,7 @@ import catalogPublicRouter from "./public/v1/catalog.public.router";
 import dataResourcesPublicRouter from "./public/v1/dataResources.public.router";
 import softwareResourcesPublicRouter from "./public/v1/softwareResources.public.router";
 import serviceOfferingsPublicRouter from "./public/v1/serviceOfferings.public.router";
+import infrastructureServicesPublicRouter from "./public/v1/infrastructureServices.public.router";
 
 //private routers
 import dataResourcesPrivateRouter from "./private/v1/dataResources.private.router";
@@ -16,6 +17,7 @@ import participantsPrivateRouter from "./private/v1/participants.private.router"
 import representationsPrivateRouter from "./private/v1/representations.private.router";
 import serviceOfferingsPrivateRouter from "./private/v1/serviceOfferings.private.router";
 import softwareResourcesPrivateRouter from "./private/v1/softwareResources.private.router";
+import infrastructureServicesPrivateRouter from "./private/v1/infrastructureService.private.router";
 
 type RouterSetup = {
   prefix: string;
@@ -44,12 +46,16 @@ const PublicRoutersV1 = [
     router: dataResourcesPublicRouter,
   },
   {
-    prefix: "/softwaresources",
+    prefix: "/softwareresources",
     router: softwareResourcesPublicRouter,
   },
   {
     prefix: "/serviceofferings",
     router: serviceOfferingsPublicRouter,
+  },
+  {
+    prefix: "/infrastructureservices",
+    router: infrastructureServicesPublicRouter,
   },
 ];
 
@@ -79,12 +85,19 @@ const PrivateRoutersV1 = [
     router: serviceOfferingsPrivateRouter,
   },
   {
-    prefix: "/softwaresources",
+    prefix: "/softwareresources",
     router: softwareResourcesPrivateRouter,
+  },
+  {
+    prefix: "/infrastructureservices",
+    router: infrastructureServicesPrivateRouter,
   },
 ];
 
-const routersToSetup = [{ prefix: "", routers: PrivateRoutersV1}, {prefix: "", routers: PublicRoutersV1}];
+const routersToSetup = [
+  { prefix: process.env.API_PREFIX, routers: PublicRoutersV1 },
+  { prefix: process.env.API_PREFIX, routers: PrivateRoutersV1 },
+];
 
 export const setupRoutes = (app: Application) => {
   routersToSetup.forEach((config: RouterSetup) => {

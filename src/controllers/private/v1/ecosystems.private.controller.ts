@@ -1,6 +1,10 @@
 import { Request, Response, NextFunction } from "express";
-import { HydratedDocument } from "mongoose";
-import { Ecosystem } from "../../../models";
+import { HydratedDocument, Types } from "mongoose";
+import {
+  Ecosystem,
+  InfrastructureService,
+  ServiceOffering,
+} from "../../../models";
 import { ECOSYSTEM_POPULATION } from "../../public/v1/ecosystems.public.controller";
 import {
   batchInjectRoleAndObligations,
@@ -13,6 +17,12 @@ import {
   IEcosystemInvitation,
   IEcosystemJoinRequest,
 } from "../../../types/ecosystem";
+import {
+  BatchDataProcessingInjection,
+  injectDataProcessingContract,
+  removeDataProcessingContract,
+  updateDataProcessingContract,
+} from "../../../libs/contract/dataProcessingInjector";
 
 /**
  * Returns all ecosystems the authenticated organization is either
@@ -854,6 +864,494 @@ export const configureParticipantEcosystemOfferings = async (
     await ecosystem.save();
 
     return res.json(ecosystem);
+  } catch (err) {
+    next(err);
+  }
+};
+
+/**
+ * Enables a infrastructure provider to sign the contract,
+ * then add provider to ecosystem
+ * and update infrastructureServices of the participant
+ */
+export const applyInfrastructureProviderSignature = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { id } = req.params;
+    const { signature } = req.body;
+    const participant = req.user.id;
+
+    const ecosystem = await Ecosystem.findById(id);
+
+    if (!ecosystem)
+      return res.json({
+        code: 404,
+        errorMsg: "Not found",
+        message: "Ecosystem not found",
+      });
+    try {
+      //find the infrastructure service invitation
+      const infrastructureInvitation = ecosystem.infrastructureServices.find(
+        (element) =>
+          element.participant === participant && element.status === "Pending"
+      );
+
+      if (!infrastructureInvitation) {
+        return res.status(404).json({
+          code: 404,
+          errorMsg: "Not found",
+          message:
+            "Infrastructure Service invitation not found or already accepted",
+        });
+      }
+
+      const participantSD = `${process.env.API_URL}/catalog/participants/${participant}`;
+
+      const contract = await signContract({
+        contractId: ecosystem.contract,
+        participant: participantSD,
+        signature: signature,
+        role: "infrastructure provider",
+      });
+
+      const isParticipant = ecosystem.participants.find(
+        (p) => p.participant === participant
+      );
+
+      if (!isParticipant) {
+        ecosystem.participants.push({
+          participant: participant,
+          roles: ["infrastructureProvider"],
+          offerings: [],
+        });
+      }
+      for (const infrastructureService of ecosystem.infrastructureServices) {
+        if (infrastructureService.participant === participant) {
+          infrastructureService.status = "Signed";
+          await infrastructureService.save();
+        }
+      }
+
+      await ecosystem.save();
+
+      return res.json({
+        code: 200,
+        message: "successfully signed contract",
+        data: contract,
+      });
+    } catch (err) {
+      return res.json({
+        code: 424,
+        errorMsg: "third party api failure",
+        message: "Failed to sign ecosystem contract",
+        data: { status: err?.status, message: err?.message },
+      });
+    }
+  } catch (err) {
+    next(err);
+  }
+};
+
+/**
+ * Enables an orchestrator to configure the infrastructure services he makes
+ * available to an ecosystem as well as the policies configured for it
+ */
+export const configureOrchestratorEcosystemInfrastructureServices = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { id } = req.params;
+    const ecosystem = await Ecosystem.findById(id).populate(
+      ECOSYSTEM_POPULATION
+    );
+    const { infrastructureServices } = req.body;
+
+    if (!ecosystem)
+      return res.json({
+        code: 404,
+        errorMsg: "Not found",
+        message: "Ecosystem not found",
+      });
+
+    if (!infrastructureServices)
+      return res.json({
+        code: 400,
+        errorMsg: "Bad request",
+        message: "Infrastructure services not found",
+      });
+
+    // const participant = ecosystem.participants.find(
+    //     (p) => getDocumentId(p.participant) === req.user.id
+    // );
+    //
+    // // erreur ochestrateur != participant
+    //
+    // if (!participant)
+    //     return errorRes({
+    //         req,
+    //         res,
+    //         code: 400,
+    //         errorMsg: 'Bad request',
+    //         message: 'Participant not found',
+    //     });
+
+    // Get all infrastructure services ids from participant
+    const flattenParticipantInfrastructureServicesIds =
+      ecosystem.infrastructureServices.map((infraServices) =>
+        getDocumentId(infraServices.infrastructureService)
+      );
+
+    // Filter out the infrastructure services that are already in the participant
+    const filteredInfrastructureServices = infrastructureServices.filter(
+      (infraServices) =>
+        !flattenParticipantInfrastructureServicesIds.includes(
+          getDocumentId(infraServices)
+        )
+    );
+    const infraServicesPopulate = await InfrastructureService.find({
+      _id: { $in: filteredInfrastructureServices },
+    });
+
+    if (infraServicesPopulate.length === 0) {
+      return res.status(200).json(ecosystem);
+    }
+    infraServicesPopulate.forEach((inf) =>
+      ecosystem.infrastructureServices.push({
+        infrastructureService: inf._id,
+        participant: getDocumentId(inf.providedBy),
+        status: "Pending",
+      })
+    );
+
+    await ecosystem.save();
+
+    return res.status(200).json(ecosystem);
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const configureOrchestratorEcosystemDataProcessingChain = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { id } = req.params;
+    const ecosystem = await Ecosystem.findById(id).populate(
+      ECOSYSTEM_POPULATION
+    );
+    const { dataProcessingChain } = req.body;
+
+    if (!ecosystem)
+      return res.json({
+        code: 404,
+        errorMsg: "Not found",
+        message: "Ecosystem not found",
+      });
+
+    if (!dataProcessingChain)
+      return res.json({
+        code: 400,
+        errorMsg: "Bad request",
+        message: "Data processing chain not found",
+      });
+
+    // Retrieve all infrastructure service and service offering id for verification
+    let chainValidated = true;
+    const infraServicesIds = ecosystem.infrastructureServices.map(
+      (infraService) => infraService.infrastructureService
+    );
+    const serviceOfferingIds = ecosystem.participants
+      .map((participant) =>
+        participant.offerings.map((element) => element.serviceOffering)
+      )
+      .flat();
+
+    //check if all element of the given chain exist inside the ecosystem
+    for (const element of dataProcessingChain) {
+      const currentEcosystemInfraServices =
+        ecosystem.infrastructureServices.find(
+          (infraService) =>
+            infraService.infrastructureService === element.resource
+        );
+
+      if (
+        currentEcosystemInfraServices &&
+        (!infraServicesIds.includes(element.resource) ||
+          currentEcosystemInfraServices?.status === "Pending")
+      ) {
+        chainValidated = false;
+      } else if (
+        !currentEcosystemInfraServices &&
+        !serviceOfferingIds.includes(element.resource)
+      ) {
+        chainValidated = false;
+      }
+    }
+
+    if (!chainValidated) {
+      return res.json({
+        code: 400,
+        errorMsg: "Action not Authorized",
+        message: "Element of the chain not in ecosystem or not signed yet",
+      });
+    }
+
+    const finalInfraServicesArray = [];
+
+    for (const dataProcessChain of dataProcessingChain) {
+      let offer: any; //(IInfrastructureService && {_id : string}) | (IServiceOffering && {_id : string});
+      let type = "serviceofferings";
+      offer = await ServiceOffering.findById(dataProcessChain.resource).lean();
+      if (!offer) {
+        offer = await InfrastructureService.findById(
+          dataProcessChain.resource
+        ).lean();
+        type = "infrastructureservices";
+      }
+
+      if (!offer) {
+        return res.json({
+          code: 404,
+          errorMsg: "Not found",
+          message: "Offer not found",
+        });
+      }
+
+      finalInfraServicesArray.push({
+        participant: offer.providedBy,
+        serviceOffering: offer._id,
+        type,
+        params: JSON.stringify(dataProcessChain.params) ?? "",
+        configuration: dataProcessChain.configuration ?? "",
+      });
+    }
+
+    ecosystem.dataProcessingChains.push({
+      infrastructureServices: finalInfraServicesArray,
+    });
+
+    // The _id of the newly added element will already be accessible here
+    const addedElement =
+      ecosystem.dataProcessingChains[ecosystem.dataProcessingChains.length - 1];
+
+    //TODO: V2 check if exact same chain exists
+    await ecosystem.save();
+
+    const batchInjectDataProcessing: BatchDataProcessingInjection = {
+      _id: addedElement._id.toString(),
+      infrastructureServices: finalInfraServicesArray.map((element) => {
+        element = {
+          participant: `${process.env.API_URL}/catalog/participants/${element.participant}`,
+          serviceOffering: `${process.env.API_URL}/catalog/${element.type}/${element.serviceOffering}`,
+          params: element.params,
+          configuration: element.configuration,
+        };
+        return element;
+      }),
+    };
+
+    // inject the chain into the contract
+    await injectDataProcessingContract(
+      ecosystem.contract,
+      batchInjectDataProcessing
+    );
+
+    return res.status(200).json(ecosystem);
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const deleteEcosystemDataProcessingChain = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { id, dataProcessingChainId } = req.params;
+    const ecosystem = await Ecosystem.findById(id).populate(
+      ECOSYSTEM_POPULATION
+    );
+    const dataProcessingChain = await ecosystem.dataProcessingChains.find(
+      (dpc) => dpc.id === dataProcessingChainId
+    );
+
+    if (!ecosystem)
+      return res.json({
+        code: 404,
+        errorMsg: "Not found",
+        message: "Ecosystem not found",
+      });
+
+    if (ecosystem.dataProcessingChains.includes(dataProcessingChain)) {
+      ecosystem.dataProcessingChains.remove(dataProcessingChain);
+    } else {
+      return res.json({
+        code: 404,
+        errorMsg: "Not found",
+        message: "Data processing chain not found in ecosystem",
+      });
+    }
+    ecosystem.save();
+
+    //remove it in the contract
+    await removeDataProcessingContract(
+      ecosystem.contract,
+      dataProcessingChainId
+    );
+
+    return res.status(200).json(ecosystem);
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const updateEcosystemDataProcessingChain = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { id, dataProcessingChainId } = req.params;
+    const { dataProcessingChain } = req.body;
+    const ecosystem = await Ecosystem.findById(id).populate(
+      ECOSYSTEM_POPULATION
+    );
+
+    const ecoDataProcessingChain = ecosystem.dataProcessingChains.find(
+      (dpc) => dpc.id === dataProcessingChainId
+    );
+
+    const dataProcessingChainIndex = ecosystem.dataProcessingChains.indexOf(
+      ecoDataProcessingChain
+    );
+
+    if (!ecosystem)
+      return res.json({
+        code: 404,
+        errorMsg: "Not found",
+        message: "Ecosystem not found",
+      });
+
+    if (!dataProcessingChain)
+      return res.json({
+        code: 404,
+        errorMsg: "Not found",
+        message: "Data processing chain not found",
+      });
+
+    if (!ecoDataProcessingChain)
+      return res.json({
+        code: 404,
+        errorMsg: "Not found",
+        message: "Data processing chain not found in ecosystem",
+      });
+
+    // Retrieve all infrastructure service and service offering id for verification
+    let chainValidated = true;
+    const infraServicesIds = ecosystem.infrastructureServices.map(
+      (infraService) => infraService.infrastructureService
+    );
+    const serviceOfferingIds = ecosystem.participants
+      .map((participant) =>
+        participant.offerings.map((element) => element.serviceOffering)
+      )
+      .flat();
+
+    //check if all element of the given chain exist inside the ecosystem
+    for (const element of dataProcessingChain) {
+      const currentEcosystemInfraServices =
+        ecosystem.infrastructureServices.find(
+          (infraService) =>
+            infraService.infrastructureService === element.resource
+        );
+
+      if (
+        currentEcosystemInfraServices &&
+        (!infraServicesIds.includes(element.resource) ||
+          currentEcosystemInfraServices?.status === "Pending")
+      ) {
+        chainValidated = false;
+      } else if (
+        !currentEcosystemInfraServices &&
+        !serviceOfferingIds.includes(element.resource)
+      ) {
+        chainValidated = false;
+      }
+    }
+
+    if (!chainValidated) {
+      return res.json({
+        code: 400,
+        errorMsg: "Action not Authorized",
+        message: "Element of the chain not in ecosystem or not signed yet",
+      });
+    }
+
+    const finalInfraServicesArray = [];
+
+    for (const dataProcessChain of dataProcessingChain) {
+      let offer: any; //(IInfrastructureService && {_id : string}) | (IServiceOffering && {_id : string});
+      let type = "serviceofferings";
+      offer = await ServiceOffering.findById(dataProcessChain.resource).lean();
+      if (!offer) {
+        offer = await InfrastructureService.findById(
+          dataProcessChain.resource
+        ).lean();
+        type = "infrastructureservices";
+      }
+
+      if (!offer) {
+        return res.json({
+          code: 404,
+          errorMsg: "Not found",
+          message: "Offer not found",
+        });
+      }
+
+      finalInfraServicesArray.push({
+        participant: offer.providedBy,
+        serviceOffering: offer._id,
+        type,
+        params: JSON.stringify(dataProcessChain.params) ?? "",
+        configuration: dataProcessChain.configuration ?? "",
+      });
+    }
+
+    ecosystem.dataProcessingChains[
+      dataProcessingChainIndex
+    ].infrastructureServices = finalInfraServicesArray;
+
+    ecosystem.save();
+
+    const batchInjectDataProcessing: BatchDataProcessingInjection = {
+      _id: dataProcessingChainId,
+      infrastructureServices: finalInfraServicesArray.map((element) => {
+        element = {
+          participant: `${process.env.API_URL}/catalog/participants/${element.participant}`,
+          serviceOffering: `${process.env.API_URL}/catalog/${element.type}/${element.serviceOffering}`,
+          params: element.params,
+          configuration: element.configuration,
+        };
+        return element;
+      }),
+    };
+
+    //update it in the contract
+    await updateDataProcessingContract(
+      ecosystem.contract,
+      dataProcessingChainId,
+      batchInjectDataProcessing
+    );
+
+    return res.status(200).json(ecosystem);
   } catch (err) {
     next(err);
   }

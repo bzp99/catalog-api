@@ -8,6 +8,7 @@ import {
   getServiceOfferingSD,
   getSoftwareResourceSD,
   getSoftwareServiceOfferingsForCategory,
+  getInfrastructureServiceSD,
 } from "../../../controllers/public/v1/catalog.public.controller";
 
 const router: Router = Router();
@@ -20,5 +21,6 @@ router.get("/participants/:id", getParticipantSD);
 router.get("/dataresources/:id", getDataResourceSD);
 router.get("/softwareresources/:id", getSoftwareResourceSD);
 router.get("/serviceofferings/:id", getServiceOfferingSD);
+router.get("/infrastructureservices/:id", getInfrastructureServiceSD);
 
 export default router;

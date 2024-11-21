@@ -6,3 +6,4 @@ export { Participant } from "./Participant";
 export { ServiceOffering } from "./ServiceOffering";
 export { ExchangeConfiguration } from "./ExchangeConfiguration";
 export { OrganizationAdmin } from "./OrganizationAdmin";
+export { InfrastructureService } from "./InfrastructureService";
