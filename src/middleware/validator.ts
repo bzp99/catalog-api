@@ -129,3 +129,34 @@ export const validate = (req: Request, res: Response, next: NextFunction) => {
     next();
   }
 };
+
+/**
+ * Checks if it's an infrastructure service array
+ * @param value
+ */
+export const isInfrastructureServicesArray = (value: any[]) => {
+  for (const item of value) {
+    if (
+      typeof item !== "object" ||
+      !item.infrastructureServices ||
+      !item.participant ||
+      !item.status
+    ) {
+      throw new Error("Invalid infrastructure services array");
+    }
+  }
+  return true;
+};
+
+/**
+ * Check if data processing chain array
+ * @param value
+ */
+export const isDataProcessingChainArray = (value: any[]) => {
+  for (const item of value) {
+    if (typeof item !== "object" || !item._id || !item.infrastructureServices) {
+      throw new Error("Invalid data processing chain array");
+    }
+  }
+  return true;
+};

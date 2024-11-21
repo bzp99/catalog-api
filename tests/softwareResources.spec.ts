@@ -39,13 +39,13 @@ describe("Software Resources Routes Tests", () => {
     // Create consumer
     const consumerData = testConsumer4;
     const consumerResponse = await request(app)
-      .post("/v1/auth/signup")
+      .post(`${process.env.API_PREFIX}/auth/signup`)
       .send(consumerData);
     consumerId = consumerResponse.body.participant._id;
 
     // Login consumer
     const response = await request(app)
-      .post("/v1/auth/login")
+      .post(`${process.env.API_PREFIX}/auth/login`)
       .send({
         email: testConsumer4.email,
         password: testConsumer4.password,
@@ -64,7 +64,7 @@ describe("Software Resources Routes Tests", () => {
   it("should create software resource", async () => {
     const softwareResourceData = sampleSoftwareResource;
     const response = await request(app)
-      .post("/v1/softwareresources")
+      .post(`${process.env.API_PREFIX}/softwareresources`)
       .set("Authorization", `Bearer ${jwt}`)
       .send(softwareResourceData)
       .expect(201);
@@ -78,7 +78,7 @@ describe("Software Resources Routes Tests", () => {
   it("should update software resource", async () => {
     const updatedSoftwareResourceData = sampleUpdatedSoftwareResource;
     const response = await request(app)
-      .put(`/v1/softwareresources/${softwareResourceId}`)
+      .put(`${process.env.API_PREFIX}/softwareresources/${softwareResourceId}`)
       .set("Authorization", `Bearer ${jwt}`)
       .send(updatedSoftwareResourceData)
       .expect(200);
@@ -87,33 +87,24 @@ describe("Software Resources Routes Tests", () => {
 
   it("should get software resource by ID-public", async () => {
     const response = await request(app)
-      .get(`/v1/softwareresources/${softwareResourceId}`)
+      .get(`${process.env.API_PREFIX}/softwareresources/${softwareResourceId}`)
       .expect(200);
     //assertions
     //expect response id = softwareResourceId
   });
 
-  it("should get software resource by ID-protected", async () => {
+  it("should get Participant softwareresources", async () => {
     const response = await request(app)
-      .get(`/v1/softwareresources/${softwareResourceId}`)
-      .set("Authorization", `Bearer ${jwt}`)
-      .expect(200);
-    //assertions
-    //expect response id = softwareResourceId
-  });
-
-  it("should get Participant softwareResources", async () => {
-    const response = await request(app)
-      .get("/v1/softwareresources/me")
+      .get(`${process.env.API_PREFIX}/softwareresources/me`)
       .set("Authorization", `Bearer ${jwt}`)
       .expect(200);
     //assertions
     //expect response not empty
   });
 
-  it("should get all softwareResources", async () => {
+  it("should get all softwareresources", async () => {
     const response = await request(app)
-      .get("/v1/softwareresources")
+      .get(`${process.env.API_PREFIX}/softwareresources`)
       .expect(200);
     //assertions
     //expect response not empty
@@ -121,7 +112,7 @@ describe("Software Resources Routes Tests", () => {
 
   it("should delete softwareResource", async () => {
     const response = await request(app)
-      .delete(`/v1/softwareresources/${softwareResourceId}`)
+      .delete(`${process.env.API_PREFIX}/softwareresources/${softwareResourceId}`)
       .set("Authorization", `Bearer ${jwt}`)
       .expect(204);
     //assertions

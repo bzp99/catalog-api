@@ -53,6 +53,30 @@ export const ecosystemSchema = new Schema<
         updatedAt: { type: Date, default: new Date(), required: true },
       },
     ],
+    infrastructureServices: [
+      {
+        infrastructureService: { type: String, required: false },
+        participant: { type: String, required: false },
+        status: {
+          type: String,
+          enum: ["Pending", "Signed"],
+          default: "Pending",
+          required: false,
+        },
+      },
+    ],
+    dataProcessingChains: [
+      {
+        infrastructureServices: [
+          {
+            participant: { type: String, required: true },
+            serviceOffering: { type: String, required: true },
+            params: { type: String },
+            configuration: { type: String },
+          },
+        ],
+      },
+    ],
     participants: [
       {
         participant: { type: String },

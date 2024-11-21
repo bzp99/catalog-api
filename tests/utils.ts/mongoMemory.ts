@@ -3,7 +3,11 @@ import { MongoMemoryServer } from "mongodb-memory-server";
 let mongoServer: MongoMemoryServer;
 export const openMongoMemory = async () => {
   console.log("\x1b[93m> Mongoose Memory Connection...\x1b[0m");
-  mongoServer = await MongoMemoryServer.create();
+  mongoServer = await MongoMemoryServer.create({
+    instance: {
+      port: 27017,
+    },
+  });
   const mongoUri = mongoServer.getUri();
   await mongoose.connect(mongoUri);
   await mongoose.connection.db.dropDatabase();
