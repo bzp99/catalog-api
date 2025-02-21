@@ -10,7 +10,6 @@ import {
 } from "../types";
 
 import { vcard } from "./models/vcard";
-import { Types } from "mongoose";
 export const mapDataResource = (
   resource: DataResource & { _id: string }
 ): dcat.Dataset => {
@@ -75,9 +74,7 @@ export const mapSoftwareResource = (
   dataService.language = countryCodes.join(";");
   dataService.endpointURL = resource.exposedThrough;
 
-  if (
-    resource.representation
-  ) {
+  if (resource.representation) {
     const dataset = new dcat.Dataset();
     dataset.distribution = new dcat.Distribution();
     dataset.distribution["@id"] = resource.representation?.toString();

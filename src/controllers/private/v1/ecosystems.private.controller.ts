@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import { HydratedDocument, Types } from "mongoose";
+import { HydratedDocument } from "mongoose";
 import {
   Ecosystem,
   InfrastructureService,
