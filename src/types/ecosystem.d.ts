@@ -1,6 +1,31 @@
 import { HydratedDocument, Model, Types } from "mongoose";
 import { AllSchemas } from "./models";
 import { EcosystemParticipantParticipation } from "./participant";
+import { IInfrastructureServicesDataProccessingChainDefinition } from "./dataprocessingchain";
+
+export interface IInfrastructureServicesDefinition {
+  /**
+   * ID of the infrastructure service
+   */
+  infrastructureService: string;
+
+  /**
+   * ID of the participant who owns the infrastructure service
+   */
+  participant: string;
+
+  /**
+   * Status of the infrastructure service
+   */
+  status: "Pending" | "Signed";
+}
+
+export interface IDataProcessingChain {
+  /**
+   * List of infrastructure services used by the data processing chain
+   */
+  infrastructureServices: IInfrastructureServicesDataProccessingChainDefinition[];
+}
 
 type IEcosystemBuildingBlockImplementation = {
   /**
@@ -214,6 +239,16 @@ export interface IEcosystem extends AllSchemas {
    * Invitations to join the ecosystem
    */
   invitations: Types.DocumentArray<IEcosystemInvitation>;
+
+  /**
+   * Infrastructure services part of the ecosystem
+   */
+  infrastructureServices: Types.DocumentArray<IInfrastructureServicesDefinition>;
+
+  /**
+   *
+   */
+  dataProcessingChains: Types.DocumentArray<IDataProcessingChain>;
 
   /**
    * Services part of the ecosystems

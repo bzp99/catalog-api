@@ -46,13 +46,13 @@ describe("Data Resources Routes Tests", () => {
     // Create provider
     const providerData = testProvider1;
     const providerResponse = await request(app)
-      .post("/v1/auth/signup")
+      .post(`${process.env.API_PREFIX}/auth/signup`)
       .send(providerData);
     providerId = providerResponse.body.participant._id;
 
     // Login provider
     const response = await request(app)
-      .post("/v1/auth/login")
+      .post(`${process.env.API_PREFIX}/auth/login`)
       .send({
         email: testProvider1.email,
         password: testProvider1.password,
@@ -64,7 +64,7 @@ describe("Data Resources Routes Tests", () => {
   it("should create data resource", async () => {
     const dataResourceData = sampleDataResource;
     const response = await request(app)
-      .post("/v1/dataResources")
+      .post(`${process.env.API_PREFIX}/dataResources`)
       .set("Authorization", `Bearer ${jwt}`)
       .send(dataResourceData)
       .expect(201);
@@ -78,7 +78,7 @@ describe("Data Resources Routes Tests", () => {
     const updatedDataResourceData = sampleUpdatedDataResource;
 
     const response = await request(app)
-      .put(`/v1/dataResources/${dataResourcesId}`)
+      .put(`${process.env.API_PREFIX}/dataResources/${dataResourcesId}`)
       .set("Authorization", `Bearer ${jwt}`)
       .send(updatedDataResourceData)
       .expect(200);
@@ -87,7 +87,7 @@ describe("Data Resources Routes Tests", () => {
 
   it("should get data resource by ID-public", async () => {
     const response = await request(app)
-      .get(`/v1/dataResources/${dataResourcesId}`)
+      .get(`${process.env.API_PREFIX}/dataResources/${dataResourcesId}`)
       .expect(200);
     //assertions
     //expect response id = dataresourceid
@@ -95,7 +95,7 @@ describe("Data Resources Routes Tests", () => {
 
   it("should get data resource by ID-protected", async () => {
     const response = await request(app)
-      .get(`/v1/dataResources/${dataResourcesId}`)
+      .get(`${process.env.API_PREFIX}/dataResources/${dataResourcesId}`)
       .set("Authorization", `Bearer ${jwt}`)
       .expect(200);
     //assertions
@@ -104,7 +104,7 @@ describe("Data Resources Routes Tests", () => {
 
   it("should get Participant Data Resources", async () => {
     const response = await request(app)
-      .get("/v1/dataResources/me")
+      .get(`${process.env.API_PREFIX}/dataResources/me`)
       .set("Authorization", `Bearer ${jwt}`)
       .expect(200);
     //assertions
@@ -112,24 +112,24 @@ describe("Data Resources Routes Tests", () => {
   });
 
   it("Should get DCAT Data Resources", async () => {
-    const res = await request(app).get("/v1/dataResources/dcat").expect(200);
+    const res = await request(app).get(`${process.env.API_PREFIX}/dataResources/dcat`).expect(200);
   });
 
   it("Should get DCAT Data Resource by id", async () => {
     const res = await request(app)
-      .get(`/v1/dataResources/dcat/${dataResourcesId}`)
+      .get(`${process.env.API_PREFIX}/dataResources/dcat/${dataResourcesId}`)
       .expect(200);
   });
 
   it("should get all dataResources", async () => {
-    const response = await request(app).get("/v1/dataResources").expect(200);
+    const response = await request(app).get(`${process.env.API_PREFIX}/dataResources`).expect(200);
     //assertions
     //expect response not empty
   });
 
   it("should delete DataResource by id", async () => {
     const response = await request(app)
-      .delete(`/v1/dataResources/${dataResourcesId}`)
+      .delete(`${process.env.API_PREFIX}/dataResources/${dataResourcesId}`)
       .set("Authorization", `Bearer ${jwt}`)
       .expect(204);
     //assertions

@@ -12,6 +12,13 @@ export const testOrchestrator = {
   firstName: "test",
   lastName: "orchest",
 };
+export const testOrchestrator2 = {
+  email: "orchestrator2@example.com",
+  password: "Password@123!",
+  participantName: "orchestOrganization2",
+  firstName: "test",
+  lastName: "orchest",
+};
 export const testProvider1 = {
   email: "provider1@example.com",
   password: "Password@123!",
@@ -47,6 +54,20 @@ export const testProvider5 = {
   firstName: "test",
   lastName: "provider5",
 };
+export const testProvider6 = {
+  email: "provider6@example.com",
+  password: "Password@123!",
+  participantName: "providerOrganization6",
+  firstName: "test",
+  lastName: "provider6",
+};
+export const infra = {
+  email: "infra@example.com",
+  password: "Password@123!",
+  participantName: "infraOrganization",
+  firstName: "test",
+  lastName: "infra",
+};
 export const testConsumer1 = {
   email: "consumer1@example.com",
   password: "Password@123!",
@@ -74,4 +95,11 @@ export const testConsumer4 = {
   participantName: "consumerOrganization4",
   firstName: "test",
   lastName: "consumer4",
+}
+export const testConsumer5 = {
+  email: "consumer5@example.com",
+  password: "Password@123!",
+  participantName: "consumerOrganization5",
+  firstName: "test",
+  lastName: "consumer5",
 }

@@ -8,8 +8,9 @@ import { IncomingMessage, Server, ServerResponse } from "http";
 
 import {
   sampleDataResource,
-  sampleUpdatedProviderServiceOffering,
-  sampleProviderServiceOffering,
+  sampleProviderInfrastructureService,
+  sampleProviderInfrastructureServiceDraft,
+  sampleUpdatedProviderInfrastructureService,
 } from "./fixtures/sampleData";
 import { Application } from "express";
 import { stub } from "sinon";
@@ -22,9 +23,9 @@ let server: Server<typeof IncomingMessage, typeof ServerResponse>;
 let providerId = "";
 let dataResourcesId = "";
 let jwt = "";
-let serviceOfferingId = "";
+let infrastructureServiceId = "";
 
-describe("Service Offering Routes Tests", () => {
+describe("Infrastructure Service Routes Tests", () => {
   let loadMongooseStub;
   before(async () => {
     loadMongooseStub = stub(loadMongoose, "loadMongoose").callsFake(
@@ -70,60 +71,59 @@ describe("Service Offering Routes Tests", () => {
     server.close();
   });
 
-  it("Should create a service offering", async () => {
+  it("Should create an infrastructure service", async () => {
     const res = await request(app)
-      .post(`${process.env.API_PREFIX}/serviceofferings`)
+      .post(`${process.env.API_PREFIX}/infrastructureservices`)
       .set("Authorization", `Bearer ${jwt}`)
-      .send({ ...sampleProviderServiceOffering, providedBy: providerId })
+      .send({ ...sampleProviderInfrastructureService, providedBy: providerId })
       .expect(201);
-    serviceOfferingId = res.body._id;
+    infrastructureServiceId = res.body._id;
   });
 
-  it("Should get the service offering by id-public", async () => {
+  it("Should create a draft infrastructure service", async () => {
+    const res = await request(app)
+      .post(`${process.env.API_PREFIX}/infrastructureservices/draft`)
+      .set("Authorization", `Bearer ${jwt}`)
+      .send({ ...sampleProviderInfrastructureServiceDraft, providedBy: providerId })
+      .expect(201);
+    expect(res.body.status).to.equal("draft");
+  });
+
+  it("Should get the infrastructure service by id-public", async () => {
     await request(app)
-      .get(`${process.env.API_PREFIX}/serviceofferings/` + serviceOfferingId)
+      .get(`${process.env.API_PREFIX}/infrastructureservices/` + infrastructureServiceId)
       .expect(200);
   });
 
-  it("Should get ServiceOfferings For Participant", async () => {
-    const res = await request(app)
-      .get(`${process.env.API_PREFIX}/serviceofferings/participant/${serviceOfferingId}`)
-      .set("Authorization", `Bearer ${jwt}`)
-      .expect(200);
-  });
-
-  it("Should get Session Participant ServiceOfferings", async () => {
-    const res = await request(app)
-      .get(`${process.env.API_PREFIX}/serviceofferings/me`)
-      .set("Authorization", `Bearer ${jwt}`)
-      .expect(200);
-  });
-
-  it("Should get all ServiceOfferings", async () => {
-    const res = await request(app).get(`${process.env.API_PREFIX}/serviceofferings`).expect(200);
-  });
-
-  it("Should get DCAT ServiceOfferings", async () => {
-    const res = await request(app).get(`${process.env.API_PREFIX}/serviceofferings/dcat`).expect(200);
-  });
-
-  it("Should get DCAT ServiceOffering by id", async () => {
-    const res = await request(app)
-      .get(`${process.env.API_PREFIX}/serviceofferings/dcat/${serviceOfferingId}`)
-      .expect(200);
-  });
-
-  it("Should update service offerings", async () => {
-    const res = await request(app)
-      .put(`${process.env.API_PREFIX}/serviceofferings/${serviceOfferingId}`)
-      .set("Authorization", `Bearer ${jwt}`)
-      .send(sampleUpdatedProviderServiceOffering)
-      .expect(200);
-  });
-
-  it("Should delete the service offering", async () => {
+  it("Should get Infrastructure Services For Participant", async () => {
     await request(app)
-      .delete(`${process.env.API_PREFIX}/serviceofferings/` + serviceOfferingId)
+      .get(`${process.env.API_PREFIX}/infrastructureservices/participant/${providerId}`)
+      .set("Authorization", `Bearer ${jwt}`)
+      .expect(200);
+  });
+
+  it("Should get Session Participant Infrastructure Services", async () => {
+    await request(app)
+      .get(`${process.env.API_PREFIX}/infrastructureservices/me`)
+      .set("Authorization", `Bearer ${jwt}`)
+      .expect(200);
+  });
+
+  it("Should get all Infrastructure Services", async () => {
+    await request(app).get(`${process.env.API_PREFIX}/infrastructureservices`).expect(200);
+  });
+
+  it("Should update infrastructure service", async () => {
+    await request(app)
+      .put(`${process.env.API_PREFIX}/infrastructureservices/${infrastructureServiceId}`)
+      .set("Authorization", `Bearer ${jwt}`)
+      .send(sampleUpdatedProviderInfrastructureService)
+      .expect(200);
+  });
+
+  it("Should delete the infrastructure service", async () => {
+    await request(app)
+      .delete(`${process.env.API_PREFIX}/infrastructureservices/` + infrastructureServiceId)
       .set("Authorization", `Bearer ${jwt}`)
       .expect(204);
   });

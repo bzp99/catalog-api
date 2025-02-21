@@ -48,13 +48,13 @@ describe("Participants Routes Tests", () => {
     // Create provider
     const providerData = testProvider1;
     const providerResponse = await request(app)
-      .post("/v1/auth/signup")
+      .post(`${process.env.API_PREFIX}/auth/signup`)
       .send(providerData);
     providerId = providerResponse.body.participant._id;
 
     // Login provider
     const response = await request(app)
-      .post("/v1/auth/login")
+      .post(`${process.env.API_PREFIX}/auth/login`)
       .send({
         email: testProvider1.email,
         password: testProvider1.password,
@@ -74,7 +74,7 @@ describe("Participants Routes Tests", () => {
 
   it("should get participant Self Description", async () => {
     const response = await request(app)
-      .get(`/v1/catalog/participants/${providerId}`)
+      .get(`${process.env.API_PREFIX}/catalog/participants/${providerId}`)
       .expect(200);
 
     //Verify API Key are not displayed on public routes
@@ -85,7 +85,7 @@ describe("Participants Routes Tests", () => {
 
   it("should get a list of participant Self Description", async () => {
     const response = await request(app)
-      .get(`/v1/catalog/participants`)
+      .get(`${process.env.API_PREFIX}/catalog/participants`)
       .expect(200);
 
     //Verify API Key are not displayed on public routes
@@ -110,7 +110,7 @@ describe("Participants Routes Tests", () => {
     );
     // check Data space connector
     const response = await request(app)
-      .post("/v1/participants/check")
+      .post(`${process.env.API_PREFIX}/participants/check`)
       .set("Authorization", `Bearer ${connectorJWT}`)
       .send({
         appKey,
@@ -125,7 +125,7 @@ describe("Participants Routes Tests", () => {
   it("should post Data Space Connector", async () => {
     // check Data space connector
     const response = await request(app)
-      .post("/v1/participants/")
+      .post(`${process.env.API_PREFIX}/participants/`)
       .set("Authorization", `Bearer ${connectorJWT}`)
       .send({
         appKey,
@@ -143,7 +143,7 @@ describe("Participants Routes Tests", () => {
   it("should check Data Space Connector return true", async () => {
     // check Data space connector
     const response = await request(app)
-      .post("/v1/participants/check")
+      .post(`${process.env.API_PREFIX}/participants/check`)
       .set("Authorization", `Bearer ${connectorJWT}`)
       .send({
         appKey,
@@ -158,7 +158,7 @@ describe("Participants Routes Tests", () => {
   it("should not generateAPIKey", async () => {
     // check Data space connector
     const response = await request(app)
-      .post("/v1/participants/generate-api-key")
+      .post(`${process.env.API_PREFIX}/participants/generate-api-key`)
       .set("Authorization", `Bearer ${connectorJWT}`)
       .expect(400);
 
@@ -168,13 +168,15 @@ describe("Participants Routes Tests", () => {
   it("should generate API Key", async () => {
     // delete API Key
     const participant = await Participant.findById(providerId)
-    participant.serviceKey = "";
+    if(participant){
+       participant.serviceKey = "";
     participant.serviceSecretKey = "";
     await participant.save();
+    }
 
     // Generate API Key
     const response = await request(app)
-      .post("/v1/participants/generate-api-key")
+      .post(`${process.env.API_PREFIX}/participants/generate-api-key`)
       .set("Authorization", `Bearer ${jwtToken}`)
       .expect(201);
 
@@ -186,7 +188,7 @@ describe("Participants Routes Tests", () => {
   it("should get API Key", async () => {
     // check Data space connector
     const response = await request(app)
-      .get("/v1/participants/api-key")
+      .get(`${process.env.API_PREFIX}/participants/api-key`)
       .set("Authorization", `Bearer ${jwtToken}`)
       .expect(200);
 

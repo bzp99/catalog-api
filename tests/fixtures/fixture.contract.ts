@@ -26,7 +26,6 @@ export const mockBilateralContract = () => {
       };
       return [200, contract];
     } catch (e) {
-      console.log(e);
       return [500, { error: "Internal Server Error" }];
     }
   });
@@ -45,7 +44,6 @@ export const mockBilateralContract = () => {
       }
       return [200, { contract }];
     } catch (e) {
-      console.log(e);
       return [500, { error: "Internal Server Error" }];
     }
   });
@@ -69,7 +67,6 @@ export const mockBilateralContract = () => {
       }
       return [200, { contract }];
     } catch (e) {
-      console.log(e);
       return [500, { error: "Internal Server Error" }];
     }
   });
@@ -84,7 +81,7 @@ export const mockBilateralContract = () => {
     .reply(200, { message: "Contract deleted successfully." });
 };
 
-export const mockContract = () => {
+export const mockContract = (contr?: string, dpId?: string) => {
   const mock = new MockAdapter(axios);
   const date = new Date().toISOString();
   const contractBase = {
@@ -100,7 +97,8 @@ export const mockContract = () => {
   let contract: any = {};
 
   const contractUrl = "http://localhost:8888/contracts";
-  const contractId = "50726f6d6574686575732d58";
+  const contractId = contr ?? "50726f6d6574686575732d58";
+  const dataProcessingChainId = dpId ?? "50726f6d6574686575732d58";
 
   mock.onPost(`${contractUrl}`).reply((config) => {
     try {
@@ -127,7 +125,6 @@ export const mockContract = () => {
       };
       return [200, contract];
     } catch (e) {
-      console.log(e);
       return [500, { error: "Internal Server Error" }];
     }
   });
@@ -156,7 +153,6 @@ export const mockContract = () => {
       }
       return [200, { contract }];
     } catch (e) {
-      console.log(e);
       return [500, { error: "Internal Server Error" }];
     }
   });
@@ -188,7 +184,6 @@ export const mockContract = () => {
       }
       return [200, { contract }];
     } catch (e) {
-      console.log(e);
       return [500, { error: "Internal Server Error" }];
     }
   });
@@ -201,4 +196,20 @@ export const mockContract = () => {
   mock
     .onDelete(`${contractUrl}/${contractId}`)
     .reply(200, { message: "Contract deleted successfully." });
+
+  mock.onPut(`${process.env.CONTRACT_SERVICE_ENDPOINT}/contracts/${contractId}/processings/insert`).reply((config) => {
+    try {
+      return [200, {message: "ok"}];
+    } catch (e) {
+      return [500, { error: "Internal Server Error" }];
+    }
+  });
+
+  mock.onPut(`${process.env.CONTRACT_SERVICE_ENDPOINT}/contracts/${contractId}/processings/update/${dataProcessingChainId}`).reply((config) => {
+    try {
+      return [200, {message: "ok"}];
+    } catch (e) {
+      return [500, { error: "Internal Server Error" }];
+    }
+  });
 };
