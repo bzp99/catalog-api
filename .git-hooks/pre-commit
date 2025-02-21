@@ -57,11 +57,6 @@ else
     echo -e "${GREEN}Tests passed${ENDCOLOR}"
 fi
 
-# Cleanup mock files created by tests
-if [ -f tests/fixtures/visions_logo.png ]; then
-  rm tests/fixtures/visions_logo.png
-fi
-
 echo "
 > Running pre-commit test build 🚀
 "
