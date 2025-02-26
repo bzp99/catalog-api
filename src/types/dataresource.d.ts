@@ -1,4 +1,4 @@
-import { Model } from "mongoose";
+import { Model, Types } from "mongoose";
 import { AllSchemas } from "./models";
 import { VirtualResource } from "./virtualresource";
 
@@ -51,6 +51,16 @@ export interface IDataResource extends AllSchemas, VirtualResource {
    * Representation of the resource
    */
   representation?: string;
+
+  /**
+   * Is the payload from the consumer needed
+   */
+  isPayloadForAPI?: boolean;
+
+  /**
+   * The API Response representation
+   */
+  apiResponseRepresentation?: string;
 }
 
 export interface IDataResourceMethods {}
