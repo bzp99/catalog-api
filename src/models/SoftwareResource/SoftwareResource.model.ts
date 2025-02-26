@@ -24,6 +24,8 @@ export const softwareResourceSchema = new Schema<
     demo_link: { type: String },
     relevant_project_link: { type: String },
     representation: { type: String, ref: "Representation" },
+    isAPI: { type: Boolean, default: false },
+    usePII: { type: Boolean, default: false },
     schema_version: { type: String, default: "1.1.0" },
   },
   {
