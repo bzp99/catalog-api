@@ -265,6 +265,13 @@ export const getServiceOfferingSD = async (
       req.params.id
     ).lean();
 
+    serviceOffering["dataResources"] = serviceOffering["dataResources"].map(
+      (dr) => `${process.env.API_URL}/catalog/dataresources/${dr}`
+    );
+    serviceOffering["softwareResources"] = serviceOffering[
+      "softwareResources"
+    ].map((sr) => `${process.env.API_URL}/catalog/softwareresources/${sr}`);
+
     const result = {
       "@context": CONFIG.apiUrl + "/serviceoffering",
       "@type": "ServiceOffering",
