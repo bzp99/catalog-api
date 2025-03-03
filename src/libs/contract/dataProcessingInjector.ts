@@ -1,4 +1,5 @@
 import axios from "axios";
+import { getContractServiceHeaders } from "./utils";
 
 export type BatchDataProcessingInjection = {
   _id: string;
@@ -53,6 +54,7 @@ export type InfrastructureService = {
 export const GetDataProcessings = async (contractId: string) => {
   const res = await axios({
     url: `${process.env.CONTRACT_SERVICE_ENDPOINT}/contracts/${contractId}/processings`,
+    headers: getContractServiceHeaders(),
     method: "GET",
   });
   return res.data;
@@ -69,6 +71,7 @@ export const batchWriteDataProcessings = async (
 ) => {
   const res = await axios({
     url: `${process.env.CONTRACT_SERVICE_ENDPOINT}/contracts/${contractId}/processings`,
+    headers: getContractServiceHeaders(),
     method: "POST",
     data,
   });
@@ -86,6 +89,7 @@ export const injectDataProcessingContract = async (
 ) => {
   const res = await axios({
     url: `${process.env.CONTRACT_SERVICE_ENDPOINT}/contracts/${contractId}/processings/insert`,
+    headers: getContractServiceHeaders(),
     method: "PUT",
     data,
   });
@@ -106,6 +110,7 @@ export const updateDataProcessingContract = async (
 ) => {
   const res = await axios({
     url: `${process.env.CONTRACT_SERVICE_ENDPOINT}/contracts/${contractId}/processings/update/${dataProcessingChainId}`,
+    headers: getContractServiceHeaders(),
     method: "PUT",
     data,
   });
@@ -124,6 +129,7 @@ export const removeDataProcessingContract = async (
 ) => {
   const res = await axios({
     url: `${process.env.CONTRACT_SERVICE_ENDPOINT}/contracts/${contractId}/processings/${dataProcessingId}`,
+    headers: getContractServiceHeaders(),
     method: "DELETE",
   });
   return res.data;
