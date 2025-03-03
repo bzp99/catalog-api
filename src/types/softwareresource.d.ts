@@ -52,6 +52,16 @@ export interface ISoftwareResource extends AllSchemas, VirtualResource {
    * Representation of the resource
    */
   representation?: string;
+
+  /**
+   * is API with payload response
+   */
+  isAPI?: boolean;
+
+  /**
+   * Use of PII
+   */
+  usePII?: boolean;
 }
 
 export interface ISoftwareResourceMethods {}

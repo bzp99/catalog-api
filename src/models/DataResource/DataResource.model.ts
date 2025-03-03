@@ -1,4 +1,4 @@
-import { Schema } from "mongoose";
+import { Schema, Types } from "mongoose";
 import {
   IDataResource,
   IDataResourceModel,
@@ -29,6 +29,8 @@ export const dataResourceSchema = new Schema<
     containsPII: { type: Boolean, required: true },
     category: { type: String, default: "" },
     representation: { type: String, ref: "Representation" },
+    isPayloadForAPI: { type: Boolean, default: false },
+    apiResponseRepresentation: { type: String, ref: "Representation" },
 
     schema_version: { type: String, default: "1" },
   },

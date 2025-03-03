@@ -1,5 +1,6 @@
 import axios from "axios";
 import { CONFIG } from "../../config/environment";
+import { getContractServiceHeaders } from "./utils";
 
 interface BilateralContractGenerationOptions {
   /**
@@ -36,9 +37,7 @@ export const generateBilateralContract = async (
   const res = await axios({
     url: CONFIG.contractServiceEndpoint + "/bilaterals",
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
+    headers: getContractServiceHeaders(),
     data: {
       contract: {
         dataProvider: options.dataProvider,
@@ -56,9 +55,7 @@ export const generateEcosystemContract = async (
   const res = await axios({
     url: CONFIG.contractServiceEndpoint + "/contracts",
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
+    headers: getContractServiceHeaders(),
     data: {
       contract: {
         ecosystem: options.ecosystem,

@@ -1,5 +1,6 @@
 import axios from "axios";
 import { CONFIG } from "../../config/environment";
+import { getContractServiceHeaders } from "./utils";
 
 type BatchRoleAndObligationInjection = {
   contractId: string;
@@ -57,9 +58,7 @@ export const batchInjectRoleAndObligations = async (
       "/contracts/policies/" +
       options.contractId,
     method: "PUT",
-    headers: {
-      "Content-Type": "application/json",
-    },
+    headers: getContractServiceHeaders(),
     data: options.rolesAndObligations,
   });
   return res.data;
@@ -74,9 +73,7 @@ export const injectPolicyInBilateralContract = async (
       "/contracts/policy/" +
       options.contractId,
     method: "PUT",
-    headers: {
-      "Content-Type": "application/json",
-    },
+    headers: getContractServiceHeaders(),
     data: options,
   });
 
@@ -92,9 +89,7 @@ export const batchInjectPoliciesInBilateralContract = async (
       "/bilaterals/policies/" +
       options.contractId,
     method: "PUT",
-    headers: {
-      "Content-Type": "application/json",
-    },
+    headers: getContractServiceHeaders(),
     data: options.rules,
   });
 
