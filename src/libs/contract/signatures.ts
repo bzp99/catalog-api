@@ -1,5 +1,5 @@
 import axios from "axios";
-import { getBilateralOrEcosystemRoute } from "./utils";
+import { getBilateralOrEcosystemRoute, getContractServiceHeaders } from "./utils";
 
 type EcosystemContractSignatureOptions = {
   contractId: string;
@@ -32,7 +32,7 @@ export const signContract = async (
   const res = await axios.put(
     getBilateralOrEcosystemRoute("ecosystem") + "/sign/" + contractId,
     payload,
-    { headers: { "Content-Type": "application/json" } }
+    { headers: getContractServiceHeaders() }
   );
 
   return res.data;
@@ -46,7 +46,7 @@ export const signBilateralContract = async (
   const res = await axios.put(
     getBilateralOrEcosystemRoute("bilateral") + "/sign/" + contractId,
     payload,
-    { headers: { "Content-Type": "application/json" } }
+    { headers: getContractServiceHeaders() }
   );
 
   return res.data;
