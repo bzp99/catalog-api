@@ -124,6 +124,7 @@ export const getParticipants = async (
   next: NextFunction
 ) => {
   try {
+    console.log("GETTING PARTICIPANTS");
     const { limit, page } = req.query;
     const queryOptions: {
       limit: number;

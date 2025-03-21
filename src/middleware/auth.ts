@@ -35,6 +35,8 @@ export const verifyJwtMiddleware = async (
   const buff = Buffer.from(data[1], "base64");
   const authObject: DecodedServiceJWT = JSON.parse(buff.toString());
 
+  console.log(`Processing authObject=${JSON.stringify(authObject)}`);
+
   const { serviceKey } = authObject;
 
   if (serviceKey) {

@@ -18,10 +18,13 @@ export const postDataSpaceConnector = async (
 ) => {
   try {
     const { appKey, endpoint } = req.body;
+    console.log(`Got appKey=${appKey} and endpoint=${endpoint} from req body`);
 
+    console.log(`Looking for participant w/ serviceKey ${req?.serviceKey}`);
     const participant = await Participant.findOne({
       serviceKey: req?.serviceKey,
     });
+    console.log(`Found participant: ${participant._id}`);
 
     if (
       !participant.dataspaceConnectorAppKey ||
@@ -37,7 +40,9 @@ export const postDataSpaceConnector = async (
       participant.urls.dataExport = urlChecker(endpoint, "data/export");
       participant.urls.dataImport = urlChecker(endpoint, "data/import");
 
+      console.log("Updated participant, saving...");
       await participant.save();
+      console.log("Saved participant");
     }
 
     const serviceOffering = await ServiceOffering.find({
