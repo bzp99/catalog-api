@@ -7,6 +7,7 @@ export const issueJwt = (participant: HydratedDocument<IParticipant>) => {
   const jwtPayload = {
     sub: participant.id,
     participant_name: participant.legalName,
+    serviceKey: participant.serviceKey,
   };
 
   const jwtOptions: jwt.SignOptions = {
